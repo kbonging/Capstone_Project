@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vibeStay.platform.dao.MemberDAO">
+    <resultMap id="memberResultMap" type="com.vibeStay.platform.domain.MemberDTO">
+        <id property="memberIdx" column="MEMBER_IDX"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="memberPwd" column="MEMBER_PWD"/>
+        <result property="memberName" column="MEMBER_NAME"/>
+        <result property="memberEmail" column="MEMBER_EMAIL"/>
+        <result property="memberNickname" column="MEMBER_NICKNAME"/>
+        <result property="profileImageUrl" column="PROFILE_IMAGE_URL"/>
+
+        <!-- DefaultDTO 필드 매핑 -->
+        <result property="searchCondition" column="SEARCH_CONDITION"/>
+        <result property="searchKeyword" column="SEARCH_KEYWORD"/>
+        <result property="regDate" column="REG_DATE"/>
+        <result property="modDate" column="MOD_DATE"/>
+        <result property="delYn" column="DEL_YN"/>
+
+        <!-- 권한 목록 -->
+        <collection property="authDTOList" ofType="com.vibeStay.platform.domain.MemberAuthDTO">
+            <result property="authIdx" column="AUTH_IDX"/>
+            <result property="auth" column="AUTH"/>
+        </collection>
+    </resultMap>
+
+    <!-- 회원 아이디로 정보 조회 -->
+    <select id="selectMemberById" parameterType="String" resultMap="memberResultMap">
+        SELECT
+            m.MEMBER_IDX,
+            m.MEMBER_ID,
+            m.MEMBER_PWD,
+            m.MEMBER_NAME,
+            m.MEMBER_EMAIL,
+            m.MEMBER_NICKNAME,
+            m.PROFILE_IMAGE_URL,
+            ma.AUTH,
+            m.DEL_YN,
+            m.REG_DATE,
+            m.MOD_DATE
+        FROM tb_member m join tb_member_auth ma
+        on m.MEMBER_IDX = ma.MEMBER_IDX
+        WHERE MEMBER_ID = #{memberId} AND DEL_YN = 'N'
+    </select>
+
+    <!-- 회원 등록 -->
+    <insert id="insertMember" parameterType="com.vibeStay.platform.domain.MemberDTO"
+            useGeneratedKeys="true" keyProperty="memberIdx">
+        INSERT INTO tb_member (
+            MEMBER_ID, MEMBER_PWD, MEMBER_NAME, MEMBER_EMAIL, MEMBER_NICKNAME, PROFILE_IMAGE_URL, REG_DATE, MOD_DATE
+        )
+        VALUES (
+            #{memberId}, #{memberPwd}, #{memberName}, #{memberEmail}, #{memberNickname}, #{profileImageUrl}, NOW(), NULL
+        );
+    </insert>
+
+    <!-- 회원 권한 등록 -->
+    <insert id="insertMemberAuth" parameterType="com.vibeStay.platform.domain.MemberAuthDTO"
+            useGeneratedKeys="true" keyProperty="authIdx">
+        INSERT INTO TB_MEMBER_AUTH( MEMBER_IDX, AUTH ) values( #{memberIdx}, #{auth} );
+    </insert>
+</mapper>

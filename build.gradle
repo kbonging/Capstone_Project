@@ -45,7 +45,14 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
 	// spring-boot-configuration-processor
+	// application.properties 에서 설정할 수 있는 자동완성 기능이 지원
+	// @ConfigurationProperties 를 사용하는 클래스의 속성 정보를 자동으로 정리한 메타데이터 파일 생성
 	implementation 'org.springframework.boot:spring-boot-configuration-processor'
+
+	// mybatis
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
+	// mysql
+	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
