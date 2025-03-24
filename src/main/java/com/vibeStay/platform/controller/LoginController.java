@@ -9,8 +9,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +24,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class LoginController {
+public class LoginController { // 이거 현재 안씀 !!!!!
     private final JwtProp jwtProp;
     private final MemberService memberService;
 
@@ -93,14 +95,10 @@ public class LoginController {
     }
 
     @PostMapping("/test")
-    public ResponseEntity<?>  test(@RequestBody MemberDTO memberDTO){
+    public ResponseEntity<?>  test(@RequestBody MemberDTO memberDTO, HttpServletRequest request){
         log.info("test memberDTO {}", memberDTO);
-        int result = memberService.insertMember(memberDTO);
-        String msg = "실패";
-        if(result > 0){
-            msg = "성공";
-        }
+        memberService.login(memberDTO, request);
 
-        return new ResponseEntity<String>(msg, HttpStatus.OK);
+        return new ResponseEntity<String>("성공", HttpStatus.OK);
     }
 }

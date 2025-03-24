@@ -15,4 +15,11 @@ public class MemberAuthDTO {
     /** 권한 */
     private String auth;
 
+    public MemberAuthDTO() {
+    }
+
+    public MemberAuthDTO(int memberIdx, String auth) {
+        this.memberIdx = memberIdx;
+        this.auth = auth;
+    }
 }
