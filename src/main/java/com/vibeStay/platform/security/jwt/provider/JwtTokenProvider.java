@@ -33,7 +33,7 @@ public class JwtTokenProvider {
     private final JwtProp jwtProp;
     private final MemberDAO memberDAO;
 
-    /*
+    /**
      * 👩‍💼➡🔐 토큰 생성
      */
     public String createToken(int memberIdx, String memberId, List<String> roles) {
@@ -150,6 +150,46 @@ public class JwtTokenProvider {
         }
 
         return null;
+    }
+
+
+    /**
+     * 토큰 유효성 검사
+     * true : 유효
+     * false : 만료
+     * */
+    public boolean validateToken(String jwt){
+
+        try {
+            // 🔐➡👩‍💼 JWT 파싱
+            Jws<Claims> parsedToken = Jwts.parser()
+                    .verifyWith(getShaKey())
+                    .build()
+                    .parseSignedClaims(jwt);
+
+            log.info("###### 토큰 만료기간 #####");
+            log.info("-> {}", parsedToken.getPayload().getExpiration());
+
+            Date exp = parsedToken.getPayload().getExpiration();
+
+            // 만료시간과 현재시간 비교
+            // 2023.12.01 vs 2023.12.14 --> 만료 : true ---> false
+            // 2023.12.30 vs 2023.12.14 --> 유효 : false ---> ture
+            return !exp.before(new Date());
+
+        } catch (ExpiredJwtException exception) {
+            log.error("Token Expired");                 // 토큰 만료
+            return false;
+        } catch (JwtException exception) {
+            log.error("Token Tampered");                // 토큰 손상
+            return false;
+        } catch (NullPointerException exception) {
+            log.error("Token is null");                 // 토큰 없음
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 
 

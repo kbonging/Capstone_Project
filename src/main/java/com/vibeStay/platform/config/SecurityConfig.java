@@ -2,6 +2,8 @@ package com.vibeStay.platform.config;
 
 import com.vibeStay.platform.security.custom.CustomUserDetailService;
 import com.vibeStay.platform.security.jwt.filter.JwtAuthenticationFilter;
+import com.vibeStay.platform.security.jwt.filter.JwtRequestFilter;
+import com.vibeStay.platform.security.jwt.provider.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -14,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j
 @Configuration
@@ -33,6 +36,9 @@ public class SecurityConfig {
     // AuthenticationManager 빈 등록
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         log.info("securityFilterChain...");
@@ -47,8 +53,11 @@ public class SecurityConfig {
         http.csrf((csrf) -> csrf.disable());
 
         // 필터 설정
-        http.addFilterAt(new JwtAuthenticationFilter(authenticationManager), null)
-                .addFilterBefore(null, null)
+        http.addFilterAt(new JwtAuthenticationFilter(authenticationManager, jwtTokenProvider)
+                        , UsernamePasswordAuthenticationFilter.class)
+
+                .addFilterBefore(new JwtRequestFilter(jwtTokenProvider)
+                        , UsernamePasswordAuthenticationFilter.class)
         ;
 
         // 인가 설정

@@ -36,6 +36,6 @@ public class CustomUserDetailService implements UserDetailsService {
         log.info("customUser : ");
         log.info(customUser.toString());
 
-        return null;
+        return customUser;
     }
 }
