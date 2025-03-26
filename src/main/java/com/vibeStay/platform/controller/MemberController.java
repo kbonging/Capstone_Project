@@ -50,7 +50,7 @@ public class MemberController {
 
     /**
      * 회원가입
-     * @param MemberDTO
+     * @param memberDTO
      * @return
      * @throws Exception
      */
