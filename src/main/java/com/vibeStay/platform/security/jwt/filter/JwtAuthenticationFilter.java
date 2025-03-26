@@ -79,6 +79,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("인증 여부 : {}", authentication.isAuthenticated());
 
         // 인증 실패 (username, password 불일치)
+        // 이거 필요 없을지도
         if(!authentication.isAuthenticated()){
             log.info("인증 실패 : 아이디 또는 비밀번호가 일치하지 않습니다.");
             response.setStatus(401);   // UNAUTHORIZED (인증 실패)
