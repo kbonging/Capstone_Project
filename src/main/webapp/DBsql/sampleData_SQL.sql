@@ -3,6 +3,7 @@
 -- 데이터를 넣지않아 프로그램 오류가 발생할 수 있습니다.
 ###############################################################################
 
+select * from tb_member;
 #############################  tb_member 테이블 샘플 데이터 #############################
 INSERT INTO tb_member (MEMBER_ID, MEMBER_PWD, MEMBER_NAME, MEMBER_EMAIL, MEMBER_NICKNAME, PROFILE_IMAGE_URL, REG_DATE, MOD_DATE) 
 VALUES ('superadmin', '$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS', '메인관리자', 'apple75391@gmail.com', '총괄관리자', 'defaultProfile.png', NOW(), NULL);
@@ -19,7 +20,7 @@ VALUES ('testUser01', '$2b$12$/lenMCtwsZPw.JJQzb8sJOgTHwpq3Ca6J43rtToUIzrjXf8AIN
 -- SET foreign_key_checks = 1;  -- 외래 키 체크 활성화
 
 -- select * from tb_member;
--- delete from tb_member where member_idx=5; -- 인덱스 번호로 회원 삭제(잘못 넣었을때만 사용)
+-- delete from tb_member where member_idx=3; -- 인덱스 번호로 회원 삭제(잘못 넣었을때만 사용)
 #####################################################################################
 
 #############################  TB_MEMBER_AUTH 테이블 샘플 데이터 #############################

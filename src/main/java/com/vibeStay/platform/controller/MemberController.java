@@ -9,10 +9,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+
+/**
+ * [GET]        /members/info   - 회원정보 조회   (ROLE_USER)
+ * [POST]       /members        - 회원가입         ALL
+ * [PUT]        /members        - 회원정보 수정   (ROLE_USER)
+ * [DELETE]     /members        - 회원탈퇴      (ROLE_ADMIN)
+ * */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -41,5 +46,25 @@ public class MemberController {
 
         // 인증 되지 않음
         return new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * 회원가입
+     * @param MemberDTO
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("")
+    public ResponseEntity<?> join(@RequestBody MemberDTO memberDTO) throws Exception{
+        log.info("[POST] : /members");
+        int result = memberService.insertMember(memberDTO);
+
+        if(result > 0){
+            log.info("회원가입 성공! - SUCCESS");
+            return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+        }else{
+            log.info("회원가입 실패! - FAIL");
+            return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+        }
     }
 }

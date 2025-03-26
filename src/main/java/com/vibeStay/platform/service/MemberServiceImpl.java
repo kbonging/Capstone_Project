@@ -47,6 +47,7 @@ public class MemberServiceImpl implements MemberService{
         return result;
     }
 
+    // 이거 현재 안씀
     @Override
     public void login(MemberDTO memberDTO, HttpServletRequest request) {
         String username = memberDTO.getMemberId();

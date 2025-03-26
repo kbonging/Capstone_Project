@@ -127,6 +127,7 @@ public class JwtTokenProvider {
                 if( memberInfo != null ) {
                     memberDTO.setMemberName(memberInfo.getMemberName());
                     memberDTO.setMemberEmail(memberInfo.getMemberEmail());
+                    log.info("토큰이 유효하면 나머지 정보도 담음 memberName : {}, memberEmail : {}", memberDTO.getMemberName(), memberDTO.getMemberEmail());
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
