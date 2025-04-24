@@ -3,8 +3,8 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.vibeStay.platform.dao.MemberDAO">
-    <resultMap id="memberResultMap" type="com.vibeStay.platform.domain.MemberDTO">
+<mapper namespace="com.webcore.platform.dao.MemberDAO">
+    <resultMap id="memberResultMap" type="com.webcore.platform.domain.MemberDTO">
         <id property="memberIdx" column="MEMBER_IDX"/>
         <result property="memberId" column="MEMBER_ID"/>
         <result property="memberPwd" column="MEMBER_PWD"/>
@@ -21,7 +21,7 @@
         <result property="delYn" column="DEL_YN"/>
 
         <!-- 권한 목록 -->
-        <collection property="authDTOList" ofType="com.vibeStay.platform.domain.MemberAuthDTO">
+        <collection property="authDTOList" ofType="com.webcore.platform.domain.MemberAuthDTO">
             <result property="authIdx" column="AUTH_IDX"/>
             <result property="auth" column="AUTH"/>
         </collection>
@@ -47,7 +47,7 @@
     </select>
 
     <!-- 회원 등록 -->
-    <insert id="insertMember" parameterType="com.vibeStay.platform.domain.MemberDTO"
+    <insert id="insertMember" parameterType="com.webcore.platform.domain.MemberDTO"
             useGeneratedKeys="true" keyProperty="memberIdx">
         INSERT INTO tb_member (
             MEMBER_ID, MEMBER_PWD, MEMBER_NAME, MEMBER_EMAIL, MEMBER_NICKNAME, PROFILE_IMAGE_URL, REG_DATE, MOD_DATE
@@ -58,7 +58,7 @@
     </insert>
 
     <!-- 회원 권한 등록 -->
-    <insert id="insertMemberAuth" parameterType="com.vibeStay.platform.domain.MemberAuthDTO"
+    <insert id="insertMemberAuth" parameterType="com.webcore.platform.domain.MemberAuthDTO"
             useGeneratedKeys="true" keyProperty="authIdx">
         INSERT INTO TB_MEMBER_AUTH( MEMBER_IDX, AUTH ) values( #{memberIdx}, #{auth} );
     </insert>

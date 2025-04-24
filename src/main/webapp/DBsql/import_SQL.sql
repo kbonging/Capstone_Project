@@ -2,9 +2,9 @@
 -- 파일에 작성된 데이터들은 "반드시" 모두 실행 해주시길 바랍니다.
 -- 데이터를 넣지않아 프로그램 오류가 발생할 수 있습니다.
 ###############################################################################
-create database vibestay;
-use vibestay;
-
+create database platfrom;
+use platfrom;
+-- drop database vibestay;
 ######################### 회원 테이블 시작 ######################
 -- drop table tb_member;
 -- truncate table tb_member;
