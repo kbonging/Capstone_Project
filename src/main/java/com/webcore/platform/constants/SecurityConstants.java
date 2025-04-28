@@ -10,6 +10,4 @@
 //    public static final String TOKEN_TYPE = "JWT";
 //}
 
-// dev 브랜치에서 수정
-// branch Test (main)
-
+// main dev 머지중
