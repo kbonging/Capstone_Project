@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -66,10 +67,12 @@ public class SecurityConfig {
         // 인가 설정
         http.authorizeHttpRequests(authorizeRequests ->
                                     authorizeRequests
-                                            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                                            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // 정적 자원 허용 (필요 시)
                                             .requestMatchers("/").permitAll()
                                             .requestMatchers("/login").permitAll()
-                                            .requestMatchers("/members/**").permitAll()
+                                            //.requestMatchers("/members/**").permitAll()
+                                            .requestMatchers(HttpMethod.POST, "/members").permitAll() // 회원가입은 누구나 가능 (POST /members)
+                                            .requestMatchers("/members/**").hasRole("USER") // 회원 가입 제외 모든 경로는 권한 필요
                                             .requestMatchers("/admin/**").hasRole("ADMIN")
                                             .anyRequest().authenticated()
                                     );
