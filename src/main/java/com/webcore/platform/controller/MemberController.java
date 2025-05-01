@@ -30,7 +30,7 @@ public class MemberController {
      * @param customUser
      * @return
      */
-    @Secured("ROLE_USER")           // USER 권한 설정
+    //@Secured("ROLE_USER")           // USER 권한 설정
     @GetMapping("/info")
     public ResponseEntity<?> userInfo(@AuthenticationPrincipal CustomUser customUser) {
 

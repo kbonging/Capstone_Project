@@ -30,7 +30,7 @@ SELECT
 	m.MOD_DATE
 FROM tb_member m join tb_member_auth ma
 on m.MEMBER_IDX=ma.MEMBER_IDX
-WHERE MEMBER_ID='superadmin'AND DEL_YN = 'N';
+WHERE MEMBER_ID='memtest05'AND DEL_YN = 'N';
 
 ################ 아이디 유무 확인(중복 체크) ##############
 SELECT COUNT(*) FROM tb_member WHERE MEMBER_ID='admin';
