@@ -29,6 +29,25 @@ INSERT INTO TB_MEMBER_AUTH(MEMBER_IDX, AUTH) values(1, 'ROLE_USER');
 INSERT INTO TB_MEMBER_AUTH(MEMBER_IDX, AUTH) values(1, 'ROLE_ADMIN');
 INSERT INTO TB_MEMBER_AUTH(MEMBER_IDX, AUTH) values(2, 'ROLE_USER');
 
+################################ 새로 생성 중 아직 IMPORT 금지 #######################
+-- 활동주제 (ACT_TOPIC)
+INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, REG_DATE)
+VALUES 
+('ACT_TOPIC', NULL, '활동주제', NOW()),
+('FOOD', 'ACT_TOPIC', '맛집', NOW()), 
+('GROCERY', 'ACT_TOPIC', '식품', NOW()), 
+('BEAUTY', 'ACT_TOPIC', '뷰티', NOW());
+-- 인플루언서 유형 (INF_TYPE)
+INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, REG_DATE)
+VALUES 
+('INF_TYPE', NULL, '인플루언서 유형', NOW()),
+('BLOG', 'INF_TYPE', '블로그', NOW()),
+('INSTA', 'INF_TYPE', '인스타', NOW()),
+('YOUTUBE', 'INF_TYPE', '유튜브', NOW());
+
+INSERT INTO TB_MEMBER (MEMBER_ID, MEMBER_PWD, MEMBER_NAME, MEMBER_EMAIL, MEMBER_PHONE, PROFILE_IMG_URL, INTRO, DEL_YN, REG_DATE) 
+VALUES ('superadmin','$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS', '메인관리자', 'apple75391@gmail.com', '010-1234-5678', 'defaultProfile.png', '총괄관리자', 'N', NOW());
+
 
 
 
