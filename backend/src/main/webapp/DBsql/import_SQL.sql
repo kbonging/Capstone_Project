@@ -41,6 +41,102 @@ CREATE TABLE tb_social_member (
 ) COMMENT='소셜 로그인 정보 테이블'; -- 테이블 설명
 ######################### 회원 테이블 끝 #######################
 
+################## 새로운 DB 설계 중입니다 ###################
+############ 아래 코드는 얘기 전 까지 import(실행) 금지 !! ############
+#########################################################
+##! 공통코드 !## (완)
+CREATE TABLE TB_COMMON_CODE (
+	CODE_ID		VARCHAR(20)		NOT NULL			COMMENT '코드번호', -- 예) BLOG, INSTA, YOUTUBE 등
+	GROUP_CODE	VARCHAR(20)		NULL				COMMENT '그룹 코드', -- 예) 인풀루언서 유형이면 INF_TYPE
+	CODE_NM		VARCHAR(100)	NOT NULL			COMMENT '코드이름',
+	IMAGE_URL	VARCHAR(255)	NULL				COMMENT '이미지 경로',
+	SORT		INT				NULL	DEFAULT 0	COMMENT '정렬 순서',
+	CODE_DC		VARCHAR(255)	NULL				COMMENT '코드 설명',
+	DEL_YN      CHAR(1)      	NOT NULL DEFAULT 'N'  COMMENT '삭제 여부(Y/N)',
+    REG_DATE    DATETIME     	NOT NULL             COMMENT '가입일시',
+    MOD_DATE    DATETIME                            COMMENT '수정일시'
+);
+
+##! 공통 회원 !## (완)
+CREATE TABLE TB_MEMBER (
+    MEMBER_IDX       INT            PRIMARY KEY AUTO_INCREMENT   COMMENT '회원 고유번호',
+    MEMBER_ID        VARCHAR(60)    UNIQUE NOT NULL 			 COMMENT '로그인 아이디',
+    MEMBER_PWD       VARCHAR(255)   NOT NULL                     COMMENT '비밀번호',
+    MEMBER_NAME      VARCHAR(30)    NOT NULL                     COMMENT '실명(이름) (한글만 입력)',
+    MEMBER_EMAIL     VARCHAR(255)   UNIQUE NOT NULL              COMMENT '이메일',
+    MEMBER_PHONE	 VARCHAR(20)    NULL                         COMMENT '휴대폰 번호',
+    PROFILE_IMG_URL VARCHAR(500)  DEFAULT 'defaultProfile.png'  COMMENT '프로필 이미지 URL (미작성시 기본 프로필 적용)',
+    INTRO		 	 TEXT	NULL								COMMENT '소개글',
+	HEART_COUNT		 INT	NULL	DEFAULT 0					COMMENT '하트수',
+	PENALTY			 INT	NULL	DEFAULT 0					COMMENT '패널티',
+    DEL_YN           CHAR(1)      NOT NULL DEFAULT 'N'          COMMENT '삭제 여부(Y/N)',
+    REG_DATE         DATETIME     NOT NULL                      COMMENT '가입일시',
+    MOD_DATE         DATETIME                                   COMMENT '수정일시'
+) COMMENT='공통 회원 정보 테이블';
+
+##! 권한 !## (완)
+CREATE TABLE TB_MEMBER_AUTH(
+	AUTH_IDX 	INT 		PRIMARY KEY AUTO_INCREMENT 	COMMENT '권한 고유번호',
+    MEMBER_IDX 	INT 		NOT NULL 					COMMENT '회원 고유번호',
+    AUTH 		VARCHAR(60) NOT NULL 					COMMENT '권한(ROLE_USER, ROLE_ADMIN, ROLE_OWNER) 리뷰어, 관리자, 소상공인',
+    FOREIGN KEY (MEMBER_IDX) REFERENCES TB_MEMBER(MEMBER_IDX) 
+		ON DELETE CASCADE  
+        ON UPDATE CASCADE
+) COMMENT='권한 테이블';
+
+
+##! 리뷰어프로필  !## (완)
+CREATE TABLE TB_REVIEWER_PROFILE (
+	MEMBER_IDX 		INT 			NOT NULL 	COMMENT '회원 고유번호',
+	NICKNAME 		VARCHAR(60) 	NULL 		COMMENT '회원 닉네임',
+	GENDER 			CHAR(1) 		NULL 		COMMENT '성별',
+	BIRTH_DATE		VARCHAR(10) 	NULL 		COMMENT '생년월일',
+	ACTIVITY_AREA 	VARCHAR(30) 	NULL 		COMMENT '활동지역',
+	ACTIVITY_TOPIC  VARCHAR(30) 	NULL 		COMMENT '활동주제 (공통코드 ACT_TOPIC)', -- 맛집, 식품 뷰티 등등
+	ZIP_CODE 		VARCHAR(10) 	NULL 		COMMENT '우편번호',
+	ADDRESS 		VARCHAR(255) 	NULL 		COMMENT '주소',
+	DETAIL_ADDRESS VARCHAR(255) 	NULL 		COMMENT '상세주소',
+	PRIMARY KEY (MEMBER_IDX),
+	FOREIGN KEY (MEMBER_IDX) REFERENCES TB_MEMBER(MEMBER_IDX)
+		ON DELETE CASCADE  
+        ON UPDATE CASCADE
+) COMMENT='리뷰어 프로필 테이블';
+
+##!  리뷰어 채널 정보 !## (완)
+CREATE TABLE TB_REVIEWER_CHANNEL (
+	REV_CHA_IDX 		INT PRIMARY KEY AUTO_INCREMENT 	COMMENT '채널 고유번호',
+	MEMBER_IDX 			INT 		NOT NULL 			COMMENT '회원 고유번호',
+	INF_TYPE_CODE_ID 	VARCHAR(20) NOT NULL 			COMMENT '인플루언서 유형 코드 (공통 코드 INF_TYPE) 도메인:"BLOG", "INSTA", "YOUTUBE" 등',
+	CHANNEL_URL 		VARCHAR(500) NOT NULL			COMMENT '채널 주소',
+	REG_DATE 			DATETIME 	NOT NULL 			COMMENT '등록일',
+	MOD_DATE 			DATETIME	 NULL 				COMMENT '수정일시',
+	FOREIGN KEY (MEMBER_IDX) REFERENCES TB_MEMBER(MEMBER_IDX)
+    	ON DELETE CASCADE
+        ON UPDATE CASCADE,
+	FOREIGN KEY (INF_TYPE_CODE_ID) REFERENCES TB_COMMON_CODE(CODE_ID)
+    	ON DELETE CASCADE
+        ON UPDATE CASCADE
+)  COMMENT='리뷰어 채널 정보(리뷰어=인플루언서 유형 정보)';
+
+##! 소상공인 !## (완)
+CREATE TABLE TB_OWNER_PROFILE (
+	MEMBER_IDX 		INT 			NOT NULL 	COMMENT '회원 고유번호',
+	BUSINESS_NAME 	VARCHAR(255) 	NOT NULL 	COMMENT '상호명',
+	BUSINESS_URL 	TEXT 			NULL 	 	COMMENT '사업장 관련 URL',
+	PRIMARY KEY (MEMBER_IDX),
+	FOREIGN KEY (MEMBER_IDX) REFERENCES TB_MEMBER(MEMBER_IDX)
+    	ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+
+
+
+
+
+
+
+
 
 
 
