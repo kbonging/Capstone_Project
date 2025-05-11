@@ -70,9 +70,11 @@ public class SecurityConfig {
                                             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // 정적 자원 허용 (필요 시)
                                             .requestMatchers("/").permitAll()
                                             .requestMatchers("/login").permitAll()
+
                                             //.requestMatchers("/members/**").permitAll()
-                                            .requestMatchers(HttpMethod.POST, "/members").permitAll() // 회원가입은 누구나 가능 (POST /members)
+                                            .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 회원가입은 누구나 가능 (POST)
                                             .requestMatchers("/members/**").hasRole("USER") // 회원 가입 제외 모든 경로는 권한 필요
+
                                             .requestMatchers("/admin/**").hasRole("ADMIN")
                                             .anyRequest().authenticated()
                                     );

@@ -10,8 +10,8 @@
         <result property="memberPwd" column="MEMBER_PWD"/>
         <result property="memberName" column="MEMBER_NAME"/>
         <result property="memberEmail" column="MEMBER_EMAIL"/>
-        <result property="memberNickname" column="MEMBER_NICKNAME"/>
-        <result property="profileImageUrl" column="PROFILE_IMAGE_URL"/>
+        <!--<result property="memberNickname" column="MEMBER_NICKNAME"/>
+        <result property="profileImageUrl" column="PROFILE_IMAGE_URL"/>-->
 
         <!-- DefaultDTO 필드 매핑 -->
         <result property="searchCondition" column="SEARCH_CONDITION"/>
@@ -27,7 +27,7 @@
         </collection>
     </resultMap>
 
-    <!-- 회원 아이디로 정보 조회 -->
+    <!-- 회원 아이디로 정보 조회 (사용 안함)-->
     <select id="selectMemberById" parameterType="String" resultMap="memberResultMap">
         SELECT
             m.MEMBER_IDX,
@@ -46,15 +46,11 @@
         WHERE MEMBER_ID = #{memberId} AND DEL_YN = 'N'
     </select>
 
-    <!-- 회원 등록 -->
+    <!-- 공통 회원 정보 등록 -->
     <insert id="insertMember" parameterType="com.webcore.platform.domain.MemberDTO"
             useGeneratedKeys="true" keyProperty="memberIdx">
-        INSERT INTO tb_member (
-            MEMBER_ID, MEMBER_PWD, MEMBER_NAME, MEMBER_EMAIL, MEMBER_NICKNAME, PROFILE_IMAGE_URL, REG_DATE, MOD_DATE
-        )
-        VALUES (
-            #{memberId}, #{memberPwd}, #{memberName}, #{memberEmail}, #{memberNickname}, #{profileImageUrl}, NOW(), NULL
-        );
+        INSERT INTO TB_MEMBER (MEMBER_ID, MEMBER_PWD, MEMBER_NAME, MEMBER_EMAIL, MEMBER_PHONE, REG_DATE)
+        VALUES (#{memberId}, #{memberPwd}, #{memberName}, #{memberEmail}, #{memberPhone}, NOW());
     </insert>
 
     <!-- 회원 권한 등록 -->
@@ -62,4 +58,5 @@
             useGeneratedKeys="true" keyProperty="authIdx">
         INSERT INTO TB_MEMBER_AUTH( MEMBER_IDX, AUTH ) values( #{memberIdx}, #{auth} );
     </insert>
+
 </mapper>

@@ -4,11 +4,20 @@
 ###############################################################################
 create database platfrom;
 use platfrom;
--- drop database vibestay;
+-- drop database platfrom;
 ######################### 회원 테이블 시작 ######################
+# 회원 테이블 삭제
 -- drop table tb_member;
+# 회원 테이블 데이터만 삭제
 -- truncate table tb_member;
--- drop table tb_social_member;
+# 공통 코드 테이블 데이터만 삭제
+-- truncate table TB_COMMON_CODE;
+
+# truncate 실행 시 foreign_key가 등록된 테이블을 truncate할 경우 오류가 발생한다.
+# 아래와 같이 해결
+-- set FOREIGN_KEY_CHECKS = 0;
+
+
 
 # tb_member 테이블
 CREATE TABLE tb_member (
@@ -46,16 +55,18 @@ CREATE TABLE tb_social_member (
 #########################################################
 ##! 공통코드 !## (완)
 CREATE TABLE TB_COMMON_CODE (
-	CODE_ID		VARCHAR(20)		NOT NULL			COMMENT '코드번호', -- 예) BLOG, INSTA, YOUTUBE 등
+	CODE_ID		VARCHAR(20)		PRIMARY KEY NOT NULL COMMENT '코드번호', -- 예) BLOG, INSTA, YOUTUBE 등
 	GROUP_CODE	VARCHAR(20)		NULL				COMMENT '그룹 코드', -- 예) 인풀루언서 유형이면 INF_TYPE
 	CODE_NM		VARCHAR(100)	NOT NULL			COMMENT '코드이름',
 	IMAGE_URL	VARCHAR(255)	NULL				COMMENT '이미지 경로',
+    GROUP_SORT 	INT 			NULL	DEFAULT 0 	COMMENT '그룹 정렬 순서',
 	SORT		INT				NULL	DEFAULT 0	COMMENT '정렬 순서',
 	CODE_DC		VARCHAR(255)	NULL				COMMENT '코드 설명',
 	DEL_YN      CHAR(1)      	NOT NULL DEFAULT 'N'  COMMENT '삭제 여부(Y/N)',
     REG_DATE    DATETIME     	NOT NULL             COMMENT '가입일시',
     MOD_DATE    DATETIME                            COMMENT '수정일시'
 );
+-- drop table TB_COMMON_CODE;
 
 ##! 공통 회원 !## (완)
 CREATE TABLE TB_MEMBER (
@@ -73,6 +84,7 @@ CREATE TABLE TB_MEMBER (
     REG_DATE         DATETIME     NOT NULL                      COMMENT '가입일시',
     MOD_DATE         DATETIME                                   COMMENT '수정일시'
 ) COMMENT='공통 회원 정보 테이블';
+-- drop table TB_MEMBER;
 
 ##! 권한 !## (완)
 CREATE TABLE TB_MEMBER_AUTH(
@@ -83,7 +95,7 @@ CREATE TABLE TB_MEMBER_AUTH(
 		ON DELETE CASCADE  
         ON UPDATE CASCADE
 ) COMMENT='권한 테이블';
-
+-- drop table TB_MEMBER_AUTH;
 
 ##! 리뷰어프로필  !## (완)
 CREATE TABLE TB_REVIEWER_PROFILE (
@@ -101,12 +113,13 @@ CREATE TABLE TB_REVIEWER_PROFILE (
 		ON DELETE CASCADE  
         ON UPDATE CASCADE
 ) COMMENT='리뷰어 프로필 테이블';
+-- drop table TB_REVIEWER_PROFILE;
 
 ##!  리뷰어 채널 정보 !## (완)
 CREATE TABLE TB_REVIEWER_CHANNEL (
 	REV_CHA_IDX 		INT PRIMARY KEY AUTO_INCREMENT 	COMMENT '채널 고유번호',
 	MEMBER_IDX 			INT 		NOT NULL 			COMMENT '회원 고유번호',
-	INF_TYPE_CODE_ID 	VARCHAR(20) NOT NULL 			COMMENT '인플루언서 유형 코드 (공통 코드 INF_TYPE) 도메인:"BLOG", "INSTA", "YOUTUBE" 등',
+	INF_TYPE_CODE_ID 	VARCHAR(20) NOT NULL 			COMMENT '인플루언서 유형 코드 (공통 코드 INF_TYPE)',
 	CHANNEL_URL 		VARCHAR(500) NOT NULL			COMMENT '채널 주소',
 	REG_DATE 			DATETIME 	NOT NULL 			COMMENT '등록일',
 	MOD_DATE 			DATETIME	 NULL 				COMMENT '수정일시',
@@ -116,7 +129,8 @@ CREATE TABLE TB_REVIEWER_CHANNEL (
 	FOREIGN KEY (INF_TYPE_CODE_ID) REFERENCES TB_COMMON_CODE(CODE_ID)
     	ON DELETE CASCADE
         ON UPDATE CASCADE
-)  COMMENT='리뷰어 채널 정보(리뷰어=인플루언서 유형 정보)';
+) COMMENT='리뷰어 채널 정보(리뷰어=인플루언서 유형 정보)';
+-- drop table TB_REVIEWER_CHANNEL;
 
 ##! 소상공인 !## (완)
 CREATE TABLE TB_OWNER_PROFILE (
@@ -127,8 +141,8 @@ CREATE TABLE TB_OWNER_PROFILE (
 	FOREIGN KEY (MEMBER_IDX) REFERENCES TB_MEMBER(MEMBER_IDX)
     	ON DELETE CASCADE
         ON UPDATE CASCADE
-);
-
+) COMMENT='소상공인 프로필 테이블';
+-- drop table TB_OWNER_PROFILE;
 
 
 

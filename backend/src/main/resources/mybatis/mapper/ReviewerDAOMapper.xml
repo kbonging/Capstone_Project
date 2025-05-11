@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webcore.platform.dao.ReviewerDAO">
+
+    <!-- 리뷰어 프로필 등록 -->
+    <insert id="insertReviewerProfile">
+        INSERT INTO TB_REVIEWER_PROFILE (MEMBER_IDX, NICKNAME, GENDER, BIRTH_DATE, ACTIVITY_AREA, ACTIVITY_TOPIC, ZIP_CODE, ADDRESS, DETAIL_ADDRESS)
+        VALUES (
+            #{memberIdx}, #{nickname}, #{gender}, #{birthDate},
+            #{activityArea}, #{activityTopic}, #{zipCode}, #{address}, #{detailAddress}
+        );
+    </insert>
+
+    <!-- 리뷰어 채널 등록 -->
+    <insert id="insertReviewerChannel">
+        INSERT INTO TB_REVIEWER_CHANNEL (MEMBER_IDX, INF_TYPE_CODE_ID, CHANNEL_URL, REG_DATE)
+        VALUES (#{memberIdx}, #{infTypeCodeId}, #{channelUrl}, NOW());
+    </insert>
+
+</mapper>
