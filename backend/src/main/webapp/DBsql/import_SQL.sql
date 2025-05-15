@@ -55,7 +55,7 @@ CREATE TABLE tb_social_member (
 #########################################################
 ##! 공통코드 !## (완)
 CREATE TABLE TB_COMMON_CODE (
-	CODE_ID		VARCHAR(20)		PRIMARY KEY NOT NULL COMMENT '코드번호', -- 예) BLOG, INSTA, YOUTUBE 등
+	CODE_ID		VARCHAR(20)		PRIMARY KEY NOT NULL COMMENT '코드번호', -- 예) INF001, INF002 등
 	GROUP_CODE	VARCHAR(20)		NULL				COMMENT '그룹 코드', -- 예) 인풀루언서 유형이면 INF_TYPE
 	CODE_NM		VARCHAR(100)	NOT NULL			COMMENT '코드이름',
 	IMAGE_URL	VARCHAR(255)	NULL				COMMENT '이미지 경로',

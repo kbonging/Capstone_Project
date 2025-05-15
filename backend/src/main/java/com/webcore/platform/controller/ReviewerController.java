@@ -20,9 +20,9 @@ public class ReviewerController {
 
     /**
      * 회원가입
-     * @param reviewerDTO
-     * @return
-     * @throws Exception
+     * @param reviewerDTO 리뷰어 정보를 담은 DTO
+     * @return 가입 처리 결과 상태 객체
+     * @throws Exception 오류가 발생한 경우
      */
     @PostMapping("")
     public ResponseEntity<?> signupReviewer(@RequestBody ReviewerDTO reviewerDTO) throws Exception{
