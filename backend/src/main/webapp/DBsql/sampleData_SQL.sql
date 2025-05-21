@@ -3,7 +3,7 @@
 -- 데이터를 넣지않아 프로그램 오류가 발생할 수 있습니다.
 ###############################################################################
 
-select * from tb_member;
+select * from TB_MEMBER;
 #############################  tb_member 테이블 샘플 데이터 #############################
 -- INSERT INTO tb_member (MEMBER_ID, MEMBER_PWD, MEMBER_NAME, MEMBER_EMAIL, MEMBER_NICKNAME, PROFILE_IMAGE_URL, REG_DATE, MOD_DATE) 
 -- VALUES ('superadmin', '$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS', '메인관리자', 'apple75391@gmail.com', '총괄관리자', 'defaultProfile.png', NOW(), NULL);
@@ -62,13 +62,13 @@ VALUES
 
 
 select * 
-FROM tb_member MB JOIN TB_MEMBER_AUTH AU
+FROM TB_MEMBER MB JOIN TB_MEMBER_AUTH AU
 ON MB.MEMBER_IDX = AU.MEMBER_IDX
 JOIN TB_REVIEWER_PROFILE RP
 ON MB.MEMBER_IDX = RP.MEMBER_IDX;
 
 select * 
-FROM tb_member MB JOIN TB_MEMBER_AUTH AU
+FROM TB_MEMBER MB JOIN TB_MEMBER_AUTH AU
 ON MB.MEMBER_IDX = AU.MEMBER_IDX
 JOIN TB_REVIEWER_PROFILE RP
 ON MB.MEMBER_IDX = RP.MEMBER_IDX
@@ -76,7 +76,7 @@ JOIN TB_REVIEWER_CHANNEL RC
 ON MB.MEMBER_IDX = RC.MEMBER_IDX;
 
 
-select * from tb_member_auth;
+select * from TB_MEMBER_AUTH;
 
 
 
