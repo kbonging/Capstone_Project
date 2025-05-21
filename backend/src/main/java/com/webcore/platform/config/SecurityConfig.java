@@ -70,9 +70,19 @@ public class SecurityConfig {
                                             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // 정적 자원 허용 (필요 시)
                                             .requestMatchers("/").permitAll()
                                             .requestMatchers("/login").permitAll()
+
                                             //.requestMatchers("/members/**").permitAll()
-                                            .requestMatchers(HttpMethod.POST, "/members").permitAll() // 회원가입은 누구나 가능 (POST /members)
+                                            // 리뷰어
+                                            .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 리뷰어 회원가입은 누구나 가능 (POST)
                                             .requestMatchers("/members/**").hasRole("USER") // 회원 가입 제외 모든 경로는 권한 필요
+
+                                            // 소상공인
+                                            .requestMatchers(HttpMethod.POST, "/api/owner").permitAll() // 소상공인 회원가입은 누구나 가능 (POST)
+
+                                            // 커뮤니티
+                                            .requestMatchers(HttpMethod.POST, "/api/community").permitAll() // 글 등록 임시로 모두 가능 (POST)
+                                            //.requestMatchers("/api/community/**").hasRole("USER") // 커뮤니티 모든 경로는 권한 필요
+
                                             .requestMatchers("/admin/**").hasRole("ADMIN")
                                             .anyRequest().authenticated()
                                     );
