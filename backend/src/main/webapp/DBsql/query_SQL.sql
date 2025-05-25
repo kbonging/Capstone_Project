@@ -9,6 +9,12 @@ SELECT * FROM tb_owner_profile;
 ############## 공통 코드 조회 ###############
 select * from tb_common_code where del_yn='n' order by group_sort, sort asc;
 
+################ 로그인 요청 시 정보 조회 ################
+SELECT  M.member_idx, M.member_id, M.member_pwd, M.member_name, M.del_yn, A.auth_idx, A.auth
+FROM TB_MEMBER M LEFT JOIN TB_MEMBER_AUTH A 
+ON M.member_idx = A.member_idx
+WHERE M.member_id = 'apple75391' AND M.del_yn = 'N';
+
 ################# 리뷰어 전체 조회 ##################
 select * 
 FROM tb_member mb JOIN tb_member_auth au

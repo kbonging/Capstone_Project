@@ -59,3 +59,4 @@ INSERT INTO tb_reviewer_channel(member_idx, inf_type_code_id, channel_url, reg_d
 VALUES 
 (1, 'INF001', 'https://blog.naver.com/apple75391', NOW()),
 (1, 'INF002', 'https://instagram.com/apple75391', NOW());
+#############################################
