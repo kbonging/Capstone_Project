@@ -43,6 +43,90 @@ VALUES
 ('ACT002', 'ACT_TOPIC', '식품', '', 1, 2, '활동주제 카테고리', NOW()),
 ('ACT003', 'ACT_TOPIC', '뷰티', '', 1, 3, '활동주제 카테고리', NOW());
 
+## 커뮤니티_카테고리 (COMMU_CATE)
+INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
+VALUES
+('COMMU_CATE', '', '커뮤니티카테고리', 2, 0, '커뮤니티 카테고리 그룹', NOW()),
+('COMMU001', 'COMMU_CATE', '노하우', 2, 1, '커뮤니티 카테고리', NOW()),
+('COMMU002', 'COMMU_CATE', '일상', 2, 2, '커뮤니티 카테고리', NOW()),
+('COMMU003', 'COMMU_CATE', '질문하기', 2, 3, '커뮤니티 카테고리', NOW()),
+('COMMU004', 'COMMU_CATE', '공지', 2, 4, '커뮤니티 카테고리', NOW());
+
+## 1대1문의_카테고리(QA_CATE)
+INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
+VALUES
+('QA_CATE', '', '1대1문의카테고리', 3, 0, '1대1문의 카테고리 그룹', NOW()),
+('QAC001', 'QA_CATE', '계정', 3, 1, '1대1문의 카테고리', NOW()),
+('QAC002', 'QA_CATE', '체험단', 3, 2, '1대1문의 카테고리', NOW()),
+('QAC003', 'QA_CATE', '리뷰', 3, 3, '1대1문의 카테고리', NOW()),
+('QAC004', 'QA_CATE', '포인트', 3, 4, '1대1문의 카테고리', NOW()),
+('QAC005', 'QA_CATE', '광고', 3, 5, '1대1문의 카테고리', NOW()),
+('QAC006', 'QA_CATE', '기타', 3, 6, '1대1문의 카테고리', NOW());
+
+## 1대1문의_처리상태(QA_STA)
+INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
+VALUES
+('QA_STA', '', '1대1문의처리상태', 4, 0, '1대1문의 처리상태 그룹', NOW()),
+('QAS001', 'QA_STA', '대기', 4, 1, '1대1문의 처리상태', NOW()),
+('QAS002', 'QA_STA', '답변완료', 4, 2, '1대1문의 처리상태', NOW());
+
+## 캠페인_유형(CAM_PROM)
+INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
+VALUES
+('CAM_PROM', '', '캠페인유형', 5, 0, '캠페인 유형 그룹', NOW()),
+('CAMP001', 'CAM_PROM', '방문형', 5, 1, '캠페인 유형', NOW()),
+('CAMP002', 'CAM_PROM', '포장형', 5, 2, '캠페인 유형', NOW()),
+('CAMP003', 'CAM_PROM', '배송형', 5, 3, '캠페인 유형', NOW()),
+('CAMP004', 'CAM_PROM', '구매형', 5, 4, '캠페인 유형', NOW());
+
+## 캠페인_카테고리(CAM_CATE)
+INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
+VALUES
+('CAM_CATE', '', '캠페인카테고리', 6, 0, '캠페인 카테고리 그룹', NOW()),
+('CAMT001', 'CAM_CATE', '맛집', 6, 1, '캠페인 카테고리', NOW()),
+('CAMT002', 'CAM_CATE', '식품', 6, 2, '캠페인 카테고리', NOW()),
+('CAMT003', 'CAM_CATE', '뷰티', 6, 3, '캠페인 카테고리', NOW()),
+('CAMT004', 'CAM_CATE', '여행', 6, 4, '캠페인 카테고리', NOW()),
+('CAMT005', 'CAM_CATE', '디지털', 6, 5, '캠페인 카테고리', NOW()),
+('CAMT006', 'CAM_CATE', '반려동물', 6, 6, '캠페인 카테고리', NOW()),
+('CAMT007', 'CAM_CATE', '기타', 6, 7, '캠페인 카테고리', NOW());
+
+## 캠페인_채널(CAM_CHANNEL)
+INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
+VALUES
+('CAM_CHANNEL', '', '캠페인채널', 7, 0, '캠페인 채널 그룹', NOW()),
+('CAMC001', 'CAM_CHANNEL', '블로그', 7, 1, '캠페인 채널', NOW()),
+('CAMC002', 'CAM_CHANNEL', '인스타그램', 7, 2, '캠페인 채널', NOW()),
+('CAMC003', 'CAM_CHANNEL', '블로그+클립', 7, 3, '캠페인 채널', NOW()),
+('CAMC004', 'CAM_CHANNEL', '클립', 7, 4, '캠페인 채널', NOW()),
+('CAMC005', 'CAM_CHANNEL', '릴스', 7, 5, '캠페인 채널', NOW()),
+('CAMC006', 'CAM_CHANNEL', '유튜브', 7, 6, '캠페인 채널', NOW()),
+('CAMC007', 'CAM_CHANNEL', '쇼츠', 7, 7, '캠페인 채널', NOW()),
+('CAMC008', 'CAM_CHANNEL', '틱톡', 7, 8, '캠페인 채널', NOW());
+
+## 캠페인_게시_상태(CAM_STA)
+INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
+VALUES
+('CAM_STA', '', '게시상태', 8, 0, '캠페인 게시 상태 그룹', NOW()),
+('CAMS001', 'CAM_STA', '대기', 8, 1, '캠페인 게시 상태', NOW()),
+('CAMS002', 'CAM_STA', '승인', 8, 2, '캠페인 게시 상태', NOW()),
+('CAMS003', 'CAM_STA', '반려', 8, 3, '캠페인 게시 상태', NOW());
+
+## 캠페인_모집_상태(REC_STA)
+INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
+VALUES
+('REC_STA', '', '모집상태', 9, 0, '캠페인 모집 상태 그룹', NOW()),
+('REC001', 'REC_STA', '모집중', 9, 1, '캠페인 모집 상태', NOW()),
+('REC002', 'REC_STA', '마감', 9, 2, '캠페인 모집 상태', NOW());
+
+## 체험단_신청_상태_코드(CAM_APP_STA)
+INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
+VALUES
+('CAM_APP_STA', '', '신청상태', 10, 0, '체험단 신청 상태 코드', NOW()),
+('CAMAPP001', 'CAM_APP_STA', '대기', 10, 1, '체험단 신청 상태', NOW()),
+('CAMAPP002', 'CAM_APP_STA', '탈락', 10, 2, '체험단 신청 상태', NOW()),
+('CAMAPP003', 'CAM_APP_STA', '당첨', 10, 3, '체험단 신청 상태', NOW());
+
 select * from TB_COMMON_CODE where del_yn='N' order by group_sort, sort asc;
 -- update TB_COMMON_CODE set group_code='' where code_id='INF_TYPE';
 
@@ -62,13 +146,13 @@ VALUES
 
 
 select * 
-FROM tb_member MB JOIN TB_MEMBER_AUTH AU
+FROM TB_MEMBER MB JOIN TB_MEMBER_AUTH AU
 ON MB.MEMBER_IDX = AU.MEMBER_IDX
 JOIN TB_REVIEWER_PROFILE RP
 ON MB.MEMBER_IDX = RP.MEMBER_IDX;
 
 select * 
-FROM tb_member MB JOIN TB_MEMBER_AUTH AU
+FROM TB_MEMBER MB JOIN TB_MEMBER_AUTH AU
 ON MB.MEMBER_IDX = AU.MEMBER_IDX
 JOIN TB_REVIEWER_PROFILE RP
 ON MB.MEMBER_IDX = RP.MEMBER_IDX
