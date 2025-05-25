@@ -4,6 +4,10 @@ import lombok.*;
 
 import java.util.List;
 
+/**
+ * 공통 회원 정보 DTO
+ * extends DefaultDTO
+ * */
 @Getter
 @Setter
 @ToString(callSuper = true)  // 부모 클래스 필드도 포함하도록 설정

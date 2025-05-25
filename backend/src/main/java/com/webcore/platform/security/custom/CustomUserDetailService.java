@@ -20,21 +20,19 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         log.info("login - loadUserByUsername : {}", username);
 
-        MemberDTO memberDTO = memberDAO.selectMemberById(username);
+        MemberDTO memberDTO = memberDAO.selectLoginMemberById(username);
 
         if(memberDTO == null){
             log.info("사용자 없음... (일치하는 아이디가 없음)");
             throw new UsernameNotFoundException("사용자를 찾을 수 없습니다. : " + username);
         }
 
-        log.info("user : ");
-        log.info(memberDTO.toString());
+        log.info("user : {}", memberDTO.toString());
 
         // MemberDTO -> CustomUser
         CustomUser customUser = new CustomUser(memberDTO);
 
-        log.info("customUser : ");
-        log.info(customUser.toString());
+        log.info("customUser : {}",customUser.toString());
 
         return customUser;
     }

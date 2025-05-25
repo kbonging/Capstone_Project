@@ -43,16 +43,15 @@ public class JwtTokenProvider {
                 .signWith(getShaKey(), Jwts.SIG.HS512)      // 서명에 사용할 키와 알고리즘 설정
                 // .setHeaderParam("typ", SecurityConstants.TOKEN_TYPE)        // deprecated (version: before 1.0)
                 .header()                                                      // update (version : after 1.0)
-                .add("typ", JwtConstants.TOKEN_TYPE)              // 헤더 설정
+                .add("typ", JwtConstants.TOKEN_TYPE)                        // 헤더 설정
                 .and()
-                .expiration(new Date(System.currentTimeMillis() + 864000000))  // 토큰 만료 시간 설정 (10일)
-                .claim("uno", "" + memberIdx)                                // 클레임 설정: 사용자 번호
-                .claim("uid", memberId)                                     // 클레임 설정: 사용자 아이디
-                .claim("rol", roles)                                      // 클레임 설정: 권한
+                .expiration(new Date(System.currentTimeMillis() + 86400000))  // 토큰 만료 시간 설정 (1일)
+                .claim("uno", "" + memberIdx)                           // 클레임 설정: 사용자 번호
+                .claim("uid", memberId)                                    // 클레임 설정: 사용자 아이디
+                .claim("rol", roles)                                       // 클레임 설정: 권한
                 .compact();
 
         log.info("jwt : {}", jwt);
-
         return jwt;
     }
 
@@ -67,11 +66,9 @@ public class JwtTokenProvider {
      * @throws Exception
      */
     public UsernamePasswordAuthenticationToken getAuthentication(String authHeader) {
-        if(authHeader == null || authHeader.length() == 0 )
+        if(authHeader == null || authHeader.length() == 0)
             return null;
-
         try {
-
             // jwt 추출
             String jwt = authHeader.replace(JwtConstants.TOKEN_PREFIX, "");
 
@@ -102,11 +99,10 @@ public class JwtTokenProvider {
             if( memberId == null || memberId.length() == 0 )
                 return null;
 
-
             MemberDTO memberDTO = new MemberDTO();
             memberDTO.setMemberIdx(no);
             memberDTO.setMemberId(memberId);
-            // OK: 권한도 바로 Users 객체에 담아보기
+            // OK: 권한도 바로 MemberDTO 객체에 담아보기
             List<MemberAuthDTO> authList = ((List<?>) roles )
                     .stream()
                     .map(auth -> new MemberAuthDTO(no, auth.toString()) )
@@ -122,17 +118,17 @@ public class JwtTokenProvider {
 
             // 토큰 유효하면
             // name, email 도 담아주기
-            try {
-                MemberDTO memberInfo = memberDAO.selectMemberById(memberId);
-                if( memberInfo != null ) {
-                    memberDTO.setMemberName(memberInfo.getMemberName());
-                    memberDTO.setMemberEmail(memberInfo.getMemberEmail());
-                    log.info("토큰이 유효하면 나머지 정보도 담음 memberName : {}, memberEmail : {}", memberDTO.getMemberName(), memberDTO.getMemberEmail());
-                }
-            } catch (Exception e) {
-                log.error(e.getMessage());
-                log.error("토큰 유효 -> DB 추가 정보 조회시 에러 발생...");
-            }
+//            try {
+//                MemberDTO memberInfo = memberDAO.selectLoginMemberById(memberId);
+//                if( memberInfo != null ) {
+//                    memberDTO.setMemberName(memberInfo.getMemberName());
+//                    memberDTO.setMemberEmail(memberInfo.getMemberEmail());
+//                    log.info("토큰이 유효하면 나머지 정보도 담음 memberName : {}, memberEmail : {}", memberDTO.getMemberName(), memberDTO.getMemberEmail());
+//                }
+//            } catch (Exception e) {
+//                log.error(e.getMessage());
+//                log.error("토큰 유효 -> DB 추가 정보 조회시 에러 발생...");
+//            }
 
             UserDetails userDetails = new CustomUser(memberDTO);
 

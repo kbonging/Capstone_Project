@@ -75,8 +75,9 @@ public class MemberServiceImpl implements MemberService{
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    @Override
-    public MemberDTO selectMemberById(String memberId) {
-        return memberDAO.selectMemberById(memberId);
-    }
+    // 현재 안씀
+//    @Override
+//    public MemberDTO selectMemberById(String memberId) {
+//        return memberDAO.selectMemberById(memberId);
+//    }
 }

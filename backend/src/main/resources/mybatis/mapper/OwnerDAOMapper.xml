@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webcore.platform.dao.OwnerDAO">
+    <!-- 소상공인 프로필 등록 -->
+    <insert id="insertOwnerProfile">
+        INSERT INTO TB_OWNER_PROFILE (MEMBER_IDX, BUSINESS_NAME, BUSINESS_URL)
+        VALUES (
+        #{memberIdx}, #{businessName}, #{businessUrl}
+        );
+    </insert>
+</mapper>
