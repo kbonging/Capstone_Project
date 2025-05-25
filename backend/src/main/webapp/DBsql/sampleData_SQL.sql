@@ -145,25 +145,3 @@ INSERT INTO tb_reviewer_channel(member_idx, inf_type_code_id, channel_url, reg_d
 VALUES 
 (1, 'INF001', 'https://blog.naver.com/apple75391', NOW()),
 (1, 'INF002', 'https://instagram.com/apple75391', NOW());
-#############################################
-
-
-select *
-FROM TB_MEMBER MB JOIN TB_MEMBER_AUTH AU
-ON MB.MEMBER_IDX = AU.MEMBER_IDX
-JOIN TB_REVIEWER_PROFILE RP
-ON MB.MEMBER_IDX = RP.MEMBER_IDX;
-
-select *
-FROM TB_MEMBER MB JOIN TB_MEMBER_AUTH AU
-ON MB.MEMBER_IDX = AU.MEMBER_IDX
-JOIN TB_REVIEWER_PROFILE RP
-ON MB.MEMBER_IDX = RP.MEMBER_IDX
-JOIN TB_REVIEWER_CHANNEL RC
-ON MB.MEMBER_IDX = RC.MEMBER_IDX;
-
-
-select * from tb_member_auth;
-
-
-
