@@ -81,8 +81,10 @@ public class SecurityConfig {
                                             .requestMatchers("/api/owner", "/api/owner/**").hasRole("OWNER") // 회원 가입 제외 모든 경로는 권한 필요
 
                                             // 커뮤니티
-                                            .requestMatchers("/api/community", "/api/community/**").permitAll() // [임시] 커뮤니티 관련 페이지 모두 가능 (POST)
-                                            //.requestMatchers("/api/community/**").hasRole("USER") // 커뮤니티 모든 경로는 권한 필요
+                                            //.requestMatchers("/api/community", "/api/community/**").permitAll() // [임시] 커뮤니티 관련 페이지 모두 가능 (POST)
+                                            .requestMatchers("/api/community", "/api/community/**") // 커뮤니티 모든 경로는 권한 필요
+                                            .hasAnyRole("USER", "OWNER", "ADMIN")
+                                            //.permitAll()
 
                                             .requestMatchers("/admin/**").hasRole("ADMIN")
                                             .anyRequest().authenticated()

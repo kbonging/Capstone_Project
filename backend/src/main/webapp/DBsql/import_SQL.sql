@@ -79,7 +79,7 @@ create table tb_reviewer_profile (
 	gender			char(1)		null comment '성별',
 	birth_date		varchar(10)	null comment '생년월일',
 	activity_area	varchar(30)	null comment '활동지역',
-	activity_topic	varchar(30)	null comment '활동주제 (공통코드 act_topic)',
+	activity_topic	varchar(30)	null comment '활동주제 (공통코드 ACT_TOPIC)',
 	zip_code		varchar(10)	null comment '우편번호',
 	address			varchar(255)	null comment '주소',
 	detail_address	varchar(255)	null comment '상세주소',
@@ -93,7 +93,7 @@ create table tb_reviewer_profile (
 create table tb_reviewer_channel (
 	rev_cha_idx		int			primary key auto_increment comment '채널 고유번호',
 	member_idx			int		not null comment '회원 고유번호',
-	inf_type_code_id	varchar(20)	not null comment '인플루언서 유형 코드 (공통 코드 inf_type)',
+	inf_type_code_id	varchar(20)	not null comment '인플루언서 유형 코드 (공통 코드 INF_TYPE)',
 	channel_url			varchar(500)	not null comment '채널 주소',
 	reg_date			datetime	not null comment '등록일',
 	mod_date			datetime	null comment '수정일시',
@@ -115,3 +115,24 @@ create table tb_owner_profile (
 		on delete cascade
 		on update cascade
 ) COMMENT='소상공인 프로필 테이블';
+
+-- 커뮤니티 테이블
+CREATE TABLE tb_community (
+    community_idx   INT AUTO_INCREMENT PRIMARY KEY 	COMMENT '커뮤니티 고유번호',
+    member_idx      INT NOT NULL 					COMMENT '회원 고유번호',
+    category_id     VARCHAR(20) NOT NULL 			COMMENT '카테고리 코드 (공통 코드 COMMU_CATE)',
+    title           VARCHAR(255) NOT NULL 			COMMENT '제목',
+    content         TEXT NOT NULL 					COMMENT '내용',
+    view_count      INT NOT NULL DEFAULT 0 			COMMENT '조회수',
+    like_count      INT NOT NULL DEFAULT 0 			COMMENT '좋아요 수',
+    reg_date        DATETIME NOT NULL 				COMMENT '등록일',
+    mod_date        DATETIME DEFAULT NULL 			COMMENT '수정일',
+    del_yn          CHAR(1) NOT NULL DEFAULT 'N' 	COMMENT '삭제 여부 (Y/N)',
+        FOREIGN KEY (member_idx) REFERENCES tb_member(member_idx)
+			on delete cascade
+			on update cascade,
+        FOREIGN KEY (category_id)  REFERENCES tb_common_code(code_id)
+			on delete cascade
+			on update cascade
+) COMMENT='커뮤니티 게시판 테이블';
+
