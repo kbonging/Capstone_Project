@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +20,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Slf4j
 @Configuration
@@ -56,13 +62,15 @@ public class SecurityConfig {
         // CSRF 공격 방어 기능 비활성화
         http.csrf((csrf) -> csrf.disable());
 
+        http.cors(Customizer.withDefaults());
+
         // 필터 설정
         http.addFilterAt(new JwtAuthenticationFilter(authenticationManager, jwtTokenProvider)
                         , UsernamePasswordAuthenticationFilter.class)
 
                 .addFilterBefore(new JwtRequestFilter(jwtTokenProvider)
-                        , UsernamePasswordAuthenticationFilter.class)
-        ;
+                        , UsernamePasswordAuthenticationFilter.class);
+
 
         // 인가 설정
         http.authorizeHttpRequests(authorizeRequests ->
@@ -71,7 +79,9 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/login").permitAll()
 
-                        .requestMatchers("/members/**").permitAll()
+                        // 테스트 설정
+                        .requestMatchers("/api/test").permitAll()
+
                         // 리뷰어
                         .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 리뷰어 회원가입은 누구나 가능 (POST)
                         .requestMatchers("/api/reviewer", "/api/reviewer/**").hasRole("USER") // 회원 가입 제외 모든 경로는 권한 필요
@@ -85,6 +95,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/community", "/api/community/**") // 커뮤니티 모든 경로는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")
                         //.permitAll()
+
 
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
@@ -102,5 +113,17 @@ public class SecurityConfig {
         return authenticationManager;
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173")); // React dev 서버 주소
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
 }
