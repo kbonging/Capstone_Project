@@ -4,5 +4,8 @@ import com.webcore.platform.domain.CommunityDTO;
 
 public interface CommunityService {
     /** 커뮤니티 글 등록 */
-    int registCommunity(CommunityDTO communityDTO);
+    int createPost(CommunityDTO communityDTO);
+
+    /** 커뮤니티 글 삭제 */
+    int deletePost(CommunityDTO communityDTO);
 }
