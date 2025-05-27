@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * [GET]        /api/community  - 게시글 조회
+ * [POST]       /api/community  - 게시글 등록
+ * [PUT]        /api/community  - 게시글 수정
+ * [DELETE]     /api/community  - 게시글 삭제
+ * */
 @Slf4j
 @RestController
 @RequiredArgsConstructor

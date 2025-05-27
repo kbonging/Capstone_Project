@@ -26,7 +26,7 @@ public class OwnerController {
      * @throws Exception 오류가 발생한 경우
      */
     @PostMapping("")
-    public ResponseEntity<?> OwnerRegister(@RequestBody OwnerDTO ownerDTO) throws Exception{
+    public ResponseEntity<?> signupOwner(@RequestBody OwnerDTO ownerDTO) throws Exception{
         log.info("[POST] : /api/owner");
         log.info("소상공인 회원가입 데이터 : {}", ownerDTO.toString());
         try {

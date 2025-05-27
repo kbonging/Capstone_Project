@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 폼</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- jQuery CDN -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <!-- BoxIcons -->
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <!-- Custom CSS -->
+  <style type="text/tailwindcss">
+    * {
+      font-family: "Poppins", sans-serif;
+      box-sizing: border-box;
+    }
+    @layer utilities {
+      .or {
+        @apply block relative mb-5 text-center
+      }
+      .or:before,
+      .or:after {
+        @apply content-[''] absolute h-px w-[43%] bg-gray-200 top-[50%]
+      }
+      .or:before {
+        @apply left-0
+      }
+      .or:after {
+        @apply right-0
+      }
+    }
+  </style>
+</head>
+<body class="h-screen grid place-items-center text-[#333] from-sky-400 to-sky-200 bg-gradient-to-tr">
+  
+  <div class="bg-white w-[400px] rounded-lg p-8 shadow-[0_0_25px_rgba(0,0,0,0.2)]">
+    <div>
+      <h2 class="text-center capitalize text-3xl">login</h2>
+      <div class="
+        flex gap-3 my-4  
+        [&>*]:flex-1 [&>*]:bg-gray-50 [&>*]:border [&>*]:rounded-md [&>*]:p-3 [&>*]:flex [&>*]:gap-2 [&>*]:items-center [&>*]:justify-center
+        [&>*>img]:h-[20px]
+      ">
+        <button><img src="../images/google.png" alt="google">Google</button>
+        <!-- <button><img src="../images/apple.png" alt="apple">Apple</button> -->
+      </div>
+    </div>
+    <span class="or">or</span>
+    <!-- Input field -->
+    <div class="
+      [&>div]:relative
+      [&>div>input]:border [&>div>input]:block [&>div>input]:w-full [&>div>input]:p-2 [&>div>input]:pl-12 [&>div>input]:rounded-md [&>div>input]:mb-2 [&>div>input]:outline-none
+      [&>div>span]:absolute [&>div>span]:top-[7px] [&>div>span]:text-xl [&>div>span]:left-[15px] [&>div>span]:text-gray-300
+      [&>div>input:focus]:border-blue-400
+      [&>div>input:focus::placeholder]:invisible
+      [&>div>input:focus+span]:text-blue-500
+    ">
+      <div>
+        <input id="user-email" type="email" placeholder="Enter your email">
+        <span><i class='bx bx-envelope'></i></span>
+      </div>
+      <div>
+        <input id="user-pw" type="password" maxlength="12" placeholder="Enter your password">
+        <span><i class='bx bx-lock'></i></span>
+        <em class="toggle-pw absolute right-4 top-2 text-xl cursor-pointer"><i class='bx bx-hide'></i></em>
+      </div>
+    </div>
+    <!-- Input field -->
+    <div class="flex justify-between my-5 capitalize items-center">
+      <label class="cursor-pointer">
+        <input class="hidden peer" type="checkbox">
+        <em class="
+          inline-block size-[20px] mr-1 translate-y-[4px]
+          bg-[url('images/icon-radio.png')] bg-no-repeat bg-left peer-checked:bg-right
+        "></em>save account
+      </label>
+      <a class="hover:underline" href="#none">forgot passowrd?</a>
+    </div>
+    <button class="bg-blue-500 text-white block w-full text-center p-3 rounded-md">log in</button>
+    <p class="text-center capitalize mt-3">
+      don't have an account? <a class="text-blue-500 hover:underline" href="#none">sign up</a>
+    </p>
+  </div>
+
+  <script>
+    $('.toggle-pw').click(function(){
+      let inputType = $('#user-pw').attr('type')
+      if(inputType == 'password') {
+        $('#user-pw').attr('type', 'text')
+        $(this).children().addClass('bx-show')
+      } else {
+        $('#user-pw').attr('type', 'password')
+        $(this).children().removeClass('bx-show')
+      }
+    })
+  </script>
+
+</body>
+</html>
