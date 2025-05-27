@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>✔Revory 메인페이지</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- jQuery CDN -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <!-- BoxIcons -->
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <!-- Custom CSS -->
+
+    <!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <style type="text/tailwindcss">
+    * {
+      font-family: "Poppins", sans-serif;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  
+  <header class="bg-[#ffffffc2] text-white border-b-2">
+    <div class="max-w-[1100px] mx-auto h-16 flex items-center justify-between ">
+      <h1 class="uppercase font-bold  ! text-black">revory</h1>
+      <!-- <form action=""> -->
+        <div class="relative pl-10 flex-1 [&>*]:capitalize [&>*]:mx-2 [&>*:hover]:underline mr-2 ! text-black ">
+          <a href="#none">체험단검색</a>
+          <a href="#none">커뮤니티</a>
+          <a href="#none">1대1문의</a>
+          <a href="#none">공지/이벤트</a>
+          <!-- <input type="text" placeholder="검색어를 입력하시오" class="border border-gray-300 px-2 py-1 rounded text-black w-full pr-28"  /> -->
+          <!-- <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black">
+            <i class="fas fa-search"></i>
+          </button> -->
+        </div>
+      <!-- </form> -->
+      <div class="[&>*]:p-1  [&>*]:rounded-full">
+        <button class="! text-black [&>*:hover]:underline [&>*:hover]:bg-slate-300 [&>*:hover]:rounded-full ">
+          <a href="#" class="px-1">회원가입/로그인</a>
+        </button>
+        
+        <button class="!bg-transparent mr-4  relative"  >
+          <span class="ml-4">
+             <i class="fa-regular fa-bell text-3xl absolute bottom-0 top-0 text-gray-500"></i>
+          </span>
+        </button>
+        <button class="!bg-transparent  relative"  >
+          <a href="">
+            <span class="ml-4">
+              <i class="fa-regular fa-circle-user text-3xl absolute bottom-0 top-0 text-gray-300"></i>
+            </span>
+          </a>
+        </button>
+        
+      </div>
+    </div>
+  </header>

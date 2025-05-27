@@ -1,0 +1,25 @@
+import { Routes, Route } from 'react-router-dom';
+import HomePage   from '../pages/HomePage';
+// import SearchPage from '../pages/SearchPage';
+// import Community  from '../pages/Community';
+// import Support    from '../pages/Support';
+// import Events     from '../pages/Events';
+import LoginPage  from '../pages/LoginPage';
+// import SignupPage from '../pages/SignupPage';
+// import MyPage     from '../pages/MyPage';
+
+export default function AppRouter() {
+  return (
+    <Routes>
+      <Route path="/"           element={<HomePage   />} />
+      {/* <Route path="/search"     element={<SearchPage />} /> */}
+      {/* <Route path="/community"  element={<Community  />} /> */}
+      {/* <Route path="/support"    element={<Support    />} /> */}
+      {/* <Route path="/events"     element={<Events     />} /> */}
+      <Route path="/login"      element={<LoginPage  />} />
+      {/* <Route path="/signup"     element={<SignupPage />} /> */}
+      {/* <Route path="/mypage"     element={<MyPage     />} /> */}
+      {/* 404 페이지도 추가 가능  나중에 할거임*/}
+    </Routes>
+  );
+}

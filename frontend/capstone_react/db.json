@@ -1,0 +1,70 @@
+{
+  "cards": [
+    {
+      "id": 1,
+      "category": "premium",
+      "badge": "HOT",
+      "imageUrl": "/images/sample1.jpg",
+      "title": "풀리오 허벅지마사지기",
+      "subtitle": "집에서 간편하게!",
+      "field": "뷰티",
+      "deliveryType": "배송형(온라인)",
+      "price": 129000,
+      "remainingDays": 3,
+      "applicants": { "current": 1000, "total": 1 }
+    },
+    {
+      "id": 2,
+      "category": "premium",
+      "badge": "NEW",
+      "imageUrl": "/images/sample2.jpg",
+      "title": "XYZ 요가매트",
+      "subtitle": "편안한 쿠션감",
+      "field": "운동",
+      "deliveryType": "배송형(오프라인)",
+      "price": 45000,
+      "remainingDays": 5,
+      "applicants": { "current": 200, "total": 1 }
+    },
+    {
+      "id": 3,
+      "category": "premium",
+      "badge": "NEW",
+      "imageUrl": "/images/sample2.jpg",
+      "title": "XYZ 요가매트",
+      "subtitle": "편안한 쿠션감",
+      "field": "운동",
+      "deliveryType": "배송형(오프라인)",
+      "price": 45000,
+      "remainingDays": 5,
+      "applicants": { "current": 200, "total": 1 }
+    },
+    {
+      "id": 4,
+      "category": "premium",
+      "badge": "NEW",
+      "imageUrl": "/images/sample2.jpg",
+      "title": "XYZ 요가매트",
+      "subtitle": "편안한 쿠션감",
+      "field": "운동",
+      "deliveryType": "배송형(오프라인)",
+      "price": 45000,
+      "remainingDays": 5,
+      "applicants": { "current": 200, "total": 1 }
+    },
+    {
+      "id": 5,
+      "category": "premium",
+      "badge": "NEW",
+      "imageUrl": "/images/sample2.jpg",
+      "title": "헬스기구",
+      "subtitle": "편안한 쿠션감",
+      "field": "운동",
+      "deliveryType": "배송형(오프라인)",
+      "price": 45000,
+      "remainingDays": 5,
+      "applicants": { "current": 200, "total": 1 }
+    }
+  ]
+}
+//json-server --watch db.json --port 4000
