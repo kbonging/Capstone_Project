@@ -1,0 +1,37 @@
+package com.webcore.platform.controller;
+
+import com.webcore.platform.domain.CommunityDTO;
+import com.webcore.platform.domain.CustomUser;
+import com.webcore.platform.service.CommunityService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/community")
+public class CommunityController {
+    private final CommunityService communityService;
+
+    // 커뮤니티 글 작성 (로그인한 유저만 가능)
+    @PostMapping
+    public ResponseEntity<?> write(@RequestBody CommunityDTO communityDTO,
+                                   @AuthenticationPrincipal CustomUser customUser) throws Exception {
+        int memberIdx = customUser.getMemberDTO().getMemberIdx();
+        communityDTO.setMemberIdx(memberIdx);
+        int result = communityService.insertCommunity(communityDTO);
+
+        if(result > 0){
+            return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+        }
+    }
+}
