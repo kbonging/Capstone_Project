@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>광고주 커뮤니티 게시판</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-white text-gray-800">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+      <!-- 헤더 -->
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">커뮤니티</h1>
+        <div class="space-x-2">
+          <button
+            class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold"
+          >
+            BEST
+          </button>
+          <button class="text-gray-600 hover:text-black text-sm">노하우</button>
+          <button class="text-gray-600 hover:text-black text-sm">일상</button>
+          <button class="text-gray-600 hover:text-black text-sm">
+            질문하기
+          </button>
+          <button class="text-gray-600 hover:text-black text-sm">공지</button>
+        </div>
+        <button
+          class="bg-blue-100 text-blue-600 px-4 py-1 rounded text-sm font-semibold"
+        >
+          글 작성
+        </button>
+      </div>
+
+      <!-- 검색창 -->
+      <div class="flex justify-between items-center mb-4">
+        <select class="border px-3 py-1 rounded text-sm">
+          <option>구분</option>
+        </select>
+        <div class="flex items-center gap-2">
+          <input
+            type="text"
+            placeholder="검색어를 입력해주세요."
+            class="border px-3 py-1 rounded text-sm w-64"
+          />
+          <button class="text-gray-500 hover:text-black text-lg">
+            <i class="fa fa-search" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 테이블 -->
+      <table class="w-full text-sm table-auto border-t">
+        <thead class="text-left border-b">
+          <tr class="text-gray-500">
+            <th class="py-2">카테고리</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>조회</th>
+            <th>좋아요</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 예시 게시글 행 -->
+          <tr class="hover:bg-gray-50 border-b-2 h-[70px] text-[15px]">
+            <td class="py-2 text-red-500 font-bold">필독</td>
+            <td>
+              1:1문의 방법 & 자주 묻는 질문
+              <span class="text-red-500 ml-1">[6]</span>
+            </td>
+            <td>
+              <span class="text-gray-800">리뷰노트</span>
+              <span class="text-xs bg-red-500 text-white px-1 rounded ml-1"
+                >관</span
+              >
+            </td>
+            <td>2025-05-21(수)</td>
+            <td>406</td>
+            <td>0</td>
+          </tr>
+          <tr class="hover:bg-gray-50 border-b-2 h-[70px] text-[15px]">
+            <td class="text-blue-500 font-medium">질문하기</td>
+            <td>
+              [추가수정] ★★★업체들도 블로거 패널티 줄수있는 방법이 있었으면
+              좋겠습니다★★★
+              <span class="text-red-500 ml-1">[12]</span>
+            </td>
+            <td>
+              바로여기 체험단
+              <span class="text-xs bg-blue-500 text-white px-1 rounded ml-1"
+                >광</span
+              >
+            </td>
+            <td>2024-12-19(목)</td>
+            <td>843</td>
+            <td>55</td>
+          </tr>
+          <tr class="hover:bg-gray-50 border-b-2 h-[70px] text-[15px]">
+            <td class="text-yellow-500 font-medium">노하우</td>
+            <td>
+              제가 선정시에는 하는 방법인데, 도움이 되실까 싶어서 씁니다.<span
+                class="text-red-500 ml-1"
+                >[6]</span
+              >
+            </td>
+            <td>
+              얼탑탐사사진관
+              <span class="text-xs bg-pink-500 text-white px-1 rounded ml-1"
+                >팁</span
+              >
+            </td>
+            <td>2024-09-20(금)</td>
+            <td>1,140</td>
+            <td>31</td>
+          </tr>
+          <tr class="hover:bg-gray-50 border-b-2 h-[70px] text-[15px]">
+            <td class="text-purple-500 font-medium">공지</td>
+            <td>
+              사장님들 리뷰노트 잘 사용하고 계신가요?<span
+                class="text-red-500 ml-1"
+                >[154]</span
+              >
+            </td>
+            <td>
+              리뷰노트
+              <span class="text-xs bg-red-500 text-white px-1 rounded ml-1"
+                >관</span
+              >
+            </td>
+            <td>2024-01-26(금)</td>
+            <td>16,115</td>
+            <td>28</td>
+          </tr>
+          <!-- 추가 행은 -->
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
