@@ -37,3 +37,13 @@ FROM tb_member mb JOIN tb_member_auth au
 ON mb.member_idx = au.member_idx
 JOIN tb_owner_profile op
 ON mb.member_idx = op.member_idx;
+
+############# 커뮤니티 글 전체 조회 ############
+select tc.community_idx, tc.member_idx, tc.category_id, cc.CODE_NM, tc.title, tc.content, tc.view_count, tc.reg_date
+from tb_community tc join tb_common_code cc
+on tc.category_id=cc.CODE_ID
+where tc.del_yn='N'
+order by tc.reg_date desc;
+
+
+

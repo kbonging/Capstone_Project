@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchCards } from '../api/cardApi';
+import { testApiRequest } from '../api/Test';
 
 export function useCards(category) {
   const [data, setData]     = useState([]);
@@ -8,6 +9,11 @@ export function useCards(category) {
 
   //컴포넌트가 처음 렌더링되거나 category가 바뀌면 useEffect가 실행
   useEffect(() => {
+    // testApiRequest()
+    //   .then(r => r.json())
+    //   .then(console.log)
+    //   .catch(console.error);
+    
     let cancelled = false;
     setLoading(true);
     fetchCards(category)

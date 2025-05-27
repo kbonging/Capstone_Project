@@ -117,6 +117,7 @@ create table tb_owner_profile (
 ) COMMENT='소상공인 프로필 테이블';
 
 -- 커뮤니티 테이블
+-- DROP TABLE tb_community;
 CREATE TABLE tb_community (
     community_idx   INT AUTO_INCREMENT PRIMARY KEY 	COMMENT '커뮤니티 고유번호',
     member_idx      INT NOT NULL 					COMMENT '회원 고유번호',
@@ -124,7 +125,6 @@ CREATE TABLE tb_community (
     title           VARCHAR(255) NOT NULL 			COMMENT '제목',
     content         TEXT NOT NULL 					COMMENT '내용',
     view_count      INT NOT NULL DEFAULT 0 			COMMENT '조회수',
-    like_count      INT NOT NULL DEFAULT 0 			COMMENT '좋아요 수',
     reg_date        DATETIME NOT NULL 				COMMENT '등록일',
     mod_date        DATETIME DEFAULT NULL 			COMMENT '수정일',
     del_yn          CHAR(1) NOT NULL DEFAULT 'N' 	COMMENT '삭제 여부 (Y/N)',
