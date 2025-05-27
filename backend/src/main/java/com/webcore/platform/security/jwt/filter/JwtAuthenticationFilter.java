@@ -1,6 +1,8 @@
 package com.webcore.platform.security.jwt.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webcore.platform.domain.CustomUser;
+import com.webcore.platform.domain.MemberDTO;
 import com.webcore.platform.security.jwt.constants.JwtConstants;
 import com.webcore.platform.security.jwt.provider.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
@@ -9,9 +11,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
@@ -51,41 +55,42 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
      */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        // 여기 클라이언트에서 받아온 값이 memberId, memberPwd 로 바꿔야 할 수도
-        String username = request.getParameter("memberId");
-        String password = request.getParameter("memberPwd");
+        MemberDTO memberDTO = new MemberDTO();
+
+        try {
+            // JSON 형식 파싱
+            ObjectMapper objectMapper = new ObjectMapper();
+            memberDTO = objectMapper.readValue(request.getInputStream(), MemberDTO.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // 클라이언트에서 전달받은 로그인 정보
+        String username = memberDTO.getMemberId();
+        String password = memberDTO.getMemberPwd();
 
         log.info("memberId : {}", username);
         log.info("memberPwd : {}", password);
 
-        // 사용자 인증정보 객체 생성
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
+        // 인증 토큰 생성
+        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
 
-        // 사용자 인증 (로그인)
-        authentication = authenticationManager.authenticate(authentication);
-      /*
-        🔐 authenticate() 인증 처리 프로세스
-        1️⃣ 주어진 Authentication 객체에서 사용자의 아이디를 추출합니다.
-        2️⃣ UserDetailsService를 사용하여 해당 아이디에 대한 UserDetails 객체를 가져옵니다.
-        3️⃣ 가져온 UserDetails 객체에서 저장된 비밀번호를 확인하기 위해 PasswordEncoder를 사용합니다.
-        4️⃣ 사용자가 제공한 비밀번호와 저장된 비밀번호가 일치하는지 확인합니다.
-        5️⃣ 인증이 성공하면, 새로운 Authentication 객체를 생성하여 반환합니다.
-        ✅ 인증 여부를, isAuthenticated() ➡ true 로 확인할 수 있습니다.
-     */
+        try {
+            // 사용자 인증 시도
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-        log.info("authenticationManager : {}", authenticationManager);
-        log.info("authentication : {}", authentication);
-        log.info("인증 여부 : {}", authentication.isAuthenticated());
+            log.info("authenticationManager : {}", authenticationManager);
+            log.info("authentication : {}", authentication);
+            log.info("인증 여부 : {}", authentication.isAuthenticated());
 
-        // 인증 실패 (username, password 불일치)
-        // 이거 필요 없을지도
-        if(!authentication.isAuthenticated()){
-            log.info("인증 실패 : 아이디 또는 비밀번호가 일치하지 않습니다.");
-            response.setStatus(401);   // UNAUTHORIZED (인증 실패)
+            return authentication;
+
+        } catch (AuthenticationException e) {
+            log.warn("인증 실패: {}", e.getMessage());  // 실제 예외 메시지를 그대로 출력
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            throw e;
         }
-
-        return authentication;
     }
+
 
     /** 
      * 인증 성공 메서드

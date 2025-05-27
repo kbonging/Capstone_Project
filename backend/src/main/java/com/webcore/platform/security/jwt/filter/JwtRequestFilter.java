@@ -30,8 +30,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String header = request.getHeader(JwtConstants.TOKEN_HEADER);
         log.info("Authorization : {}", header);
-        log.info("##doFilterInternal## - memberId : {}", request.getParameter("memberId"));
-        log.info("##doFilterInternal## - memberPwd : {}", request.getParameter("memberPwd"));
+//        log.info("##doFilterInternal## - memberId : {}", request.getParameter("memberId"));
+//        log.info("##doFilterInternal## - memberPwd : {}", request.getParameter("memberPwd"));
 
         // jwt 토큰이 없으면 다음 필터로 이동
         // Bearer + {jwt} 체크
