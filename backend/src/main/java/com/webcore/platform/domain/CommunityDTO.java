@@ -13,13 +13,11 @@ public class CommunityDTO extends DefaultDTO {
     /** 회원 고유번호 (FK) */
     private int memberIdx;
     /** 공통코드 COMMU_CATE */
-    private String codeId;
+    private String categoryId;
     /** 제목 */
     private String title;
     /** 내용 */
     private String content;
     /** 조회수 */
     private int viewCount;
-    /** 좋아요 */
-    private int likeCount;
 }

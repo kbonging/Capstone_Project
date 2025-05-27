@@ -13,10 +13,10 @@ public class CommunityServiceImpl implements CommunityService {
     private final CommunityDAO communityDAO;
 
     @Override
-    public int insertCommunity(CommunityDTO communityDTO) {
+    public int registCommunity(CommunityDTO communityDTO) {
         int result = communityDAO.insertCommunity(communityDTO);
         if(result > 0) {
-            log.info("Insert community successfully");
+            log.info("Insert community successfully!! insert user's idx : {}", communityDTO.getMemberIdx());
         }
 
         return result;

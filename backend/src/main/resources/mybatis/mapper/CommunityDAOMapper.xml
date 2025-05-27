@@ -7,6 +7,6 @@
     <insert id="insertCommunity" parameterType="com.webcore.platform.domain.CommunityDTO"
             useGeneratedKeys="true" keyProperty="communityIdx">
         INSERT INTO TB_COMMUNITY (MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, REG_DATE)
-        VALUES (#{memberIdx}, #{codeId}, #{title}, #{content}, NOW());
+        VALUES (#{memberIdx}, #{categoryId}, #{title}, #{content}, NOW());
     </insert>
 </mapper>
