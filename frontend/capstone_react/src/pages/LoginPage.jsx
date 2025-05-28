@@ -8,8 +8,9 @@ export default function LoginPage() {
   const { setUser, setToken } = useContext(AppContext); //전역으로 할당
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [memberId, setMemberId] = useState("");
+  const [memberPwd, setMemberPwd] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
   const [saveAccount, setSaveAccount] = useState(false);
   const [error, setError] = useState(null);
@@ -21,14 +22,14 @@ export default function LoginPage() {
     setError(null);
     try {
       // 1) 서버에 로그인 요청
-      const { token, user } = await loginUser({ email, password });
+      const { token } = await loginUser({ memberId, memberPwd });
       // 2) 토큰을 로컬스토리지에 저장 (다음번 자동 로그인용)
       if (saveAccount) {
         localStorage.setItem("token", token);
       }
       // 3) Context에 유저·토큰 정보 업데이트
       setToken(token);
-      setUser(user);
+      //setUser(user);
       // 4) 로그인 후 홈으로 이동
       navigate("/");
     } catch (err) {
@@ -44,17 +45,6 @@ export default function LoginPage() {
       >
         <h2 className="text-center capitalize text-3xl mb-6">login</h2>
 
-        {/* Social Login */}
-        <div className="flex gap-3 mb-6">
-          <div
-            type="button"
-            className="flex-1 bg-gray-50 border rounded-md p-3 flex gap-2 items-center justify-center"
-          >
-            <img src="/images/google.png" alt="LOGO" className="h-5" />
-            {/* LOGO */}
-          </div>
-        </div>
-
         {/* <span className="block relative mb-5 text-center or">or</span> */}
 
         {/* 에러 메시지 */}
@@ -66,11 +56,11 @@ export default function LoginPage() {
         <div className="space-y-4 mb-6">
           <div className="relative">
             <input
-              id="user-email"
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="memberId"
+              type="text"
+              placeholder="Enter your ID"
+              value={memberId}
+              onChange={(e) => setMemberId(e.target.value)}
               className="border block w-full p-2 pl-12 rounded-md outline-none focus:border-blue-400 placeholder-gray-400 focus:placeholder-transparent"
               required
             />
@@ -84,8 +74,8 @@ export default function LoginPage() {
               id="user-pw"
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={memberPwd}
+              onChange={(e) => setMemberPwd(e.target.value)}
               className="border block w-full p-2 pl-12 rounded-md outline-none focus:border-blue-400 placeholder-gray-400 focus:placeholder-transparent"
               maxLength={12}
               required

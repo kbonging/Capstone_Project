@@ -11,8 +11,12 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,         // 호스트 헤더를 타겟의 것으로 변경
         secure: false,              // HTTPS 셀프사인 인증서 허용 여부
-        rewrite: (path) => path.replace(/^\/api/, ''),  
-        // ex) /api/community/posts → /community/posts 로 백엔드에 전달
+        rewrite: (path) => path,
+      },
+      '/login': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
       },
     }
   }

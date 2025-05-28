@@ -77,10 +77,13 @@ public class SecurityConfig {
                 authorizeRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // 정적 자원 허용 (필요 시)
                         .requestMatchers("/").permitAll()
+                        //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 이게 없으면 OPTIONS가 막힙니다 (필요없을 수도)
                         .requestMatchers("/login").permitAll()
 
                         // 테스트 설정
                         .requestMatchers("/api/test").permitAll()
+
+                        // 공통 회원
 
                         // 리뷰어
                         .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 리뷰어 회원가입은 누구나 가능 (POST)
@@ -119,6 +122,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("http://localhost:5173")); // React dev 서버 주소
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
+        //config.setExposedHeaders(List.of("Authorization"));// (필요없을 수도)
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
