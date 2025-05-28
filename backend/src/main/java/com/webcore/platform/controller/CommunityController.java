@@ -45,6 +45,15 @@ public class CommunityController {
                                         @AuthenticationPrincipal CustomUser customUser) throws Exception {
         int loginMemberIdx = customUser.getMemberDTO().getMemberIdx();
 
+        CommunityDTO post = communityService.getCommunityByIdx(communityIdx);
+        if (post == null) {
+            return new ResponseEntity<>("게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
+
+        if (post.getMemberIdx() != loginMemberIdx) {
+            return new ResponseEntity<>("본인이 작성한 글만 삭제할 수 있습니다.", HttpStatus.FORBIDDEN);
+        }
+
         CommunityDTO dto = new CommunityDTO();
         dto.setCommunityIdx(communityIdx);
         dto.setMemberIdx(loginMemberIdx);
@@ -58,4 +67,34 @@ public class CommunityController {
             return new ResponseEntity<>("삭제 권한이 없거나 게시글이 존재하지 않습니다.", HttpStatus.FORBIDDEN);
         }
     }
+
+    @PutMapping("/{communityIdx}")
+    public ResponseEntity<?> updatePost(@PathVariable int communityIdx,
+                                        @RequestBody CommunityDTO communityDTO,
+                                        @AuthenticationPrincipal CustomUser customUser) throws Exception {
+        int loginMemberIdx = customUser.getMemberDTO().getMemberIdx();
+
+        CommunityDTO originalPost = communityService.getCommunityByIdx(communityIdx);
+
+        if(originalPost == null){
+            return new ResponseEntity<>("게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
+
+        if(originalPost.getMemberIdx() != loginMemberIdx) {
+            return new ResponseEntity<>("작성자 본인 아님", HttpStatus.FORBIDDEN);
+        }
+
+        communityDTO.setCommunityIdx(communityIdx);
+        communityDTO.setMemberIdx(loginMemberIdx);
+
+        int result = communityService.updatePost(communityDTO);
+        if(result > 0) {
+            log.info("Community updated successfully");
+            return new ResponseEntity<>("게시글이 수정되었습니다.", HttpStatus.OK);
+        } else {
+            log.info("Community update failed");
+            return new ResponseEntity<>("게시글 수정에 실패했습니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
 }

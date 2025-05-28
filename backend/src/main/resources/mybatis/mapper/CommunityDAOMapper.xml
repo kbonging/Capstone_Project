@@ -5,6 +5,12 @@
 
 <mapper namespace="com.webcore.platform.dao.CommunityDAO">
 
+    <select id="getCommunityByIdx" parameterType="int" resultType="com.webcore.platform.domain.CommunityDTO">
+        SELECT COMMUNITY_IDX, MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, VIEW_COUNT, CONTENT, VIEW_COUNT, REG_DATE, MOD_DATE, DEL_YN
+        FROM TB_COMMUNITY
+        WHERE COMMUNITY_IDX = #{communityIdx};
+    </select>
+
     <insert id="insertCommunity" parameterType="com.webcore.platform.domain.CommunityDTO"
             useGeneratedKeys="true" keyProperty="communityIdx">
         INSERT INTO TB_COMMUNITY (MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, REG_DATE)
@@ -14,8 +20,21 @@
     <update id="deleteCommunity" parameterType="com.webcore.platform.domain.CommunityDTO">
         UPDATE TB_COMMUNITY
         SET
-            DEL_YN = 'Y'
+            DEL_YN = 'Y',
+            MOD_DATE = NOW()
+        WHERE COMMUNITY_IDX = #{communityIdx}
+            AND MEMBER_IDX = #{memberIdx};
+    </update>
+
+    <update id="updateCommunity" parameterType="com.webcore.platform.domain.CommunityDTO">
+        UPDATE TB_COMMUNITY
+        SET
+            CATEGORY_ID = #{categoryId},
+            TITLE = #{title},
+            CONTENT = #{content},
+            MOD_DATE = NOW()
         WHERE COMMUNITY_IDX = #{communityIdx}
             AND MEMBER_IDX = #{memberIdx}
+            AND DEL_YN='N';
     </update>
 </mapper>

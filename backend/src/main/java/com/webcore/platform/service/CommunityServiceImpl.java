@@ -13,6 +13,11 @@ public class CommunityServiceImpl implements CommunityService {
     private final CommunityDAO communityDAO;
 
     @Override
+    public CommunityDTO getCommunityByIdx(int communityIdx) {
+        return communityDAO.getCommunityByIdx(communityIdx);
+    }
+
+    @Override
     public int createPost(CommunityDTO communityDTO) {
         int result = communityDAO.insertCommunity(communityDTO);
         if(result > 0) {
@@ -27,6 +32,16 @@ public class CommunityServiceImpl implements CommunityService {
         int result = communityDAO.deleteCommunity(communityDTO);
         if(result > 0) {
             log.info("Delete Post successfully!! delete user's idx : {}", communityDTO.getMemberIdx());
+        }
+
+        return result;
+    }
+
+    @Override
+    public int updatePost(CommunityDTO communityDTO) {
+        int result = communityDAO.updateCommunity(communityDTO);
+        if(result > 0) {
+            log.info("Update Post successfully!! update user's idx : {}", communityDTO.getMemberIdx());
         }
 
         return result;
