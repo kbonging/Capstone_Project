@@ -15,14 +15,17 @@ FROM TB_MEMBER M LEFT JOIN TB_MEMBER_AUTH A
 ON M.member_idx = A.member_idx
 WHERE M.member_id = 'apple75391' AND M.del_yn = 'N';
 
-################# 리뷰어 전체 조회 ##################
+##************************************************##
+##********************** 리뷰어 ********************##
+##************************************************##
+##### 리뷰어 전체 조회 #####
 select * 
 FROM tb_member mb JOIN tb_member_auth au
 ON mb.member_idx = au.member_idx
 JOIN tb_reviewer_profile rp
 ON mb.member_idx = rp.member_idx;
 
-############ 리뷰어 채널 전체 조회 #############
+###### 리뷰어 채널 전체 조회 ######
 select mb.member_idx, mb.member_name, rc.inf_type_code_id, rc.channel_url
 FROM tb_member mb JOIN tb_member_auth au
 ON mb.member_idx = au.member_idx
@@ -31,19 +34,50 @@ ON mb.member_idx = rp.member_idx
 JOIN tb_reviewer_channel rc
 ON mb.member_idx = rc.member_idx;
 
-################# 소상공인 전체 조회 ####################
+###### (리뷰어) 회원 고유번호로 정보 조회 ######
+select mb.member_idx, mb.member_id, mb.member_name, mb.member_email, mb.member_phone, mb.profile_img_url, mb.intro, mb.heart_count, mb.penalty, mb.del_yn, mb.reg_date, au.auth, 
+	rp.NICKNAME, rp.GENDER, rp.BIRTH_DATE, rp.ACTIVITY_AREA, rp.ACTIVITY_TOPIC, rp.ZIP_CODE, rp.ADDRESS, rp.DETAIL_ADDRESS,
+	rc.CHANNEL_URL, rc.INF_TYPE_CODE_ID
+FROM tb_member mb JOIN tb_member_auth au
+ON mb.member_idx = au.member_idx
+JOIN tb_reviewer_profile rp
+ON mb.member_idx = rp.member_idx
+JOIN tb_reviewer_channel rc
+ON mb.member_idx = rc.member_idx
+where mb.member_idx=1;
+
+##************************************************##
+##********************* 소상공인 *******************##
+##************************************************##
+##### 소상공인 전체 조회 #####
 select * 
 FROM tb_member mb JOIN tb_member_auth au
 ON mb.member_idx = au.member_idx
 JOIN tb_owner_profile op
 ON mb.member_idx = op.member_idx;
 
-############# 커뮤니티 글 전체 조회 ############
+############## (소상공인) 회원 고유번호로 정보 조회 ##############
+select mb.member_idx, mb.member_id, mb.member_name, mb.member_email, mb.member_phone, 
+	mb.profile_img_url, mb.intro, mb.heart_count, mb.penalty, mb.del_yn, mb.reg_date, au.auth, 
+	op.BUSINESS_NAME, op.BUSINESS_URL
+FROM tb_member mb JOIN tb_member_auth au
+ON mb.member_idx = au.member_idx
+JOIN tb_owner_profile op
+on mb.MEMBER_IDX=op.MEMBER_IDX
+where mb.member_idx=25;
+
+##************************************************##
+##********************* 커뮤니티 *******************##
+##************************************************##
+##### 커뮤니티 글 전체 조회 #####
 select tc.community_idx, tc.member_idx, tc.category_id, cc.CODE_NM, tc.title, tc.content, tc.view_count, tc.reg_date
 from tb_community tc join tb_common_code cc
 on tc.category_id=cc.CODE_ID
 where tc.del_yn='N'
-order by tc.reg_date desc;
+order by tc.reg_date desc
+limit 0, 10;
+
+
 
 
 

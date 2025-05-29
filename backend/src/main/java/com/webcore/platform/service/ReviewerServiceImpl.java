@@ -50,4 +50,9 @@ public class ReviewerServiceImpl implements ReviewerService{
             }
         }
     }
+
+    @Override
+    public ReviewerDTO selectReviewerByIdx(int memberIdx) {
+        return reviewerDAO.selectReviewerByIdx(memberIdx);
+    }
 }

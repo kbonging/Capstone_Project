@@ -26,7 +26,7 @@ export default function Header() {
         <div className="flex items-center space-x-4 text-black">
           {user ? (
             <>
-               <Link to="/mypage" className="hover:text-gray-500">{user.name} </Link>
+               <Link to="/mypage" className="hover:text-gray-500">{user.memberName} </Link>
               <button onClick={logout} className="hover:text-gray-500">로그아웃</button>
             </>
           ) : (

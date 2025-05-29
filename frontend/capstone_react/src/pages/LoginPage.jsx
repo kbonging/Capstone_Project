@@ -5,7 +5,7 @@ import { AppContext } from "../contexts/AppContext";
 import { loginUser } from "../api/authApi"; // 아래 예시처럼 구현해 두세요
 
 export default function LoginPage() {
-  const { setUser, setToken } = useContext(AppContext); //전역으로 할당
+  const { setToken } = useContext(AppContext); //전역으로 할당
   const navigate = useNavigate();
 
   const [memberId, setMemberId] = useState("");
