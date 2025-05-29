@@ -145,3 +145,18 @@ INSERT INTO tb_reviewer_channel(member_idx, inf_type_code_id, channel_url, reg_d
 VALUES 
 (1, 'INF001', 'https://blog.naver.com/apple75391', NOW()),
 (1, 'INF002', 'https://instagram.com/apple75391', NOW());
+
+################# 커뮤니티 글 등록 ##################
+INSERT INTO tb_community (
+    member_idx, category_id, title, content, view_count, reg_date, mod_date, del_yn
+) VALUES
+(1, 'COMMU001', 'SNS 마케팅 노하우 공유합니다', '인스타그램 운영 팁과 노출 노하우를 정리해봤어요.', 34, DATE_SUB(NOW(), INTERVAL 0 DAY), NULL, 'N'),
+(8, 'COMMU001', '고객 응대 매뉴얼 공유', '리뷰 대응할 때 효과적인 방법을 정리했습니다.', 21, DATE_SUB(NOW(), INTERVAL 1 DAY), NULL, 'N'),
+(7, 'COMMU002', '오늘 가게에 귀여운 손님이 왔어요', '강아지를 데리고 온 손님 덕분에 하루 종일 기분 좋았어요.', 56, DATE_SUB(NOW(), INTERVAL 2 DAY), NULL, 'N'),
+(14, 'COMMU002', '요즘 날씨가 좋아서 테라스 장사 대박', '봄 날씨에 테라스 자리에 손님이 가득하네요.', 18, DATE_SUB(NOW(), INTERVAL 3 DAY), NULL, 'N'),
+(9, 'COMMU003', '배달 앱 수수료 줄이는 팁 있을까요?', '배달의민족 수수료가 너무 부담입니다. 다들 어떻게 하고 계신가요?', 44, DATE_SUB(NOW(), INTERVAL 4 DAY), NULL, 'N'),
+(17, 'COMMU003', '간판 제작 업체 추천 부탁드립니다', '저렴하면서 퀄리티 좋은 간판 업체 아시는 분 계실까요?', 12, DATE_SUB(NOW(), INTERVAL 5 DAY), NULL, 'N'),
+(20, 'COMMU004', '5월 커뮤니티 활동 이벤트 안내', '활동 많은 회원 분들께 소정의 상품을 드립니다.', 89, DATE_SUB(NOW(), INTERVAL 6 DAY), NULL, 'N'),
+(26, 'COMMU004', '신규 기능 안내: 댓글 알림 도입', '이제 댓글이 달리면 알림으로 받아보실 수 있어요.', 35, DATE_SUB(NOW(), INTERVAL 7 DAY), NULL, 'N'),
+(23, 'COMMU002', '오늘도 가게 셀프 오픈했어요', '직원 없이 혼자 운영하니 점점 익숙해지네요.', 23, DATE_SUB(NOW(), INTERVAL 8 DAY), NULL, 'N'),
+(10, 'COMMU001', '매출 관리 엑셀 양식 공유', '월별 정산에 도움이 되는 템플릿 공유합니다.', 40, DATE_SUB(NOW(), INTERVAL 9 DAY), NULL, 'N');

@@ -4,6 +4,37 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.webcore.platform.dao.CommunityDAO">
+    <!-- 검색키워드가 있을경우 -->
+    <sql id="searchWhere">
+        <if test="searchKeyword != null">
+            <choose>
+                <when test="searchCondition != null and searchCondition != ''">
+                    AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <otherwise>
+                    AND (title LIKE CONCAT('%', #{searchKeyword}, '%')
+                    OR content LIKE CONCAT('%', #{searchKeyword}, '%'))
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+<!--    &lt;!&ndash; 검색키워드 와 카테고리가 있을경우 &ndash;&gt;-->
+<!--    <sql id="searchWhere_Category">-->
+<!--        <if test="searchKeyword != null">-->
+<!--            and ${search_target} like CONCAT('%','${search_keyword}','%')-->
+<!--        </if>-->
+<!--    </sql>-->
+
+    <select id="selectCommunityList" parameterType="com.webcore.platform.domain.CommunityDTO" resultType="com.webcore.platform.domain.CommunityDTO">
+        SELECT
+            tc.community_idx, tc.member_idx, tc.category_id, cc.CODE_NM, tc.title, tc.content, tc.view_count, tc.reg_date
+        FROM tb_community tc join tb_common_code cc
+        ON tc.category_id=cc.CODE_ID
+        WHERE tc.del_yn='N'
+        <include refid="searchWhere"></include>
+        ORDER BY tc.reg_date DESC
+        <!--LIMIT #{start}, #{end}-->
+    </select>
 
     <select id="getCommunityByIdx" parameterType="int" resultType="com.webcore.platform.domain.CommunityDTO">
         SELECT COMMUNITY_IDX, MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, VIEW_COUNT, CONTENT, VIEW_COUNT, REG_DATE, MOD_DATE, DEL_YN

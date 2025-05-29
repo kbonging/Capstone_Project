@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * [GET]        /api/community  - 게시글 조회
  * [POST]       /api/community  - 게시글 등록
@@ -23,10 +25,24 @@ import org.springframework.web.bind.annotation.*;
 public class CommunityController {
     private final CommunityService communityService;
 
+    /** 커뮤니티 리스트 목록*/
+    @GetMapping("")
+    public ResponseEntity<?> getCommunityList(CommunityDTO communityDTO,
+                                              @AuthenticationPrincipal CustomUser customUser){
+        log.info("/api/community [Request] => {}",communityDTO.toString());
+        List<CommunityDTO> communityList = communityService.selectCommunityList(communityDTO);
+        log.info("게시글 전체 목록 => {}", communityList);
+
+        if(communityList==null || communityList.isEmpty()){
+            return new ResponseEntity<>("조회된 게시글이 없습니다", HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(communityList, HttpStatus.OK);
+    }
+
     // 커뮤니티 글 작성 (로그인한 유저만 가능)
     @PostMapping("")
     public ResponseEntity<?> createPost(@RequestBody CommunityDTO communityDTO,
-                                   @AuthenticationPrincipal CustomUser customUser) throws Exception {
+                                        @AuthenticationPrincipal CustomUser customUser) throws Exception {
         int memberIdx = customUser.getMemberDTO().getMemberIdx();
         communityDTO.setMemberIdx(memberIdx);
         int result = communityService.createPost(communityDTO);
