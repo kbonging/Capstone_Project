@@ -26,7 +26,7 @@ public class CommunityController {
     // 커뮤니티 글 작성 (로그인한 유저만 가능)
     @PostMapping("")
     public ResponseEntity<?> createPost(@RequestBody CommunityDTO communityDTO,
-                                   @AuthenticationPrincipal CustomUser customUser) throws Exception {
+                                   @AuthenticationPrincipal CustomUser customUser) {
         int memberIdx = customUser.getMemberDTO().getMemberIdx();
         communityDTO.setMemberIdx(memberIdx);
         int result = communityService.createPost(communityDTO);
@@ -42,7 +42,7 @@ public class CommunityController {
 
     @DeleteMapping("/{communityIdx}")
     public ResponseEntity<?> deletePost(@PathVariable int communityIdx,
-                                        @AuthenticationPrincipal CustomUser customUser) throws Exception {
+                                        @AuthenticationPrincipal CustomUser customUser) {
         int loginMemberIdx = customUser.getMemberDTO().getMemberIdx();
 
         CommunityDTO post = communityService.getCommunityByIdx(communityIdx);
@@ -71,7 +71,7 @@ public class CommunityController {
     @PutMapping("/{communityIdx}")
     public ResponseEntity<?> updatePost(@PathVariable int communityIdx,
                                         @RequestBody CommunityDTO communityDTO,
-                                        @AuthenticationPrincipal CustomUser customUser) throws Exception {
+                                        @AuthenticationPrincipal CustomUser customUser) {
         int loginMemberIdx = customUser.getMemberDTO().getMemberIdx();
 
         CommunityDTO originalPost = communityService.getCommunityByIdx(communityIdx);
