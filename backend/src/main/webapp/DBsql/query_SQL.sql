@@ -70,13 +70,31 @@ where mb.member_idx=25;
 ##********************* 커뮤니티 *******************##
 ##************************************************##
 ##### 커뮤니티 글 전체 조회 #####
-select tc.community_idx, tc.member_idx, tc.category_id, cc.CODE_NM, tc.title, tc.content, tc.view_count, tc.reg_date
-from tb_community tc join tb_common_code cc
-on tc.category_id=cc.CODE_ID
-where tc.del_yn='N'
-order by tc.reg_date desc
-limit 0, 10;
-
+SELECT
+    cm.community_idx,
+    cm.member_idx,
+    cm.category_id,
+    cc.code_nm,
+    cm.title,
+    cm.content,
+    cm.view_count,
+    cm.reg_date,
+    ma.auth,
+    CASE
+        WHEN ma.auth = 'ROLE_USER' THEN rp.nickname
+        WHEN ma.auth = 'ROLE_OWNER' THEN op.business_name
+        WHEN ma.auth = 'ROLE_ADMIN' THEN "관리자"
+        ELSE '알 수 없음'
+    END AS writer_name
+FROM tb_community cm
+JOIN tb_member m ON cm.member_idx = m.member_idx
+JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
+JOIN tb_common_code cc ON cm.category_id=cc.code_id
+LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
+LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
+WHERE cm.del_yn='N'
+ORDER BY cm.reg_date DESC
+LIMIT 0, 1000;
 
 
 
