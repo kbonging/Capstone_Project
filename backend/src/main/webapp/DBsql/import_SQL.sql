@@ -11,6 +11,7 @@
 -- FROM information_schema.tables
 -- WHERE table_schema = 'capstone';
 
+
 ######################### 회원 테이블 시작 ######################
 -- 회원 테이블 삭제
 -- drop table tb_member;
@@ -46,7 +47,7 @@ create table tb_common_code (
 	group_sort		int 			null default 0 comment '그룹 정렬 순서',
 	sort			int			null default 0 comment '정렬 순서',
 	code_dc			varchar(255)	null comment '코드 설명',
-	del_yn			char(1)			not null default 'n' comment '삭제 여부(y/n)',
+	del_yn			char(1)			not null default 'N' comment '삭제 여부(Y/N)',
 	reg_date		datetime		not null comment '가입일시',
 	mod_date		datetime		null comment '수정일시'
 )comment='공통 코드 테이블';
@@ -63,7 +64,7 @@ create table tb_member (
 	intro			text		null comment '소개글',
 	heart_count		int			null default 0 comment '하트수',
 	penalty			int			null default 0 comment '패널티',
-	del_yn			char(1)			not null default 'n' comment '삭제 여부(y/n)',
+	del_yn			char(1)			not null default 'N' comment '삭제 여부(Y/N)',
 	reg_date		datetime		not null comment '가입일시',
 	mod_date		datetime		null comment '수정일시'
 ) COMMENT='공통 회원 정보 테이블';

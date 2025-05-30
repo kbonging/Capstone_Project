@@ -16,22 +16,30 @@ export default function CommunityPage() {
   const [error, setError] = useState(null);
   const { token } = useContext(AppContext);
 
-  const params = { // 이거 나중에 수정
+  const [params, setParams] = useState({
     searchKeyword: '',
     searchCondition: '',
-    start: 0,
-    end: 10,
+  });
+
+  const onChangeInput = (e) => {
+    console.log(e);
+    const { name, value } = e.target;
+    setParams(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const queryString = new URLSearchParams(params).toString();
   
-    useEffect(() => {
+  useEffect(() => {
+      const queryString = new URLSearchParams(params).toString();
+
       setLoading(true);
       fetchCommunityPosts(token, queryString)
         .then(data => setPosts(data))
         .catch(err => setError(err.message))
         .finally(() => setLoading(false));
-    }, [token, queryString]);
+    }, [token, params]);
 
   if (loading) return <p className="text-center py-8">로딩 중…</p>;
   if (error)
@@ -43,37 +51,35 @@ export default function CommunityPage() {
         {/* 헤더 */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">커뮤니티</h1>
-          <div className="space-x-2">
-            <button className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold">
-              BEST
-            </button>
-            <button className="text-gray-600 hover:text-black text-sm">
-              노하우
-            </button>
-            <button className="text-gray-600 hover:text-black text-sm">
-              일상
-            </button>
-            <button className="text-gray-600 hover:text-black text-sm">
-              질문하기
-            </button>
-            <button className="text-gray-600 hover:text-black text-sm">
-              공지
-            </button>
-          </div>
           <button className="bg-blue-100 text-blue-600 px-4 py-1 rounded text-sm font-semibold">
             글 작성
           </button>
         </div>
 
         {/* 검색창 */}
-        <div className="flex justify-between items-center mb-4">
-          <select className="border px-3 py-1 rounded text-sm">
-            <option>구분</option>
-          </select>
+        <div className="flex justify-between items-center mb-4 gap-2 flex-wrap">
+          {/* 왼쪽: 카테고리 버튼 */}
           <div className="flex items-center gap-2">
+            <button className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold">
+              BEST
+            </button>
+            <button className="text-gray-600 hover:text-black text-sm">노하우</button>
+            <button className="text-gray-600 hover:text-black text-sm">일상</button>
+            <button className="text-gray-600 hover:text-black text-sm">질문하기</button>
+            <button className="text-gray-600 hover:text-black text-sm">공지</button>
+          </div>
+
+          {/* 오른쪽: 구분 + 검색 */}
+          <div className="flex items-center gap-2">
+            <select className="border px-3 py-1 rounded text-sm">
+              <option>구분</option>
+            </select>
             <input
               type="text"
+              value={params.searchKeyword}
+              name="searchKeyword"
               placeholder="검색어를 입력해주세요."
+              onChange={onChangeInput}
               className="border px-3 py-1 rounded text-sm w-64"
             />
             <button className="text-gray-500 hover:text-black text-lg">
@@ -125,6 +131,11 @@ export default function CommunityPage() {
                     {post.auth === 'ROLE_USER' && (
                       <span className="ml-2 text-xs font-semibold text-white bg-lime-500 px-1 rounded">
                         리
+                      </span>
+                    )}
+                    {post.auth === 'ROLE_ADMIN' && (
+                      <span className="ml-2 text-xs font-semibold text-white bg-lime-500 px-1 rounded">
+                        관
                       </span>
                     )}
                   </td>
