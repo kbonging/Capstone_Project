@@ -56,6 +56,7 @@ public class CommunityController {
         }
     }
 
+    // 커뮤니티 글 삭제 (작성자만 가능)
     @DeleteMapping("/{communityIdx}")
     public ResponseEntity<?> deletePost(@PathVariable int communityIdx,
                                         @AuthenticationPrincipal CustomUser customUser) {
@@ -84,6 +85,7 @@ public class CommunityController {
         }
     }
 
+    // 커뮤니티 글 수정 (작성자만 가능)
     @PutMapping("/{communityIdx}")
     public ResponseEntity<?> updatePost(@PathVariable int communityIdx,
                                         @RequestBody CommunityDTO communityDTO,

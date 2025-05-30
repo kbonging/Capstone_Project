@@ -68,4 +68,5 @@
             AND MEMBER_IDX = #{memberIdx}
             AND DEL_YN='N';
     </update>
+
 </mapper>
