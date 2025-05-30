@@ -2,6 +2,7 @@ package com.webcore.platform.service;
 
 import com.webcore.platform.dao.CommunityDAO;
 import com.webcore.platform.domain.CommunityDTO;
+import com.webcore.platform.response.CommunityListResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final CommunityDAO communityDAO;
 
     @Override
-    public List<CommunityDTO> selectCommunityList(CommunityDTO communityDTO) {
+    public List<CommunityListResponseDTO> selectCommunityList(CommunityDTO communityDTO) {
         return communityDAO.selectCommunityList(communityDTO);
     }
 

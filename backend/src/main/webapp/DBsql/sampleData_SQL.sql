@@ -146,17 +146,58 @@ VALUES
 (1, 'INF001', 'https://blog.naver.com/apple75391', NOW()),
 (1, 'INF002', 'https://instagram.com/apple75391', NOW());
 
+-- UPDATE tb_reviewer_profile SET nickname = CASE member_idx
+--   when 1 then '봉잉'
+--   WHEN 2 THEN '현지번개'
+--   WHEN 3 THEN '하나푸딩'
+--   WHEN 4 THEN '민수핫도그'
+--   WHEN 5 THEN '소연고래'
+--   WHEN 6 THEN '재민감자'
+--   WHEN 7 THEN '은지슈퍼스타'
+--   WHEN 8 THEN '현우뽀짝'
+--   WHEN 9 THEN '유나초코'
+--   WHEN 10 THEN '동해번쩍'
+--   WHEN 11 THEN '서윤캔디'
+--   WHEN 12 THEN '규민펭귄'
+--   WHEN 13 THEN '아린구름'
+--   WHEN 14 THEN '준서멜로디'
+--   WHEN 15 THEN '예빈루돌프'
+--   ELSE nickname
+-- END
+-- WHERE member_idx IN (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
+
+
 ################# 커뮤니티 글 등록 ##################
-INSERT INTO tb_community (
-    member_idx, category_id, title, content, view_count, reg_date, mod_date, del_yn
-) VALUES
-(1, 'COMMU001', 'SNS 마케팅 노하우 공유합니다', '인스타그램 운영 팁과 노출 노하우를 정리해봤어요.', 34, DATE_SUB(NOW(), INTERVAL 0 DAY), NULL, 'N'),
-(8, 'COMMU001', '고객 응대 매뉴얼 공유', '리뷰 대응할 때 효과적인 방법을 정리했습니다.', 21, DATE_SUB(NOW(), INTERVAL 1 DAY), NULL, 'N'),
-(7, 'COMMU002', '오늘 가게에 귀여운 손님이 왔어요', '강아지를 데리고 온 손님 덕분에 하루 종일 기분 좋았어요.', 56, DATE_SUB(NOW(), INTERVAL 2 DAY), NULL, 'N'),
-(14, 'COMMU002', '요즘 날씨가 좋아서 테라스 장사 대박', '봄 날씨에 테라스 자리에 손님이 가득하네요.', 18, DATE_SUB(NOW(), INTERVAL 3 DAY), NULL, 'N'),
-(9, 'COMMU003', '배달 앱 수수료 줄이는 팁 있을까요?', '배달의민족 수수료가 너무 부담입니다. 다들 어떻게 하고 계신가요?', 44, DATE_SUB(NOW(), INTERVAL 4 DAY), NULL, 'N'),
-(17, 'COMMU003', '간판 제작 업체 추천 부탁드립니다', '저렴하면서 퀄리티 좋은 간판 업체 아시는 분 계실까요?', 12, DATE_SUB(NOW(), INTERVAL 5 DAY), NULL, 'N'),
-(20, 'COMMU004', '5월 커뮤니티 활동 이벤트 안내', '활동 많은 회원 분들께 소정의 상품을 드립니다.', 89, DATE_SUB(NOW(), INTERVAL 6 DAY), NULL, 'N'),
-(26, 'COMMU004', '신규 기능 안내: 댓글 알림 도입', '이제 댓글이 달리면 알림으로 받아보실 수 있어요.', 35, DATE_SUB(NOW(), INTERVAL 7 DAY), NULL, 'N'),
-(23, 'COMMU002', '오늘도 가게 셀프 오픈했어요', '직원 없이 혼자 운영하니 점점 익숙해지네요.', 23, DATE_SUB(NOW(), INTERVAL 8 DAY), NULL, 'N'),
-(10, 'COMMU001', '매출 관리 엑셀 양식 공유', '월별 정산에 도움이 되는 템플릿 공유합니다.', 40, DATE_SUB(NOW(), INTERVAL 9 DAY), NULL, 'N');
+-- INSERT INTO tb_community (
+--     member_idx, category_id, title, content, view_count, reg_date, mod_date, del_yn
+-- ) VALUES
+-- (1, 'COMMU001', 'SNS 마케팅 노하우 공유합니다', '인스타그램 운영 팁과 노출 노하우를 정리해봤어요.', 34, DATE_SUB(NOW(), INTERVAL 0 DAY), NULL, 'N'),
+-- (2, 'COMMU001', '고객 응대 매뉴얼 공유', '리뷰 대응할 때 효과적인 방법을 정리했습니다.', 21, DATE_SUB(NOW(), INTERVAL 1 DAY), NULL, 'N'),
+-- (3, 'COMMU002', '오늘 가게에 귀여운 손님이 왔어요', '강아지를 데리고 온 손님 덕분에 하루 종일 기분 좋았어요.', 56, DATE_SUB(NOW(), INTERVAL 2 DAY), NULL, 'N'),
+-- (4, 'COMMU002', '요즘 날씨가 좋아서 테라스 장사 대박', '봄 날씨에 테라스 자리에 손님이 가득하네요.', 18, DATE_SUB(NOW(), INTERVAL 3 DAY), NULL, 'N'),
+-- (5, 'COMMU003', '배달 앱 수수료 줄이는 팁 있을까요?', '배달의민족 수수료가 너무 부담입니다. 다들 어떻게 하고 계신가요?', 44, DATE_SUB(NOW(), INTERVAL 4 DAY), NULL, 'N'),
+-- (6, 'COMMU003', '간판 제작 업체 추천 부탁드립니다', '저렴하면서 퀄리티 좋은 간판 업체 아시는 분 계실까요?', 12, DATE_SUB(NOW(), INTERVAL 5 DAY), NULL, 'N'),
+-- (7, 'COMMU004', '5월 커뮤니티 활동 이벤트 안내', '활동 많은 회원 분들께 소정의 상품을 드립니다.', 89, DATE_SUB(NOW(), INTERVAL 6 DAY), NULL, 'N'),
+-- (8, 'COMMU004', '신규 기능 안내: 댓글 알림 도입', '이제 댓글이 달리면 알림으로 받아보실 수 있어요.', 35, DATE_SUB(NOW(), INTERVAL 7 DAY), NULL, 'N'),
+-- (9, 'COMMU002', '오늘도 가게 셀프 오픈했어요', '직원 없이 혼자 운영하니 점점 익숙해지네요.', 23, DATE_SUB(NOW(), INTERVAL 8 DAY), NULL, 'N'),
+-- (10, 'COMMU001', '매출 관리 엑셀 양식 공유', '월별 정산에 도움이 되는 템플릿 공유합니다.', 40, DATE_SUB(NOW(), INTERVAL 9 DAY), NULL, 'N');
+-- INSERT INTO tb_community (
+--     member_idx, category_id, title, content, view_count, reg_date, mod_date, del_yn
+-- ) VALUES
+-- (11, 'COMMU001', 'SNS 해시태그 전략 공유', '노출을 늘리는 해시태그 조합 방법에 대해 공유합니다.', 27, DATE_SUB(NOW(), INTERVAL 10 DAY), NULL, 'N'),
+-- (12, 'COMMU002', '손님 아이 돌잔치 후기', '돌잔치를 가게에서 진행했는데 분위기가 너무 좋았어요.', 65, DATE_SUB(NOW(), INTERVAL 11 DAY), NULL, 'N'),
+-- (13, 'COMMU003', '주방 인덕션 추천 부탁드려요', '가성비 좋은 인덕션 제품이 있을까요?', 19, DATE_SUB(NOW(), INTERVAL 12 DAY), NULL, 'N'),
+-- (14, 'COMMU004', '신규 회원을 위한 커뮤니티 가이드', '처음 방문하신 분들을 위한 이용 안내입니다.', 75, DATE_SUB(NOW(), INTERVAL 13 DAY), NULL, 'N'),
+-- (15, 'COMMU001', '인플루언서 협업 후기', '최근 진행한 체험단 캠페인의 성과를 공유합니다.', 38, DATE_SUB(NOW(), INTERVAL 14 DAY), NULL, 'N'),
+-- (1, 'COMMU002', '가게 인테리어 셀프 리모델링 후기', '직접 인테리어 작업한 후기를 공유드려요.', 51, DATE_SUB(NOW(), INTERVAL 15 DAY), NULL, 'N'),
+-- (2, 'COMMU003', '카드 단말기 수수료 고민', '단말기 수수료가 비싸서 다른 방법 고민 중입니다.', 29, DATE_SUB(NOW(), INTERVAL 16 DAY), NULL, 'N'),
+-- (3, 'COMMU004', '이달의 인기글 선정 기준 안내', '인기글 선정 기준과 혜택을 알려드립니다.', 80, DATE_SUB(NOW(), INTERVAL 17 DAY), NULL, 'N'),
+-- (4, 'COMMU002', '점심 장사 꿀팁 공유', '짧은 시간에 많은 손님을 응대하는 노하우입니다.', 33, DATE_SUB(NOW(), INTERVAL 18 DAY), NULL, 'N'),
+-- (5, 'COMMU001', '리뷰 이벤트 아이디어 나눔', '참여율 높은 리뷰 이벤트 사례를 공유합니다.', 42, DATE_SUB(NOW(), INTERVAL 19 DAY), NULL, 'N');
+-- INSERT INTO tb_community (
+--     member_idx, category_id, title, content, view_count, reg_date, mod_date, del_yn
+-- ) VALUES
+-- (16, 'COMMU003', '현금영수증 발행 기준 문의', '소액 결제 시에도 꼭 발행해야 하나요? 경험 공유 부탁드려요.', 17, DATE_SUB(NOW(), INTERVAL 20 DAY), NULL, 'N'),
+-- (17, 'COMMU002', '비 오는 날 매장 분위기 최고였어요', '조용히 음악 틀고 분위기 있게 운영했더니 손님 반응이 좋았어요.', 48, DATE_SUB(NOW(), INTERVAL 21 DAY), NULL, 'N');
+
+

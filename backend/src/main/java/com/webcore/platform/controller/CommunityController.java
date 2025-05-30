@@ -2,6 +2,7 @@ package com.webcore.platform.controller;
 
 import com.webcore.platform.domain.CommunityDTO;
 import com.webcore.platform.domain.CustomUser;
+import com.webcore.platform.response.CommunityListResponseDTO;
 import com.webcore.platform.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +28,9 @@ public class CommunityController {
 
     /** 커뮤니티 리스트 목록*/
     @GetMapping("")
-    public ResponseEntity<?> getCommunityList(CommunityDTO communityDTO,
-                                              @AuthenticationPrincipal CustomUser customUser){
+    public ResponseEntity<?> getCommunityList(CommunityDTO communityDTO){
         log.info("/api/community [Request] => {}",communityDTO.toString());
-        List<CommunityDTO> communityList = communityService.selectCommunityList(communityDTO);
+        List<CommunityListResponseDTO> communityList = communityService.selectCommunityList(communityDTO);
         log.info("게시글 전체 목록 => {}", communityList);
 
         if(communityList==null || communityList.isEmpty()){

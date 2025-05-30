@@ -5,6 +5,12 @@
 -- create database capstone;
 -- use capstone;
 -- drop database capstone;
+
+# 전체 테이블 삭제 명령어 조회
+-- SELECT CONCAT('DROP TABLE IF EXISTS `', table_name, '`;')
+-- FROM information_schema.tables
+-- WHERE table_schema = 'capstone';
+
 ######################### 회원 테이블 시작 ######################
 -- 회원 테이블 삭제
 -- drop table tb_member;
@@ -75,7 +81,7 @@ create table tb_member_auth (
 -- 리뷰어 프로필
 create table tb_reviewer_profile (
 	member_idx		int			not null comment '회원 고유번호',
-	nickname		varchar(60)	null comment '회원 닉네임',
+	nickname		varchar(60)	not null comment '회원 닉네임',
 	gender			char(1)		null comment '성별',
 	birth_date		varchar(10)	null comment '생년월일',
 	activity_area	varchar(30)	null comment '활동지역',

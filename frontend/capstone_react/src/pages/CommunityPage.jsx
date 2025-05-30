@@ -1,7 +1,14 @@
 // src/pages/CommunityPage.jsx
 import React, { useState, useEffect,useContext } from "react";
 import { AppContext } from "../contexts/AppContext";
-import { fetchCommunityPosts } from "../api/communityApi";     
+import { fetchCommunityPosts } from "../api/communityApi";
+
+const categoryColorMap = {
+  COMMU001: "#FDD835",
+  COMMU002: "#4DB6AC",
+  COMMU003: "#7986CB",
+  COMMU004: "#FF8A65"
+};
 
 export default function CommunityPage() {
   const [posts, setPosts] = useState([]);
@@ -10,10 +17,10 @@ export default function CommunityPage() {
   const { token } = useContext(AppContext);
 
   const params = { // 이거 나중에 수정
-  searchKeyword: '',
-  searchCondition: '',
-  start: 0,
-  end: 10,
+    searchKeyword: '',
+    searchCondition: '',
+    start: 0,
+    end: 10,
   };
 
   const queryString = new URLSearchParams(params).toString();
@@ -88,29 +95,45 @@ export default function CommunityPage() {
             </tr>
           </thead>
           <tbody>
-            {posts.map((post) => (
-              <tr
-                key={post.communityIdx}
-                className="hover:bg-gray-50 border-b-2 h-[70px] text-[15px]"
-              >
-                <td className={`py-2 font-bold ${post.categoryColor}`}>
-                  {post.categoryId}
-                </td>
-                <td>
-                  {post.title}
-                  <span className="text-red-500 ml-1">[10]</span>
-                </td>
-                <td>
-                  <span className="text-gray-800">{post.memberIdx}</span>
-                  {/* <span className="text-xs bg-red-500 text-white px-1 rounded ml-1">
-                    th
-                  </span> */}
-                </td>
-                <td>{post.regDate}</td>
-                <td>{post.viewCount}</td>
-                <td>55</td>
-              </tr>
-            ))}
+            {posts.map((post) => {
+              const categoryColor = categoryColorMap[post.categoryId]; // 기본색 회색
+
+              return (
+                <tr
+                  key={post.communityIdx}
+                  className="hover:bg-gray-50 border-b-2 h-[70px] text-[15px]"
+                >
+                  <td className="py-2 font-bold">
+                    <span
+                      className="px-2 py-1 rounded-full text-white text-xs"
+                      style={{ color: categoryColor }}
+                    >
+                      {post.codeNm}
+                    </span>
+                  </td>
+                  <td>
+                    {post.title}
+                    {/* <span className="text-red-500 ml-1">[10]</span> */}
+                  </td>
+                  <td>
+                    <span className="text-gray-800">{post.writerName}</span>
+                    {post.auth === 'ROLE_OWNER' && (
+                      <span className="ml-2 text-xs font-semibold text-white bg-cyan-400 px-1 rounded">
+                        소
+                      </span>
+                    )}
+                    {post.auth === 'ROLE_USER' && (
+                      <span className="ml-2 text-xs font-semibold text-white bg-lime-500 px-1 rounded">
+                        리
+                      </span>
+                    )}
+                  </td>
+                  <td>{new Date(post.regDate).toLocaleDateString()}</td>
+                  <td>{post.viewCount}</td>
+                  <td>0</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
