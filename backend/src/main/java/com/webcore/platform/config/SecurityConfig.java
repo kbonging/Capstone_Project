@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +20,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Slf4j
 @Configuration
@@ -56,38 +62,39 @@ public class SecurityConfig {
         // CSRF 공격 방어 기능 비활성화
         http.csrf((csrf) -> csrf.disable());
 
+        http.cors(Customizer.withDefaults());
+
         // 필터 설정
         http.addFilterAt(new JwtAuthenticationFilter(authenticationManager, jwtTokenProvider)
                         , UsernamePasswordAuthenticationFilter.class)
 
                 .addFilterBefore(new JwtRequestFilter(jwtTokenProvider)
-                        , UsernamePasswordAuthenticationFilter.class)
-        ;
+                        , UsernamePasswordAuthenticationFilter.class);
+
 
         // 인가 설정
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // 정적 자원 허용 (필요 시)
                         .requestMatchers("/").permitAll()
+                        //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 이게 없으면 OPTIONS가 막힙니다 (필요없을 수도)
                         .requestMatchers("/login").permitAll()
-
-                        .requestMatchers("/members/**").permitAll()
+                        // 테스트 설정
+                        .requestMatchers("/api/test").permitAll()
+                        // 공통(common)
+                        .requestMatchers("/api/common", "/api/common/**").permitAll()
                         // 리뷰어
                         .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 리뷰어 회원가입은 누구나 가능 (POST)
                         .requestMatchers("/api/reviewer", "/api/reviewer/**").hasRole("USER") // 회원 가입 제외 모든 경로는 권한 필요
-
                         // 소상공인
                         .requestMatchers(HttpMethod.POST, "/api/owner").permitAll() // 소상공인 회원가입은 누구나 가능 (POST)
                         .requestMatchers("/api/owner", "/api/owner/**").hasRole("OWNER") // 회원 가입 제외 모든 경로는 권한 필요
-
                         // 커뮤니티
-                        //.requestMatchers("/api/community", "/api/community/**").permitAll() // [임시] 커뮤니티 관련 페이지 모두 가능 (POST)
                         .requestMatchers("/api/community", "/api/community/**") // 커뮤니티 모든 경로는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")
-                        //.permitAll()
 
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated() // 모든 요청은 인증된 사용자만 접근 가능하다.
         );
 
         // 인증 방식 설정 (커스텀)
@@ -102,5 +109,18 @@ public class SecurityConfig {
         return authenticationManager;
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173")); // React dev 서버 주소
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        //config.setExposedHeaders(List.of("Authorization"));// (필요없을 수도)
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
 }

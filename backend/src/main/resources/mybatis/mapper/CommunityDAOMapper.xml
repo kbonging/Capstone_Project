@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webcore.platform.dao.CommunityDAO">
+
+    <!--게시글 조회 ResultMap-->
+    <resultMap id="CommunityResultMap" type="com.webcore.platform.response.CommunityListResponseDTO">
+        <id property="communityIdx" column="community_idx" />
+        <result property="memberIdx" column="member_idx" />
+        <result property="categoryId" column="category_id" />
+        <result property="codeNm" column="code_nm" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="viewCount" column="view_count" />
+        <result property="regDate" column="reg_date" />
+        <result property="auth" column="auth" />
+        <result property="writerName" column="writer_name" />
+    </resultMap>
+
+    <!-- 검색키워드가 있을경우 -->
+    <sql id="searchWhere">
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchCondition != null and searchCondition != ''">
+                    AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <otherwise>
+                    AND (title LIKE CONCAT('%', #{searchKeyword}, '%')
+                    OR content LIKE CONCAT('%', #{searchKeyword}, '%'))
+                </otherwise>
+            </choose>
+        </if>
+
+        <if test="categoryId != null and categoryId != ''">
+            AND category_id = #{categoryId}
+        </if>
+    </sql>
+<!--    &lt;!&ndash; 검색키워드 와 카테고리가 있을경우 &ndash;&gt;-->
+<!--    <sql id="searchWhere_Category">-->
+<!--        <if test="searchKeyword != null">-->
+<!--            and ${search_target} like CONCAT('%','${search_keyword}','%')-->
+<!--        </if>-->
+<!--    </sql>-->
+
+    <select id="selectCommunityList" parameterType="com.webcore.platform.domain.CommunityDTO" resultMap="CommunityResultMap">
+        SELECT
+            cm.community_idx,
+            cm.member_idx,
+            cm.category_id,
+            cc.code_nm,
+            cm.title,
+            cm.content,
+            cm.view_count,
+            cm.reg_date,
+            ma.auth,
+            CASE
+                WHEN ma.auth = 'ROLE_USER' THEN rp.nickname
+                WHEN ma.auth = 'ROLE_OWNER' THEN op.business_name
+                WHEN ma.auth = 'ROLE_ADMIN' THEN m.member_name
+            ELSE '알 수 없음'
+        END AS writer_name
+        FROM tb_community cm
+        JOIN tb_member m ON cm.member_idx = m.member_idx
+        JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
+        JOIN tb_common_code cc ON cm.category_id=cc.code_id
+        LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
+        LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
+        WHERE cm.del_yn='N'
+        <include refid="searchWhere"></include>
+        ORDER BY cm.reg_date DESC
+        <!--LIMIT #{start}, #{end}-->
+    </select>
+
+    <select id="getCommunityByIdx" parameterType="int" resultType="com.webcore.platform.domain.CommunityDTO">
+        SELECT COMMUNITY_IDX, MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, VIEW_COUNT, CONTENT, VIEW_COUNT, REG_DATE, MOD_DATE, DEL_YN
+        FROM TB_COMMUNITY
+        WHERE COMMUNITY_IDX = #{communityIdx};
+    </select>
+
+    <insert id="insertCommunity" parameterType="com.webcore.platform.domain.CommunityDTO"
+            useGeneratedKeys="true" keyProperty="communityIdx">
+        INSERT INTO TB_COMMUNITY (MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, REG_DATE)
+        VALUES (#{memberIdx}, #{categoryId}, #{title}, #{content}, NOW());
+    </insert>
+
+    <update id="deleteCommunity" parameterType="com.webcore.platform.domain.CommunityDTO">
+        UPDATE TB_COMMUNITY
+        SET
+            DEL_YN = 'Y',
+            MOD_DATE = NOW()
+        WHERE COMMUNITY_IDX = #{communityIdx}
+            AND MEMBER_IDX = #{memberIdx};
+    </update>
+
+    <update id="updateCommunity" parameterType="com.webcore.platform.domain.CommunityDTO">
+        UPDATE TB_COMMUNITY
+        SET
+            CATEGORY_ID = #{categoryId},
+            TITLE = #{title},
+            CONTENT = #{content},
+            MOD_DATE = NOW()
+        WHERE COMMUNITY_IDX = #{communityIdx}
+            AND MEMBER_IDX = #{memberIdx}
+            AND DEL_YN='N';
+    </update>
+</mapper>

@@ -36,4 +36,9 @@ public class OwnerServiceImpl implements OwnerService{
         // 3. 소상공인 프로필 등록
         ownerDAO.insertOwnerProfile(ownerDTO);
     }
+
+    @Override
+    public OwnerDTO selectOwnerByIdx(int memberIdx) {
+        return ownerDAO.selectOwnerByIdx(memberIdx);
+    }
 }

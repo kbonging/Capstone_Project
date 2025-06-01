@@ -4,29 +4,24 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.webcore.platform.dao.MemberDAO">
-    <!--(현재 사용 안함 수정예정)-->
-<!--    <resultMap id="memberResultMap" type="com.webcore.platform.domain.MemberDTO" >-->
-<!--        <id property="memberIdx" column="MEMBER_IDX"/>-->
-<!--        <result property="memberId" column="MEMBER_ID"/>-->
-<!--        <result property="memberPwd" column="MEMBER_PWD"/>-->
-<!--        <result property="memberName" column="MEMBER_NAME"/>-->
-<!--        <result property="memberEmail" column="MEMBER_EMAIL"/>-->
-<!--        &lt;!&ndash;<result property="memberNickname" column="MEMBER_NICKNAME"/>-->
-<!--        <result property="profileImageUrl" column="PROFILE_IMAGE_URL"/>&ndash;&gt;-->
-
-<!--        &lt;!&ndash; DefaultDTO 필드 매핑 &ndash;&gt;-->
-<!--        <result property="searchCondition" column="SEARCH_CONDITION"/>-->
-<!--        <result property="searchKeyword" column="SEARCH_KEYWORD"/>-->
-<!--        <result property="regDate" column="REG_DATE"/>-->
-<!--        <result property="modDate" column="MOD_DATE"/>-->
-<!--        <result property="delYn" column="DEL_YN"/>-->
-
-<!--        &lt;!&ndash; 권한 목록 &ndash;&gt;-->
-<!--        <collection property="authDTOList" ofType="com.webcore.platform.domain.MemberAuthDTO">-->
-<!--            <result property="authIdx" column="AUTH_IDX"/>-->
-<!--            <result property="auth" column="AUTH"/>-->
-<!--        </collection>-->
-<!--    </resultMap>-->
+    <!--MemberResultMap-->
+    <resultMap id="MemberResultMap" type="com.webcore.platform.domain.MemberDTO" >
+        <id property="memberIdx" column="member_idx"/>
+        <result property="memberId" column="member_id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="memberEmail" column="member_email"/>
+        <result property="memberPhone" column="member_phone"/>
+        <result property="profileImgUrl" column="profile_image"/>
+        <result property="intro" column=""/>
+        <result property="heartCount" column=""/>
+        <result property="penalty" column=""/>
+        <result property="delYn" column="DEL_YN"/>
+        <!--권한 목록-->
+        <collection property="authDTOList" ofType="com.webcore.platform.domain.MemberAuthDTO">
+            <result property="authIdx" column="auth_idx"/>
+            <result property="auth" column="auth"/>
+        </collection>
+    </resultMap>
 
     <!--로그인 resultMap-->
     <resultMap id="loginResultMap" type="com.webcore.platform.domain.MemberDTO" >
@@ -50,6 +45,14 @@
         FROM TB_MEMBER M LEFT JOIN TB_MEMBER_AUTH A
         ON M.member_idx = A.member_idx
         WHERE M.member_id = #{memberId} AND M.del_yn = 'N';
+    </select>
+
+    <!--회원 고유 번호로 회원 정보 조회-->
+    <select id="selectMemberById" parameterType="java.lang.Integer" resultMap="MemberResultMap">
+        select mb.member_idx, mb.member_id, mb.member_name, au.auth , member_email, profile_img_url, intro, heart_count, penalty, mb.del_yn
+        FROM tb_member mb JOIN tb_member_auth au
+        ON mb.member_idx = au.member_idx
+        WHERE mb.member_idx=#{memberIdx} AND mb.del_yn='N';
     </select>
 
     <!-- 공통 회원 정보 등록 -->

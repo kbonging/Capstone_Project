@@ -18,4 +18,9 @@ public class DefaultDTO {
     private String modDate;
     /** 삭제여부 */
     private String delYn;
+
+    /** 페이징: 시작 인덱스 */
+    private int start;
+    /** 페이징: 조회 개수 */
+    private int end;
 }

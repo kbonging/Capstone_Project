@@ -10,4 +10,6 @@ public interface ReviewerDAO {
     void insertReviewerProfile(ReviewerDTO reviewerDTO);
     /** 리뷰어 채널 등록 */
     void insertReviewerChannel(ReviewerChannelDTO channelDTO);
+    /** 회원 고유번호로 리뷰어 정보 조회 */
+    ReviewerDTO selectReviewerByIdx(int memberIdx);
 }

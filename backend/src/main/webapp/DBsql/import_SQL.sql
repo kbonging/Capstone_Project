@@ -5,6 +5,13 @@
 -- create database capstone;
 -- use capstone;
 -- drop database capstone;
+
+# 전체 테이블 삭제 명령어 조회
+-- SELECT CONCAT('DROP TABLE IF EXISTS `', table_name, '`;')
+-- FROM information_schema.tables
+-- WHERE table_schema = 'capstone';
+
+
 ######################### 회원 테이블 시작 ######################
 -- 회원 테이블 삭제
 -- drop table tb_member;
@@ -40,7 +47,7 @@ create table tb_common_code (
 	group_sort		int 			null default 0 comment '그룹 정렬 순서',
 	sort			int			null default 0 comment '정렬 순서',
 	code_dc			varchar(255)	null comment '코드 설명',
-	del_yn			char(1)			not null default 'n' comment '삭제 여부(y/n)',
+	del_yn			char(1)			not null default 'N' comment '삭제 여부(Y/N)',
 	reg_date		datetime		not null comment '가입일시',
 	mod_date		datetime		null comment '수정일시'
 )comment='공통 코드 테이블';
@@ -57,7 +64,7 @@ create table tb_member (
 	intro			text		null comment '소개글',
 	heart_count		int			null default 0 comment '하트수',
 	penalty			int			null default 0 comment '패널티',
-	del_yn			char(1)			not null default 'n' comment '삭제 여부(y/n)',
+	del_yn			char(1)			not null default 'N' comment '삭제 여부(Y/N)',
 	reg_date		datetime		not null comment '가입일시',
 	mod_date		datetime		null comment '수정일시'
 ) COMMENT='공통 회원 정보 테이블';
@@ -75,7 +82,7 @@ create table tb_member_auth (
 -- 리뷰어 프로필
 create table tb_reviewer_profile (
 	member_idx		int			not null comment '회원 고유번호',
-	nickname		varchar(60)	null comment '회원 닉네임',
+	nickname		varchar(60)	not null comment '회원 닉네임',
 	gender			char(1)		null comment '성별',
 	birth_date		varchar(10)	null comment '생년월일',
 	activity_area	varchar(30)	null comment '활동지역',
@@ -117,6 +124,7 @@ create table tb_owner_profile (
 ) COMMENT='소상공인 프로필 테이블';
 
 -- 커뮤니티 테이블
+-- DROP TABLE tb_community;
 CREATE TABLE tb_community (
     community_idx   INT AUTO_INCREMENT PRIMARY KEY 	COMMENT '커뮤니티 고유번호',
     member_idx      INT NOT NULL 					COMMENT '회원 고유번호',
@@ -124,7 +132,6 @@ CREATE TABLE tb_community (
     title           VARCHAR(255) NOT NULL 			COMMENT '제목',
     content         TEXT NOT NULL 					COMMENT '내용',
     view_count      INT NOT NULL DEFAULT 0 			COMMENT '조회수',
-    like_count      INT NOT NULL DEFAULT 0 			COMMENT '좋아요 수',
     reg_date        DATETIME NOT NULL 				COMMENT '등록일',
     mod_date        DATETIME DEFAULT NULL 			COMMENT '수정일',
     del_yn          CHAR(1) NOT NULL DEFAULT 'N' 	COMMENT '삭제 여부 (Y/N)',
