@@ -12,4 +12,6 @@ public interface MemberDAO {
     int insertMember(MemberDTO memberDTO);
     /** 권한 등록 */
     int insertMemberAuth(MemberAuthDTO memberAuthDTO);
+    /** 회원 고유번호로 정보 조회 */
+    MemberDTO selectMemberById(int memberIdx);
 }

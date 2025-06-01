@@ -79,29 +79,22 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 이게 없으면 OPTIONS가 막힙니다 (필요없을 수도)
                         .requestMatchers("/login").permitAll()
-
                         // 테스트 설정
                         .requestMatchers("/api/test").permitAll()
-
-                        // 공통 회원
-
+                        // 공통(common)
+                        .requestMatchers("/api/common", "/api/common/**").permitAll()
                         // 리뷰어
                         .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 리뷰어 회원가입은 누구나 가능 (POST)
                         .requestMatchers("/api/reviewer", "/api/reviewer/**").hasRole("USER") // 회원 가입 제외 모든 경로는 권한 필요
-
                         // 소상공인
                         .requestMatchers(HttpMethod.POST, "/api/owner").permitAll() // 소상공인 회원가입은 누구나 가능 (POST)
                         .requestMatchers("/api/owner", "/api/owner/**").hasRole("OWNER") // 회원 가입 제외 모든 경로는 권한 필요
-
                         // 커뮤니티
-                        //.requestMatchers("/api/community", "/api/community/**").permitAll() // [임시] 커뮤니티 관련 페이지 모두 가능 (POST)
                         .requestMatchers("/api/community", "/api/community/**") // 커뮤니티 모든 경로는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")
-                        //.permitAll()
-
 
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated() // 모든 요청은 인증된 사용자만 접근 가능하다.
         );
 
         // 인증 방식 설정 (커스텀)

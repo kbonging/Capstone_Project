@@ -30,6 +30,9 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public Object loadUserInfoByMemberIdx(int memberIdx, List<MemberAuthDTO> authList) {
+        if(authList.stream().anyMatch(auth -> AuthRole.ADMIN.equals(auth.getAuth()))){
+            return memberDAO.selectMemberById(memberIdx);
+        }
         if (authList.stream().anyMatch(auth -> AuthRole.REVIEWER.equals(auth.getAuth()))) {
             return reviewerService.selectReviewerByIdx(memberIdx);
         }

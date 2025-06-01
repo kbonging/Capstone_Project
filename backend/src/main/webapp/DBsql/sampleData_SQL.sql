@@ -139,6 +139,12 @@ select * from TB_COMMON_CODE where del_yn='N' order by group_sort, sort asc;
 select * from tb_common_code where del_yn='n' order by group_sort, sort asc;
 -- update tb_common_code set group_code='' where code_id='INF_TYPE';
 
+####### 관리자 계정 등록 ##############
+INSERT INTO tb_member (member_id, member_pwd, member_name, member_email, member_phone, reg_date)
+VALUES ('superadmin','$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS', '리보리', 'revoryadmin@revory.com', '010-1111-9999', NOW());
+## 권한 등록
+INSERT INTO tb_member_auth(member_idx, auth) values(29, 'ROLE_ADMIN');
+
 ################ 리뷰어 회원가입 ################
 # 리뷰어 회원 가입 시 아래 쿼리문 동시 insert #
 INSERT INTO tb_member (member_id, member_pwd, member_name, member_email, member_phone, reg_date)
