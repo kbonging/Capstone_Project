@@ -111,4 +111,39 @@ WHERE cm.del_yn='N'
 ORDER BY cm.reg_date DESC
 LIMIT 0, 1000;
 
+####커뮤니티 상세 조회#####
+SELECT
+	cm.community_idx,
+	cm.member_idx,
+	cm.category_id,
+	cc.code_nm,
+	cm.title,
+	cm.content,
+	cm.view_count,
+	cm.reg_date,
+	cm.mod_date,
+	(
+		SELECT COUNT(*)
+		FROM tb_like l
+		WHERE l.community_idx = cm.community_idx
+	) AS like_count,
+	ma.auth,
+	CASE
+		WHEN ma.auth = 'ROLE_USER' THEN rp.nickname
+		WHEN ma.auth = 'ROLE_OWNER' THEN op.business_name
+		WHEN ma.auth = 'ROLE_ADMIN' THEN m.member_name
+		ELSE '알 수 없음'
+	END AS writer_name
+FROM tb_community cm
+JOIN tb_member m ON cm.member_idx = m.member_idx
+JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
+JOIN tb_common_code cc ON cm.category_id = cc.code_id
+LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
+LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
+WHERE cm.community_idx = 2
+	AND cm.del_yn = 'N';
 
+###### 조회수 증가 ########
+        UPDATE tb_community
+        SET view_count = view_count + 1
+        WHERE community_idx = 2;
