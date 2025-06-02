@@ -2,10 +2,12 @@ package com.webcore.platform.service;
 
 import com.webcore.platform.dao.CommunityDAO;
 import com.webcore.platform.domain.CommunityDTO;
+import com.webcore.platform.response.CommunityDetailResponseDTO;
 import com.webcore.platform.response.CommunityListResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,8 +22,10 @@ public class CommunityServiceImpl implements CommunityService {
         return communityDAO.selectCommunityList(communityDTO);
     }
 
+    @Transactional
     @Override
-    public CommunityDTO getCommunityByIdx(int communityIdx) {
+    public CommunityDetailResponseDTO getCommunityByIdx(int communityIdx) {
+        communityDAO.increaseViewCount(communityIdx);
         return communityDAO.getCommunityByIdx(communityIdx);
     }
 

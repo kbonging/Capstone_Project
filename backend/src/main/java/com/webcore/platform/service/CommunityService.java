@@ -1,6 +1,7 @@
 package com.webcore.platform.service;
 
 import com.webcore.platform.domain.CommunityDTO;
+import com.webcore.platform.response.CommunityDetailResponseDTO;
 import com.webcore.platform.response.CommunityListResponseDTO;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public interface CommunityService {
     List<CommunityListResponseDTO> selectCommunityList(CommunityDTO communityDTO);
 
     /** 커뮤니티  글 상세정보 */
-    CommunityDTO getCommunityByIdx(int communityIdx);
+    CommunityDetailResponseDTO getCommunityByIdx(int communityIdx);
 
     /** 커뮤니티 글 등록 */
     int createPost(CommunityDTO communityDTO);

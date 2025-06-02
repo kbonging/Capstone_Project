@@ -73,11 +73,59 @@
         <!--LIMIT #{start}, #{end}-->
     </select>
 
-    <select id="getCommunityByIdx" parameterType="int" resultType="com.webcore.platform.domain.CommunityDTO">
-        SELECT COMMUNITY_IDX, MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, VIEW_COUNT, CONTENT, VIEW_COUNT, REG_DATE, MOD_DATE, DEL_YN
-        FROM TB_COMMUNITY
-        WHERE COMMUNITY_IDX = #{communityIdx};
+    <!-- 게시글 상세 페이지 조회-->
+    <resultMap id="CommunityDetailResultMap" type="com.webcore.platform.response.CommunityDetailResponseDTO">
+        <id property="communityIdx" column="community_idx" />
+        <result property="categoryId" column="category_id" />
+        <result property="categoryName" column="code_nm" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="viewCount" column="view_count" />
+        <result property="likeCount" column="like_count" />
+        <result property="auth" column="auth" />
+        <result property="writerName" column="writer_name" />
+        <result property="regDate" column="reg_date" />
+        <result property="modeDate" column="mod_date" />
+    </resultMap>
+
+    <select id="getCommunityByIdx" parameterType="int" resultMap="CommunityDetailResultMap">
+        SELECT
+            cm.community_idx,
+            cm.member_idx,
+            cm.category_id,
+            cc.code_nm,
+            cm.title,
+            cm.content,
+            cm.view_count,
+            cm.reg_date,
+            cm.mod_date,
+            (
+                SELECT COUNT(*)
+                FROM tb_like l
+                WHERE l.community_idx = cm.community_idx
+            ) AS like_count,
+            ma.auth,
+            CASE
+                WHEN ma.auth = 'ROLE_USER' THEN rp.nickname
+                WHEN ma.auth = 'ROLE_OWNER' THEN op.business_name
+                WHEN ma.auth = 'ROLE_ADMIN' THEN m.member_name
+                ELSE '알 수 없음'
+            END AS writer_name
+        FROM tb_community cm
+        JOIN tb_member m ON cm.member_idx = m.member_idx
+        JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
+        JOIN tb_common_code cc ON cm.category_id = cc.code_id
+        LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
+        LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
+        WHERE cm.community_idx = #{communityIdx}
+            AND cm.del_yn = 'N'
     </select>
+
+    <update id="increaseViewCount">
+        UPDATE tb_community
+        SET view_count = view_count + 1
+        WHERE community_idx = #{communityIdx}
+    </update>
 
     <insert id="insertCommunity" parameterType="com.webcore.platform.domain.CommunityDTO"
             useGeneratedKeys="true" keyProperty="communityIdx">

@@ -2,6 +2,7 @@ package com.webcore.platform.controller;
 
 import com.webcore.platform.domain.CommunityDTO;
 import com.webcore.platform.domain.CustomUser;
+import com.webcore.platform.response.CommunityDetailResponseDTO;
 import com.webcore.platform.response.CommunityListResponseDTO;
 import com.webcore.platform.service.CommunityService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,15 @@ public class CommunityController {
         return new ResponseEntity<>(communityList, HttpStatus.OK);
     }
 
+    /** 커뮤니티 상세페이지 + 조회수 증가*/
+    @GetMapping("/{communityIdx}")
+    public ResponseEntity<?> getCommunityDetail(@PathVariable int communityIdx) {
+        log.info("/api/community [Request] => {}",communityIdx);
+        CommunityDetailResponseDTO communityDetail = communityService.getCommunityByIdx(communityIdx);
+        log.info("게시글 상세 페이지 => {}", communityDetail);
+        return new ResponseEntity<>(communityDetail, HttpStatus.OK);
+    }
+
     // 커뮤니티 글 작성 (로그인한 유저만 가능)
     @PostMapping("")
     public ResponseEntity<?> createPost(@RequestBody CommunityDTO communityDTO,
@@ -59,7 +69,7 @@ public class CommunityController {
                                         @AuthenticationPrincipal CustomUser customUser) {
         int loginMemberIdx = customUser.getMemberDTO().getMemberIdx();
 
-        CommunityDTO post = communityService.getCommunityByIdx(communityIdx);
+        CommunityDetailResponseDTO post = communityService.getCommunityByIdx(communityIdx);
         if (post == null) {
             return new ResponseEntity<>("게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
         }
@@ -89,7 +99,7 @@ public class CommunityController {
                                         @AuthenticationPrincipal CustomUser customUser) {
         int loginMemberIdx = customUser.getMemberDTO().getMemberIdx();
 
-        CommunityDTO originalPost = communityService.getCommunityByIdx(communityIdx);
+        CommunityDetailResponseDTO originalPost = communityService.getCommunityByIdx(communityIdx);
 
         if(originalPost == null){
             return new ResponseEntity<>("게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
