@@ -21,7 +21,7 @@ public class CommonController {
     private final CommonService commonService;
 
     /** 그룹코드로 공통코드 목록 조회*/
-    @GetMapping("/{groupCode}")
+    @GetMapping("/code/{groupCode}")
     public ResponseEntity<?> getCommonCodeList(@PathVariable String groupCode){
         log.info("/api/common/{}", groupCode);
         List<CmmCodeDTO> cmmCodeDTOList = commonService.selectCmmCodeByGroupCode(groupCode);

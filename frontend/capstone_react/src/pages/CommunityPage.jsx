@@ -18,7 +18,7 @@ export default function CommunityPage() {
   const { token } = useContext(AppContext);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // 입력 상태
+  // ✅ 검색 조건 상태
   const [params, setParams] = useState({
     categoryId: searchParams.get("categoryId") || "",
     searchKeyword: searchParams.get("searchKeyword") || "",

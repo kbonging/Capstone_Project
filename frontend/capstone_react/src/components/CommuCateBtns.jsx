@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { fetchCommonCode } from "../api/commonApi";
 
 export default function CommuCateBtns({ selectedCategory, onCategoryChange}) {
-  //const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
   
   useEffect(()=>{
