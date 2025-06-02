@@ -32,10 +32,7 @@ public class CommunityController {
         log.info("/api/community [Request] => {}",communityDTO.toString());
         List<CommunityListResponseDTO> communityList = communityService.selectCommunityList(communityDTO);
         log.info("게시글 전체 목록 => {}", communityList);
-
-        if(communityList==null || communityList.isEmpty()){
-            return new ResponseEntity<>("조회된 게시글이 없습니다", HttpStatus.NO_CONTENT);
-        }
+        
         return new ResponseEntity<>(communityList, HttpStatus.OK);
     }
 

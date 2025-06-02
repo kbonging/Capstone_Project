@@ -21,7 +21,7 @@
 
     <!-- 검색키워드가 있을경우 -->
     <sql id="searchWhere">
-        <if test="searchKeyword != null">
+        <if test="searchKeyword != null and searchKeyword != ''">
             <choose>
                 <when test="searchCondition != null and searchCondition != ''">
                     AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
@@ -31,6 +31,10 @@
                     OR content LIKE CONCAT('%', #{searchKeyword}, '%'))
                 </otherwise>
             </choose>
+        </if>
+
+        <if test="categoryId != null and categoryId != ''">
+            AND category_id = #{categoryId}
         </if>
     </sql>
 <!--    &lt;!&ndash; 검색키워드 와 카테고리가 있을경우 &ndash;&gt;-->
@@ -54,7 +58,7 @@
             CASE
                 WHEN ma.auth = 'ROLE_USER' THEN rp.nickname
                 WHEN ma.auth = 'ROLE_OWNER' THEN op.business_name
-                WHEN ma.auth = 'ROLE_ADMIN' THEN "관리자"
+                WHEN ma.auth = 'ROLE_ADMIN' THEN m.member_name
             ELSE '알 수 없음'
         END AS writer_name
         FROM tb_community cm

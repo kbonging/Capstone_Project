@@ -16,4 +16,5 @@ public interface MemberService {
      * @return           역할에 따른 도메인 DTO (ReviewerDTO, OwnerDTO 등)
      */
     Object loadUserInfoByMemberIdx(int memberIdx, List<MemberAuthDTO> authList);
+
 }

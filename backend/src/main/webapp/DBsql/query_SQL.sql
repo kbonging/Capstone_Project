@@ -8,12 +8,22 @@ SELECT * FROM tb_owner_profile;
 
 ############## 공통 코드 조회 ###############
 select * from tb_common_code where del_yn='n' order by group_sort, sort asc;
-
+-- 그룹으로 조회
+SELECT code_id, group_code, code_nm, image_url, group_sort, sort, code_dc, del_yn 
+FROM tb_common_code
+WHERE group_code='COMMU_CATE' AND del_yn='N'
+ORDER BY group_sort, sort;
 ################ 로그인 요청 시 정보 조회 ################
 SELECT  M.member_idx, M.member_id, M.member_pwd, M.member_name, M.del_yn, A.auth_idx, A.auth
 FROM TB_MEMBER M LEFT JOIN TB_MEMBER_AUTH A 
 ON M.member_idx = A.member_idx
 WHERE M.member_id = 'apple75391' AND M.del_yn = 'N';
+
+############### 전체 회원 조회(관리자 조회할때 사용중) #############
+select mb.member_idx, mb.member_id, mb.member_name, au.auth , member_email, profile_img_url, intro, heart_count, penalty, mb.del_yn
+FROM tb_member mb JOIN tb_member_auth au
+ON mb.member_idx = au.member_idx
+WHERE mb.member_idx=29 AND mb.del_yn='N';
 
 ##************************************************##
 ##********************** 리뷰어 ********************##
@@ -46,6 +56,10 @@ JOIN tb_reviewer_channel rc
 ON mb.member_idx = rc.member_idx
 where mb.member_idx=1;
 
+update tb_member
+set member_name='김봉중'
+where member_idx=1;
+
 ##************************************************##
 ##********************* 소상공인 *******************##
 ##************************************************##
@@ -69,6 +83,7 @@ where mb.member_idx=25;
 ##************************************************##
 ##********************* 커뮤니티 *******************##
 ##************************************************##
+select * from tb_community;
 ##### 커뮤니티 글 전체 조회 #####
 SELECT
     cm.community_idx,
@@ -83,7 +98,7 @@ SELECT
     CASE
         WHEN ma.auth = 'ROLE_USER' THEN rp.nickname
         WHEN ma.auth = 'ROLE_OWNER' THEN op.business_name
-        WHEN ma.auth = 'ROLE_ADMIN' THEN "관리자"
+        WHEN ma.auth = 'ROLE_ADMIN' THEN m.member_name
         ELSE '알 수 없음'
     END AS writer_name
 FROM tb_community cm
@@ -95,7 +110,5 @@ LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
 WHERE cm.del_yn='N'
 ORDER BY cm.reg_date DESC
 LIMIT 0, 1000;
-
-
 
 

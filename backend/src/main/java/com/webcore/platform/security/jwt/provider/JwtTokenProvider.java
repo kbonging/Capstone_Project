@@ -83,7 +83,7 @@ public class JwtTokenProvider {
             // 인증된 사용자 번호
             String memberIdx = parsedToken.getPayload().get("uno").toString();
             int no = ( memberIdx == null ? 0 : Integer.parseInt(memberIdx) );
-            log.info("memberIdx : : {}", memberIdx);
+            log.info("memberIdx : {}", memberIdx);
 
             // 인증된 사용자 아이디
             String memberId = parsedToken.getPayload().get("uid").toString();
