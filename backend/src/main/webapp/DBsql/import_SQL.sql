@@ -142,3 +142,46 @@ CREATE TABLE tb_community (
 			on update cascade
 ) COMMENT='커뮤니티 게시판 테이블';
 
+	-- 댓글 테이블
+    -- DROP TABLE tb_comment
+CREATE TABLE tb_comment (
+	comment_idx		INT AUTO_INCREMENT PRIMARY KEY 	COMMENT '댓글 고유번호',
+    community_idx	INT NOT NULL					COMMENT '게시글 고유번호',
+	member_idx		INT NOT NULL					COMMENT '회원 고유번호',
+    content			TEXT NOT NULL					COMMENT '내용',
+    parent_id		INT NULL						COMMENT '부모 댓글',
+    group_id		INT NOT NULL					COMMENT '트리 그룹',
+    depth			INT NOT NULL DEFAULT 0			COMMENT '계층',
+    sort_order		INT NOT NULL DEFAULT 0			COMMENT '정렬 순서',
+    comment_type	VARCHAR(20) NOT NULL			COMMENT '댓글 타입',
+    reg_date		DATETIME NOT NULL				COMMENT '등록일',
+    mod_date		DATETIME DEFAULT NULL			COMMENT '수정일',
+    del_yn			CHAR(1) NOT NULL DEFAULT 'N'	COMMENT '삭제 여부(Y/N)',
+		FOREIGN KEY (parent_id)		REFERENCES tb_comment(comment_idx)
+			on delete cascade
+            on update cascade,
+		FOREIGN KEY (member_idx)	REFERENCES tb_member(member_idx)
+			on delete cascade
+            on update cascade,
+		FOREIGN KEY (community_idx) REFERENCES tb_community(community_idx)
+			on delete cascade
+            on update cascade,
+		FOREIGN KEY (comment_type)	REFERENCES tb_common_code(code_id)
+			on update cascade
+) COMMENT = '댓글 테이블';
+
+	-- 좋아요 테이블
+    -- DROP TABLE tb_like
+CREATE TABLE tb_like (
+	like_idx		INT AUTO_INCREMENT PRIMARY KEY COMMENT '좋아요 고유번호',
+    community_idx	INT NOT NULL				   COMMENT '커뮤니티 고유번호',
+    member_idx		INT NOT NULL				   COMMENT '회원 고유번호',
+    reg_date		DATETIME NOT NULL				COMMENT '등록일',
+        UNIQUE KEY uniq_like (community_idx, member_idx),
+		FOREIGN KEY (member_idx) REFERENCES tb_member(member_idx)
+			on delete cascade
+            on update cascade,
+		FOREIGN KEY (community_idx) REFERENCES tb_community(community_idx)
+			on delete cascade
+            on update cascade
+) COMMENT = '좋아요 테이블'
