@@ -158,7 +158,11 @@ CREATE TABLE tb_comment (
     reg_date		DATETIME NOT NULL				COMMENT '등록일',
     mod_date		DATETIME DEFAULT NULL			COMMENT '수정일',
     del_yn			CHAR(1) NOT NULL DEFAULT 'N'	COMMENT '삭제 여부(Y/N)',
+		CHECK (depth <= 2),
 		FOREIGN KEY (parent_id)		REFERENCES tb_comment(comment_idx)
+			on delete cascade
+            on update cascade,
+		FOREIGN KEY (group_id)		REFERENCES tb_comment(comment_idx)
 			on delete cascade
             on update cascade,
 		FOREIGN KEY (member_idx)	REFERENCES tb_member(member_idx)
@@ -185,4 +189,4 @@ CREATE TABLE tb_like (
 		FOREIGN KEY (community_idx) REFERENCES tb_community(community_idx)
 			on delete cascade
             on update cascade
-) COMMENT = '좋아요 테이블'
+) COMMENT = '좋아요 테이블';
