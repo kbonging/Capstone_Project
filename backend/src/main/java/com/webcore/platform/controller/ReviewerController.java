@@ -34,6 +34,7 @@ public class ReviewerController {
             return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
         } catch (Exception e) {
             log.info("회원가입 실패.... - FAIL");
+            log.error("에러 메시지: ", e); // 이 줄 추가!!!
             return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
         }
     }

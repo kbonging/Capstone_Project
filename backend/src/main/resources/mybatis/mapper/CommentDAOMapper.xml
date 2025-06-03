@@ -48,4 +48,58 @@
         AND c.del_yn = 'N'
         ORDER BY c.group_id ASC, c.sort_order ASC
     </select>
+
+    <!-- 1. 최대 sort_order 가져오기 -->
+    <select id="getMaxSortOrder" parameterType="int" resultType="int">
+        SELECT MAX(sort_order)
+        FROM tb_comment
+        WHERE community_idx = #{communityIdx}
+    </select>
+
+    <!-- 2. 부모 댓글의 group_id 가져오기 -->
+    <select id="getGroupIdForParent" parameterType="int" resultType="int">
+        SELECT group_id
+        FROM tb_comment
+        WHERE comment_idx = #{parentId}
+    </select>
+
+    <!-- 3. 부모 댓글의 depth 가져오기 -->
+    <select id="getDepthForParent" parameterType="int" resultType="int">
+        SELECT depth
+        FROM tb_comment
+        WHERE comment_idx = #{parentId}
+    </select>
+
+    <!-- 4. 최상위 댓글 등록 (parent_id 없음) -->
+    <insert id="insertComment" parameterType="com.webcore.platform.domain.CommentDTO" useGeneratedKeys="true" keyProperty="commentIdx">
+        INSERT INTO tb_comment (
+        community_idx, member_idx, content,
+        depth, sort_order, comment_type,
+        reg_date, del_yn
+        ) VALUES (
+        #{communityIdx}, #{memberIdx}, #{content},
+        #{depth}, #{sortOrder}, #{commentType},
+        NOW(), 'N'
+        )
+    </insert>
+
+    <!-- 5. 대댓글 등록 -->
+    <insert id="insertReply" parameterType="com.webcore.platform.domain.CommentDTO">
+        INSERT INTO tb_comment (
+        community_idx, member_idx, content,
+        parent_id, group_id, depth, sort_order,
+        comment_type, reg_date, del_yn
+        ) VALUES (
+        #{communityIdx}, #{memberIdx}, #{content},
+        #{parentId}, #{groupId}, #{depth}, #{sortOrder},
+        #{commentType}, NOW(), 'N'
+        )
+    </insert>
+
+    <!-- 6. 댓글 등록 후 자기 자신의 comment_idx로 group_id 업데이트 -->
+    <update id="updateGroupIdToSelf" parameterType="int">
+        UPDATE tb_comment
+        SET group_id = comment_idx
+        WHERE comment_idx = #{commentIdx}
+    </update>
 </mapper>

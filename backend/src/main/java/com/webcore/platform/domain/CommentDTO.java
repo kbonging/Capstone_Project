@@ -17,7 +17,7 @@ public class CommentDTO extends DefaultDTO {
     /** 댓글 내용 */
     private String content;
     /** 댓글 부모 id */
-    private int parentId;
+    private Integer parentId;
     /** 댓글 그룹 id */
     private int groupId;
     /** 계층 */
