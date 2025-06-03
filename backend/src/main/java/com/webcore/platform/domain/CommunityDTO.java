@@ -20,4 +20,7 @@ public class CommunityDTO extends DefaultDTO {
     private String content;
     /** 조회수 */
     private int viewCount;
+
+    // 페이징 정보를 포함
+    private PagingDTO paging = new PagingDTO();
 }

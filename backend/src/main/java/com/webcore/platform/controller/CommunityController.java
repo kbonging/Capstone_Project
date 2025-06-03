@@ -30,7 +30,7 @@ public class CommunityController {
     /** 커뮤니티 리스트 목록*/
     @GetMapping("")
     public ResponseEntity<?> getCommunityList(CommunityDTO communityDTO){
-        log.info("/api/community [Request] => {}",communityDTO.toString());
+        log.info("[GET] /api/community [Request] => {}",communityDTO.toString());
         List<CommunityListResponseDTO> communityList = communityService.selectCommunityList(communityDTO);
         log.info("게시글 전체 목록 => {}", communityList);
         
@@ -40,7 +40,8 @@ public class CommunityController {
     /** 커뮤니티 상세페이지 + 조회수 증가*/
     @GetMapping("/{communityIdx}")
     public ResponseEntity<?> getCommunityDetail(@PathVariable int communityIdx) {
-        log.info("/api/community [Request] => {}",communityIdx);
+        log.info("[GET] /api/community/{{{}}}", communityIdx);
+
         CommunityDetailResponseDTO communityDetail = communityService.getCommunityByIdx(communityIdx);
         log.info("게시글 상세 페이지 => {}", communityDetail);
         return new ResponseEntity<>(communityDetail, HttpStatus.OK);
