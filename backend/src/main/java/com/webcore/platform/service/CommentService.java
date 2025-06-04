@@ -12,7 +12,7 @@ public interface CommentService {
 
     CommentDTO getCommentById(int commentIdx);
 
-    void insertComment(int communityIdx, CommentDTO commentDTO, CustomUser customUser);
+    void insertComment(CommentDTO commentDTO);
 
     int deleteComment(CommentDTO commentDTO);
 }

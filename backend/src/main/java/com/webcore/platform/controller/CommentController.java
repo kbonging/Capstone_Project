@@ -18,27 +18,28 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/community")
+@RequestMapping("/api/comments")
 public class CommentController {
     private final CommentService commentService;
 
     /** 게시글 댓글 리스트 조회 */
-    @GetMapping("/comments/{communityIdx}")
+    @GetMapping("/{type}/{idx}")
     public ResponseEntity<?> getCommentsByCommunity(@PathVariable int communityIdx) {
         List<CommentListResponseDTO> commentListByCommunityIdx = commentService.selectCommentsByCommunityIdx(communityIdx);
         return new ResponseEntity<>(commentListByCommunityIdx, HttpStatus.OK);
     }
 
     /**[댓글 등록 API] 최상위 + 대댓글 포함 [셀렉 조회할때 sortOrder 키워드 사용해서 자식댓글 순차적으로 조회]*/
-    @PostMapping("/comments/{communityIdx}")
+    @PostMapping("")
     public ResponseEntity<?> addComment(
-            @PathVariable int communityIdx,
             @RequestBody CommentDTO commentDTO,
             @AuthenticationPrincipal CustomUser customUser
     ) {
         try {
-            log.info("[POST] : /api/"+communityIdx+"comments");
-            commentService.insertComment(communityIdx, commentDTO, customUser);
+//            log.info("[POST] : /api/"+communityIdx+"comments");
+            commentDTO.setMemberIdx(customUser.getMemberDTO().getMemberIdx());
+            commentService.insertComment(commentDTO);
+
             return ResponseEntity.ok("댓글 등록 성공");
         } catch (Exception e) {
             log.error("댓글 등록 실패", e);
@@ -47,7 +48,7 @@ public class CommentController {
         }
     }
 
-    @DeleteMapping("/comments/{commentIdx}")
+    @DeleteMapping("/{commentIdx}")
     public ResponseEntity<?> deleteComment(@PathVariable int commentIdx,
                                            @AuthenticationPrincipal CustomUser customUser) {
         int loginMemberIdx = customUser.getMemberDTO().getMemberIdx();
