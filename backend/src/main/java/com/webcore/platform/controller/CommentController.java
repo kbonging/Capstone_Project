@@ -1,10 +1,8 @@
 package com.webcore.platform.controller;
 
 import com.webcore.platform.domain.CommentDTO;
-import com.webcore.platform.domain.CommunityDTO;
 import com.webcore.platform.domain.CustomUser;
 import com.webcore.platform.response.CommentListResponseDTO;
-import com.webcore.platform.response.CommunityDetailResponseDTO;
 import com.webcore.platform.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

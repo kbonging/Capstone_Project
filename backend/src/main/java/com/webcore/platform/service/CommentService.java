@@ -1,7 +1,6 @@
 package com.webcore.platform.service;
 
 import com.webcore.platform.domain.CommentDTO;
-import com.webcore.platform.domain.CustomUser;
 import com.webcore.platform.response.CommentListResponseDTO;
 
 import java.util.List;
