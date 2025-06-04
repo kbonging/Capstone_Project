@@ -24,8 +24,9 @@ public class CommentController {
 
     /** 게시글 댓글 리스트 조회 */
     @GetMapping("/{type}/{idx}")
-    public ResponseEntity<?> getCommentsByCommunity(@PathVariable int communityIdx) {
-        List<CommentListResponseDTO> commentListByCommunityIdx = commentService.selectCommentsByCommunityIdx(communityIdx);
+    public ResponseEntity<?> getCommentsByCommunity(@PathVariable int idx,
+                                                    @PathVariable String type) {
+        List<CommentListResponseDTO> commentListByCommunityIdx = commentService.selectCommentsByCommunityIdx(idx, type);
         return new ResponseEntity<>(commentListByCommunityIdx, HttpStatus.OK);
     }
 

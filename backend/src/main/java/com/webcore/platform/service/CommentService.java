@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CommentService {
 
-    List<CommentListResponseDTO> selectCommentsByCommunityIdx(int communityIdx);
+    List<CommentListResponseDTO> selectCommentsByCommunityIdx(int idx, String type);
 
     CommentDTO getCommentById(int commentIdx);
 
