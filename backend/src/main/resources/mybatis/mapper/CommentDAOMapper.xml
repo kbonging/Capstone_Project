@@ -22,7 +22,7 @@
         <result property="" column="" />
     </resultMap>-->
 
-    <select id="selectCommentListByCommunityIdx" parameterType="int" resultType="com.webcore.platform.response.CommentListResponseDTO">
+    <select id="selectCommentListByCommunityIdx" parameterType="com.webcore.platform.domain.CommentDTO" resultType="com.webcore.platform.response.CommentListResponseDTO">
         SELECT
         c.comment_idx,
         c.community_idx,
@@ -44,8 +44,13 @@
         JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
         LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
         LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
-        WHERE c.community_idx = #{communityIdx}
-        AND c.del_yn = 'N'
+        WHERE c.del_yn = 'N'
+        <if test="communityIdx != null">
+            AND c.community_idx = #{communityIdx}
+        </if>
+        <if test="campaignIdx != null">
+            AND c.campaign_idx = #{campaignIdx}
+        </if>
         ORDER BY c.group_id ASC, c.sort_order ASC
     </select>
 

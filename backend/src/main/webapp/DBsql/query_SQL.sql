@@ -152,29 +152,27 @@ SET view_count = view_count + 1
 WHERE community_idx = 2;
 
 ####### 댓글 조회 #########
-    <select id="selectCommentListByCommunityIdx" parameterType="int" resultType="com.webcore.platform.response.CommentListResponseDTO">
-        SELECT
-        c.comment_idx,
-        c.community_idx,
-        c.content,
-        c.comment_type,
-        CASE
-        WHEN ma.auth = 'ROLE_USER' THEN rp.nickname
-        WHEN ma.auth = 'ROLE_OWNER' THEN op.business_name
-        WHEN ma.auth = 'ROLE_ADMIN' THEN m.member_name
-        ELSE '알 수 없음'
-        END AS writer_name,
-        ma.auth,
-        c.parent_id,
-        c.depth,
-        DATE_FORMAT(c.reg_date, '%Y-%m-%d %H:%i:%s') AS reg_date,
-        DATE_FORMAT(c.mod_date, '%Y-%m-%d %H:%i:%s') AS mod_date
-        FROM tb_comment c
-        JOIN tb_member m ON c.member_idx = m.member_idx
-        JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
-        LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
-        LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
-        WHERE c.community_idx = 2
-        AND c.del_yn = 'N'
-        ORDER BY c.group_id ASC, c.sort_order ASC
-    </select>
+SELECT
+c.comment_idx,
+c.community_idx,
+c.content,
+c.comment_type,
+CASE
+WHEN ma.auth = 'ROLE_USER' THEN rp.nickname
+WHEN ma.auth = 'ROLE_OWNER' THEN op.business_name
+WHEN ma.auth = 'ROLE_ADMIN' THEN m.member_name
+ELSE '알 수 없음'
+END AS writer_name,
+ma.auth,
+c.parent_id,
+c.depth,
+DATE_FORMAT(c.reg_date, '%Y-%m-%d %H:%i:%s') AS reg_date,
+DATE_FORMAT(c.mod_date, '%Y-%m-%d %H:%i:%s') AS mod_date
+FROM tb_comment c
+JOIN tb_member m ON c.member_idx = m.member_idx
+JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
+LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
+LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
+WHERE c.community_idx = 2
+AND c.del_yn = 'N'
+ORDER BY c.group_id ASC, c.sort_order ASC;

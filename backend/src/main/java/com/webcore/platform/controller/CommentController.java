@@ -1,10 +1,8 @@
 package com.webcore.platform.controller;
 
 import com.webcore.platform.domain.CommentDTO;
-import com.webcore.platform.domain.CommunityDTO;
 import com.webcore.platform.domain.CustomUser;
 import com.webcore.platform.response.CommentListResponseDTO;
-import com.webcore.platform.response.CommunityDetailResponseDTO;
 import com.webcore.platform.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +22,9 @@ public class CommentController {
 
     /** 게시글 댓글 리스트 조회 */
     @GetMapping("/{type}/{idx}")
-    public ResponseEntity<?> getCommentsByCommunity(@PathVariable int communityIdx) {
-        List<CommentListResponseDTO> commentListByCommunityIdx = commentService.selectCommentsByCommunityIdx(communityIdx);
+    public ResponseEntity<?> getCommentsByCommunity(@PathVariable int idx,
+                                                    @PathVariable String type) {
+        List<CommentListResponseDTO> commentListByCommunityIdx = commentService.selectCommentsByCommunityIdx(idx, type);
         return new ResponseEntity<>(commentListByCommunityIdx, HttpStatus.OK);
     }
 

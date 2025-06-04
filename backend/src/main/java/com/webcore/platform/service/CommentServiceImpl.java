@@ -3,7 +3,6 @@ package com.webcore.platform.service;
 import com.webcore.platform.common.CommentType;
 import com.webcore.platform.dao.CommentDAO;
 import com.webcore.platform.domain.CommentDTO;
-import com.webcore.platform.domain.CustomUser;
 import com.webcore.platform.response.CommentListResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +16,19 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
     private final CommentDAO commentDAO;
 
-    /** 게시글의 댓글 조회 로직 */
+    /** 커뮤니티, 체험단 댓글 조회 로직 */
     @Override
-    public List<CommentListResponseDTO> selectCommentsByCommunityIdx(int communityIdx) {
-        return commentDAO.selectCommentListByCommunityIdx(communityIdx);
+    public List<CommentListResponseDTO> selectCommentsByCommunityIdx(int idx, String type) {
+
+        CommentDTO commentDTO = new CommentDTO();
+
+        if("COMMT001".equals(type)) {
+            commentDTO.setCommunityIdx(idx);
+        } else if ("COMMT002".equals(type)) {
+            commentDTO.setCampaignIdx(idx);
+        }
+
+        return commentDAO.selectCommentListByCommunityIdx(commentDTO);
     }
 
     /** 댓글 1개 조회 */

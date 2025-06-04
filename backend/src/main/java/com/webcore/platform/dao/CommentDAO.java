@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface CommentDAO {
     /** 커뮤니티 댓글 조회 */
-    List<CommentListResponseDTO> selectCommentListByCommunityIdx(int communityIdx);
+    List<CommentListResponseDTO> selectCommentListByCommunityIdx(CommentDTO commentDTO);
 
     /** 댓글 1개 조회 */
     CommentDTO getCommentById(int commentIdx);
