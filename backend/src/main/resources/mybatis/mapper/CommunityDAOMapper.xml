@@ -85,7 +85,7 @@
         <result property="auth" column="auth" />
         <result property="writerName" column="writer_name" />
         <result property="regDate" column="reg_date" />
-        <result property="modeDate" column="mod_date" />
+        <result property="modDate" column="mod_date" />
     </resultMap>
 
     <select id="getCommunityByIdx" parameterType="int" resultMap="CommunityDetailResultMap">
