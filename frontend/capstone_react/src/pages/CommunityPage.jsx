@@ -1,5 +1,5 @@
 // src/pages/CommunityPage.jsx
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import { fetchCommunityPosts } from "../api/communityApi";
@@ -13,16 +13,10 @@ const categoryColorMap = {
 };
 
 export default function CommunityPage() {
+  const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const { token } = useContext(AppContext);
-
-  const [posts, setPosts] = useState([]); // 게시글 목록
   const [searchParams, setSearchParams] = useSearchParams();
-
-  // ✅ 무한 스크롤 상태
-  const pageRef = useRef(1);              // 현재 페이지 번호
-  const [hasMore, setHasMore] = useState(true);      // 더 불러올 게시글 있는지 여부
-  const [loading, setLoading] = useState(false);     // 로딩 중 여부
 
   // ✅ 검색 조건 상태
   const [params, setParams] = useState({
@@ -52,7 +46,7 @@ export default function CommunityPage() {
 
   // 🔍 검색 버튼 클릭 시 → URL 쿼리 반영
   const onSearch = (customParams = params) => {
-    setSearchParams(customParams); // 검색 조건이 바뀔 때 URL 쿼리 갱신
+    setSearchParams(customParams); // URL만 갱신됨
   };
 
   // ⌨️ Enter 키로 검색
@@ -60,69 +54,14 @@ export default function CommunityPage() {
     if (e.keyCode === 13) {onSearch();}
   };
 
-  // ✅ 스크롤 이벤트로 하단 도달 감지 → 다음 페이지 로딩
+  // ✅ searchParams 변경 시 API 호출
   useEffect(() => {
-    const handleScroll = () => {
-      if (loading || !hasMore) return;
+    const queryString = new URLSearchParams(searchParams).toString();
 
-      const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
-      if (scrollTop + clientHeight >= scrollHeight - 100) {
-        loadMore();
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // ✅ 게시글 로딩 함수 (page 단위로 불러오기)
-  const loadMore = async () => {
-    if (loading || !hasMore) return;
-
-    setLoading(true);
-    try {
-      const query = new URLSearchParams({
-        ...params,
-        page: pageRef.current,
-        size: 10,
-      }).toString();
-
-      const newPosts = await fetchCommunityPosts(token, query);
-      setPosts((prev) => [...prev, ...newPosts]);
-
-      pageRef.current += 1;   // pageRef로 직접 증가
-      setHasMore(newPosts.length > 0);
-    } catch (err) {
-      setError(err.message || "게시글 불러오기 실패");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          loadMore();
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-    const sentinel = document.getElementById("scroll-sentinel");
-    if (sentinel) observer.observe(sentinel);
-
-    return () => observer.disconnect();
-  }, []);// 빈 배열로 의존성 제거
-
-
-  // ✅ 검색 조건이 변경되면 상태 초기화 후 다시 1페이지부터 로딩
-  useEffect(() => {
-    setPosts([]);
-    pageRef.current = 1;   // ref 초기화
-    setHasMore(true);
-    loadMore();
+    setError(null);
+    fetchCommunityPosts(token, queryString)
+      .then((data) => setPosts(data))
+      .catch((err) => setError(err.message));
   }, [searchParams, token]);
 
   // if (loading) return <p className="text-center py-8">로딩 중…</p>;
@@ -270,7 +209,7 @@ export default function CommunityPage() {
 
                 return (
                   <tr
-                    //key={post.communityIdx}
+                    key={post.communityIdx}
                     className="hover:bg-gray-50 border-b h-[70px] text-[15px]"
                   >
                     <td className="py-2 font-bold  text-center">
