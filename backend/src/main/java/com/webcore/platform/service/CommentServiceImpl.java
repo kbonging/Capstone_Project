@@ -7,6 +7,7 @@ import com.webcore.platform.domain.CustomUser;
 import com.webcore.platform.response.CommentListResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +18,16 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
     private final CommentDAO commentDAO;
 
+    /** 게시글의 댓글 조회 로직 */
     @Override
     public List<CommentListResponseDTO> selectCommentsByCommunityIdx(int communityIdx) {
         return commentDAO.selectCommentListByCommunityIdx(communityIdx);
+    }
+
+    /** 댓글 1개 조회 */
+    @Override
+    public CommentDTO getCommentById(int commentIdx) {
+        return commentDAO.getCommentById(commentIdx);
     }
 
     /**[댓글등록 서비스 로직] */
@@ -58,5 +66,12 @@ public class CommentServiceImpl implements CommentService {
         log.info("댓글 등록 성공: {}", commentDTO);
     }
 
-
+    @Override
+    public int deleteComment(CommentDTO commentDTO) {
+        int result = commentDAO.deleteComment(commentDTO);
+        if(result > 0) {
+            log.info("Delete Comment Successfully!! delete user's idx : {}", commentDTO.getMemberIdx());
+        }
+        return result;
+    }
 }

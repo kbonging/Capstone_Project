@@ -175,6 +175,20 @@ CREATE TABLE tb_comment (
 			on update cascade
 ) COMMENT = '댓글 테이블';
 
+######### Campaign 테이블 없어서 불가능 ㄱㄷ ############
+-- ALTER TABLE tb_comment
+-- ADD FOREIGN KEY (campaign_idx)
+-- REFERENCES tb_campaign(campaign_idx)
+-- ON DELETE CASCADE
+-- ON UPDATE CASCADE;
+
+-- ALTER TABLE tb_comment
+-- ADD
+-- CHECK (
+--     (community_idx IS NOT NULL AND campaign_idx IS NULL) OR
+--     (community_idx IS NULL AND campaign_idx IS NOT NULL)
+-- );
+
 	-- 좋아요 테이블
     -- DROP TABLE tb_like
 CREATE TABLE tb_like (

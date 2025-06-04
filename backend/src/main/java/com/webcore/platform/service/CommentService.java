@@ -7,6 +7,12 @@ import com.webcore.platform.response.CommentListResponseDTO;
 import java.util.List;
 
 public interface CommentService {
+
     List<CommentListResponseDTO> selectCommentsByCommunityIdx(int communityIdx);
+
+    CommentDTO getCommentById(int commentIdx);
+
     void insertComment(int communityIdx, CommentDTO commentDTO, CustomUser customUser);
+
+    int deleteComment(CommentDTO commentDTO);
 }

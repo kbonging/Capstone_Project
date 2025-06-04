@@ -11,10 +11,13 @@ public interface CommentDAO {
     /** 커뮤니티 댓글 조회 */
     List<CommentListResponseDTO> selectCommentListByCommunityIdx(int communityIdx);
 
-    /**최대 sort_order 가져오기*/  /** */
+    /** 댓글 1개 조회 */
+    CommentDTO getCommentById(int commentIdx);
+
+    /** 최대 sort_order 가져오기*/  /** */
     Integer getMaxSortOrder(int communityIdx);
 
-    /**부모 댓글의 group_id 가져오기*/
+    /** 부모 댓글의 group_id 가져오기*/
     Integer getGroupIdForParent(int parentId);
 
      /** 부모 댓글의 depth 가져오기*/
@@ -28,5 +31,8 @@ public interface CommentDAO {
 
      /** 댓글 등록 후 자기 자신의 comment_idx로 group_id 갱신*/
     void updateGroupIdToSelf(int commentIdx);
+
+    /** 커뮤니티 댓글 삭제 */
+    int deleteComment(CommentDTO commentDTO);
 
 }

@@ -85,7 +85,7 @@
         <result property="auth" column="auth" />
         <result property="writerName" column="writer_name" />
         <result property="regDate" column="reg_date" />
-        <result property="modeDate" column="mod_date" />
+        <result property="modDate" column="mod_date" />
     </resultMap>
 
     <select id="getCommunityByIdx" parameterType="int" resultMap="CommunityDetailResultMap">
@@ -129,12 +129,12 @@
 
     <insert id="insertCommunity" parameterType="com.webcore.platform.domain.CommunityDTO"
             useGeneratedKeys="true" keyProperty="communityIdx">
-        INSERT INTO TB_COMMUNITY (MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, REG_DATE)
+        INSERT INTO tb_community (MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, REG_DATE)
         VALUES (#{memberIdx}, #{categoryId}, #{title}, #{content}, NOW());
     </insert>
 
     <update id="deleteCommunity" parameterType="com.webcore.platform.domain.CommunityDTO">
-        UPDATE TB_COMMUNITY
+        UPDATE tb_community
         SET
             DEL_YN = 'Y',
             MOD_DATE = NOW()
@@ -143,7 +143,7 @@
     </update>
 
     <update id="updateCommunity" parameterType="com.webcore.platform.domain.CommunityDTO">
-        UPDATE TB_COMMUNITY
+        UPDATE tb_community
         SET
             CATEGORY_ID = #{categoryId},
             TITLE = #{title},
