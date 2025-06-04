@@ -65,10 +65,10 @@ export default function CommunityPage() {
         .catch((err) => setError(err.message));
   }, [searchParams, token]);
 
-  // if (loading) return <p className="text-center py-8">로딩 중…</p>;
+  // if (loading) return <p className="text-center py-8">로딩 중…</p>; 아진짜 개느리네
   if (error)
     return (
-        <p className="text-center py-8 text-red-500">
+        <p className="text-center py-8 text-red-500"> 
           에러: {error}
         </p>
     );
@@ -224,7 +224,7 @@ export default function CommunityPage() {
                         {post.codeNm}
                       </span>
                         </td>
-                        <td className="pl-8"> 260번째줄 커뮤니티 페이지jsx
+                        <td className="pl-8"> 
                           <Link
                               to={`/community/${post.communityIdx}`}
                               className="hover:underline text-blue-600"
