@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import { fetchCommunityPosts } from "../api/communityApi";
 import CommuCateBtns from "../components/CommuCateBtns";
+import { Link } from "react-router-dom"; //링크 연결위해(라우터) 추가했습니다
 
 const categoryColorMap = {
   COMMU001: "#FDD835",
@@ -13,9 +14,10 @@ const categoryColorMap = {
 };
 
 export default function CommunityPage() {
-  const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const { token } = useContext(AppContext);
+
+  const [posts, setPosts] = useState([]); // 게시글 목록
   const [searchParams, setSearchParams] = useSearchParams();
 
   // ✅ 검색 조건 상태
@@ -46,7 +48,7 @@ export default function CommunityPage() {
 
   // 🔍 검색 버튼 클릭 시 → URL 쿼리 반영
   const onSearch = (customParams = params) => {
-    setSearchParams(customParams); // URL만 갱신됨
+    setSearchParams(customParams); // 검색 조건이 바뀔 때 URL 쿼리 갱신
   };
 
   // ⌨️ Enter 키로 검색
@@ -209,7 +211,7 @@ export default function CommunityPage() {
 
                 return (
                   <tr
-                    key={post.communityIdx}
+                    //key={post.communityIdx}
                     className="hover:bg-gray-50 border-b h-[70px] text-[15px]"
                   >
                     <td className="py-2 font-bold  text-center">
