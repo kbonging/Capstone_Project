@@ -8,7 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface CommentDAO {
-    /** 커뮤니티 댓글 조회 */
+    /** 댓글 조회 */
     List<CommentListResponseDTO> selectCommentListByCommunityIdx(CommentDTO commentDTO);
 
     /** 댓글 1개 조회 */
@@ -35,7 +35,10 @@ public interface CommentDAO {
      /** 댓글 등록 후 자기 자신의 comment_idx로 group_id 갱신*/
     void updateGroupIdToSelf(int commentIdx);
 
-    /** 커뮤니티 댓글 삭제 */
+    /** 댓글 삭제 */
     int deleteComment(CommentDTO commentDTO);
+
+    /** 댓글 수정 */
+    int updateComment(CommentDTO commentDTO);
 
 }

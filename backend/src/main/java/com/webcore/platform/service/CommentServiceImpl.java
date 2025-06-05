@@ -6,6 +6,8 @@ import com.webcore.platform.domain.CommentDTO;
 import com.webcore.platform.response.CommentListResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -87,4 +89,27 @@ public class CommentServiceImpl implements CommentService {
         }
         return result;
     }
+
+    @Override
+    public ResponseEntity<?> updateComment(CommentDTO commentDTO) {
+        CommentDTO getComment = commentDAO.getCommentById(commentDTO.getCommentIdx());
+
+        if(getComment == null) {
+            log.info("수정할 게시글 없어 응애");
+            return ResponseEntity.status(HttpStatus.OK).body("댓글이 존재하지 않습니다.");
+        }
+
+        int loginMember = commentDTO.getMemberIdx();
+        int Member = getComment.getMemberIdx();
+
+        if(loginMember != Member) {
+            log.info(loginMember + "와" + Member +"가 달라요");
+            return ResponseEntity.status(HttpStatus.OK).body("댓글 작성자가 아닙니다.");
+        }
+
+        commentDAO.updateComment(commentDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body("댓글 수정이 완료되었습니다.");
+    }
+
 }
