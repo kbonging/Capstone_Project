@@ -35,7 +35,7 @@ public class CommentController {
             @AuthenticationPrincipal CustomUser customUser
     ) {
         try {
-//            log.info("[POST] : /api/"+communityIdx+"comments");
+            log.info("[POST] : /api/comments");
             commentDTO.setMemberIdx(customUser.getMemberDTO().getMemberIdx());
             commentService.insertComment(commentDTO);
 

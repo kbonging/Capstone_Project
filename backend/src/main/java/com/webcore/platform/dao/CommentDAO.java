@@ -14,8 +14,11 @@ public interface CommentDAO {
     /** 댓글 1개 조회 */
     CommentDTO getCommentById(int commentIdx);
 
-    /** 최대 sort_order 가져오기*/  /** */
+    /** 커뮤니티 댓글 최대 sort_order */
     Integer getMaxSortOrder(int communityIdx);
+
+    /** 캠페인 댓글 최대 sort_order */
+    Integer getMaxSortOrderByCampaign(int campaignIdx);
 
     /** 부모 댓글의 group_id 가져오기*/
     Integer getGroupIdForParent(int parentId);

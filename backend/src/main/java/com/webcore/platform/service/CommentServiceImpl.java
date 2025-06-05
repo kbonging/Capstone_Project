@@ -42,6 +42,13 @@ public class CommentServiceImpl implements CommentService {
     /**[댓글등록 서비스 로직] */
     @Override
     public void insertComment(CommentDTO commentDTO) {
+        if (commentDTO.getCommunityIdx() != null) {
+            commentDTO.setCommentType(CommentType.COMMUNITY); // "COMMT001"
+        } else if (commentDTO.getCampaignIdx() != null) {
+            commentDTO.setCommentType(CommentType.CAMPAIGN); // "COMMT002"
+        } else {
+            throw new IllegalArgumentException("댓글이 속할 게시글(campaignIdx/communityIdx)이 없습니다.");
+        }
 
         /**[정렬값 계산] */
         Integer maxSort = commentDAO.getMaxSortOrder(commentDTO.getCommunityIdx());

@@ -62,11 +62,18 @@
         WHERE COMMENT_IDX = #{commentIdx};
     </select>
 
-    <!-- 1. 최대 sort_order 가져오기 -->
+    <!-- 커뮤니티 댓글 sort_order -->
     <select id="getMaxSortOrder" parameterType="int" resultType="int">
         SELECT MAX(sort_order)
         FROM tb_comment
         WHERE community_idx = #{communityIdx}
+    </select>
+
+    <!-- 캠페인 댓글 sort_order -->
+    <select id="getMaxSortOrderByCampaign" parameterType="int" resultType="int">
+        SELECT MAX(sort_order)
+        FROM tb_comment
+        WHERE campaign_idx = #{campaignIdx}
     </select>
 
     <!-- 2. 부모 댓글의 group_id 가져오기 -->
@@ -76,14 +83,14 @@
         WHERE comment_idx = #{parentId}
     </select>
 
-    <!-- 3. 부모 댓글의 depth 가져오기 -->
+    <!-- 부모 댓글의 depth 가져오기 -->
     <select id="getDepthForParent" parameterType="int" resultType="int">
         SELECT depth
         FROM tb_comment
         WHERE comment_idx = #{parentId}
     </select>
 
-    <!-- 4. 최상위 댓글 등록 (parent_id 없음) -->
+    <!-- 최상위 댓글 달기 -->
     <insert id="insertComment" parameterType="com.webcore.platform.domain.CommentDTO" useGeneratedKeys="true" keyProperty="commentIdx">
         INSERT INTO tb_comment (
         community_idx, campaign_idx, member_idx, content,
@@ -96,7 +103,7 @@
         )
     </insert>
 
-    <!-- 5. 대댓글 등록 -->
+    <!-- 대댓글 달기 -->
     <insert id="insertReply" parameterType="com.webcore.platform.domain.CommentDTO">
         INSERT INTO tb_comment (
         community_idx, campaign_idx, member_idx, content,
