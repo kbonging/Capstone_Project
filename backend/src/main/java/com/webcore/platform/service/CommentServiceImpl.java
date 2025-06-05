@@ -50,26 +50,31 @@ public class CommentServiceImpl implements CommentService {
             throw new IllegalArgumentException("댓글이 속할 게시글(campaignIdx/communityIdx)이 없습니다.");
         }
 
-        /**[정렬값 계산] */
-        Integer maxSort = commentDAO.getMaxSortOrder(commentDTO.getCommunityIdx());
+        // 💡 정렬 순서는 커뮤니티 or 캠페인에 따라 다르게 처리
+        Integer maxSort;
+        if (commentDTO.getCommunityIdx() != null) {
+            maxSort = commentDAO.getMaxSortOrder(commentDTO.getCommunityIdx());
+        } else {
+            maxSort = commentDAO.getMaxSortOrderByCampaign(commentDTO.getCampaignIdx());
+        }
+
         int sortOrder = (maxSort != null ? maxSort + 1 : 1);
         commentDTO.setSortOrder(sortOrder);
 
-        /** [댓글 구분 처리] */
+        //  댓글 계층 분기
         if (commentDTO.getParentId() == null) {
-            /** [최상위 댓글로직] */
+            //  최상위 댓글
             commentDTO.setDepth(0);
-//            commentDTO.setCommentType(type);
-            commentDAO.insertComment(commentDTO);
+            commentDAO.insertComment(commentDTO); // keyProperty로 commentIdx 채워짐
             commentDAO.updateGroupIdToSelf(commentDTO.getCommentIdx());
         } else {
-            /** [대댓글] */
+            // 🟡 대댓글
             Integer groupId = commentDAO.getGroupIdForParent(commentDTO.getParentId());
             Integer depth = commentDAO.getDepthForParent(commentDTO.getParentId());
 
             commentDTO.setGroupId(groupId);
             commentDTO.setDepth(depth + 1);
-//            commentDTO.setCommentType(type);
+            commentDTO.setCommentType(CommentType.COMMUNITY);
 
             commentDAO.insertReply(commentDTO);
         }
