@@ -4,6 +4,7 @@ import com.webcore.platform.domain.CommunityDTO;
 import com.webcore.platform.response.CommunityDetailResponseDTO;
 import com.webcore.platform.response.CommunityListResponseDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -13,8 +14,14 @@ public interface CommunityDAO {
     List<CommunityListResponseDTO> selectCommunityList(CommunityDTO communityDTO);
 
     /** 커뮤니티 글 상세정보 */
-    CommunityDetailResponseDTO getCommunityByIdx(int communityIdx);
-
+    CommunityDetailResponseDTO getCommunityByIdx(@Param("communityIdx") int communityIdx,
+                                                 @Param("memberIdx") int memberIdx);
+    /** 좋아요 등록*/
+    int insertLike(@Param("communityIdx") int communityIdx,
+                   @Param("memberIdx") int memberIdx);
+    /** 좋아요 삭제*/
+    int deleteLike(@Param("communityIdx") int communityIdx,
+                   @Param("memberIdx") int memberIdx);
     /** 커뮤니티 조회수 증가 */
     void increaseViewCount(int communityIdx);
 

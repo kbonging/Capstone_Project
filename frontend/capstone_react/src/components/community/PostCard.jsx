@@ -1,21 +1,27 @@
-import { useEffect, useState, useContext } from "react";
-import { useParams } from "react-router-dom";
-import { getCommentsByCommunity } from "../../api/communityApi";
+import { useState, useContext } from "react";
 import { AppContext } from "../../contexts/AppContext";
+import { addLike, deleteLike } from "../../api/communityApi";
 
-export default function PostCard() {
-  const { id } = useParams();
-  const [post, setPost] = useState(null);
+export default function PostCard({post}) {
   const { token } = useContext(AppContext);
 
-  useEffect(() => {
-    if (!id) return;
-    getCommentsByCommunity(id, token)
-      .then((res) => setPost(res.data))
-      .catch((err) => console.error("게시글 로딩 실패:", err));
-  }, [id]);
+  const [liked, setLiked] = useState(post.likeByMe);
+  const [likeCount, setLikeCount] = useState(post.likeCount);
 
-  if (!post) return <p className="text-center py-8">게시글 불러오는 중...</p>;
+  const handleLikeClick = async () => {
+    try {
+      if (liked) {
+        await deleteLike(post.communityIdx, token); // 취소 API 호출
+        setLikeCount((prev) => prev - 1);
+      } else {
+        await addLike(post.communityIdx, token); // 등록 API 호출
+        setLikeCount((prev) => prev + 1);
+      }
+      setLiked(!liked); // 상태 반전
+    } catch (err) {
+      console.error("좋아요 처리 실패", err);
+    }
+  };
 
   return (
     <article className="bg-white rounded-lg overflow-hidden">
@@ -53,9 +59,11 @@ export default function PostCard() {
       {/* 좋아요 / 댓글 / 공유 */}
       <footer className="px-6 py-3 border-t border-gray-200 flex items-center justify-between">
         <div className="flex items-center space-x-6">
-          <button className="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
+          <button
+            onClick={handleLikeClick}
+            className={`flex items-center space-x-1 ${liked ? 'text-blue-600' : 'text-gray-500'} hover:text-blue-600 transition-colors`}>
             <i className="fa-regular fa-thumbs-up w-5 h-5"></i>
-            <span className="text-sm font-medium">{post.likeCount || 0}</span>
+            <span className="text-sm font-medium">{likeCount}</span>
           </button>
           <button className="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
             <i className="fas fa-comment w-5 h-5"></i>

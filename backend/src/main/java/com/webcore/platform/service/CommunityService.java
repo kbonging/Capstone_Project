@@ -11,7 +11,13 @@ public interface CommunityService {
     List<CommunityListResponseDTO> selectCommunityList(CommunityDTO communityDTO);
 
     /** 커뮤니티  글 상세정보 */
-    CommunityDetailResponseDTO getCommunityByIdx(int communityIdx);
+    CommunityDetailResponseDTO getCommunityByIdx(int communityIdx, int memberIdx);
+
+    /** 좋아요 등록 */
+    boolean addLike(int communityIdx, int memberIdx);
+
+    /** 좋아요 삭제 */
+    boolean removeLike(int communityIdx, int memberIdx);
 
     /** 커뮤니티 글 등록 */
     int createPost(CommunityDTO communityDTO);

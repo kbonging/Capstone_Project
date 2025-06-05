@@ -59,10 +59,6 @@ JOIN tb_reviewer_channel rc
 ON mb.member_idx = rc.member_idx
 where mb.member_idx=1;
 
-update tb_member
-set member_name='김봉중'
-where member_idx=1;
-
 ##************************************************##
 ##********************* 소상공인 *******************##
 ##************************************************##
@@ -130,6 +126,15 @@ SELECT
 		FROM tb_like l
 		WHERE l.community_idx = cm.community_idx
 	) AS like_count,
+    CASE
+		WHEN EXISTS(
+			SELECT 1
+			FROM tb_like l
+			WHERE l.community_idx = cm.community_idx
+		    AND l.member_idx = 1
+        ) THEN 1
+        ELSE 0
+	END AS liked_by_me,
 	ma.auth,
 	CASE
 		WHEN ma.auth = 'ROLE_USER' THEN rp.nickname
@@ -143,8 +148,12 @@ JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
 JOIN tb_common_code cc ON cm.category_id = cc.code_id
 LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
 LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
-WHERE cm.community_idx = 2
+WHERE cm.community_idx = 1
 	AND cm.del_yn = 'N';
+###### 좋아요 추가 #######
+INSERT INTO tb_like (community_idx, member_idx, reg_date)
+VALUES (1, 1, now());
+select * from tb_like;
 
 ###### 조회수 증가 ########
 UPDATE tb_community

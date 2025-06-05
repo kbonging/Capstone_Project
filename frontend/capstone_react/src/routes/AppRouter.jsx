@@ -18,7 +18,7 @@ export default function AppRouter() {
       {/* <Route path="/support"    element={<Support    />} /> */}
       {/* <Route path="/events"     element={<Events     />} /> */}
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/community/:id" element={<CommunityDetailPage />} />
+      <Route path="/community/:communityIdx" element={<CommunityDetailPage />} />
       {/* <Route path="/signup"     element={<SignupPage />} /> */}
       {/* <Route path="/mypage"     element={<MyPage     />} /> */}
       {/* 404 페이지도 추가 가능  나중에 할거임*/}

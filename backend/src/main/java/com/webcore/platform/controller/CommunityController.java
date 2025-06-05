@@ -37,14 +37,39 @@ public class CommunityController {
         return new ResponseEntity<>(communityList, HttpStatus.OK);
     }
 
-    /** 커뮤니티 상세페이지 + 조회수 증가*/
+    /** 커뮤니티 상세페이지 조회*/
     @GetMapping("/{communityIdx}")
-    public ResponseEntity<?> getCommunityDetail(@PathVariable int communityIdx) {
+    public ResponseEntity<?> getCommunityDetail(@PathVariable int communityIdx,
+                                                @AuthenticationPrincipal CustomUser customUser) {
         log.info("[GET] /api/community/{{{}}}", communityIdx);
 
-        CommunityDetailResponseDTO communityDetail = communityService.getCommunityByIdx(communityIdx);
+        CommunityDetailResponseDTO communityDetail = communityService.getCommunityByIdx(communityIdx, customUser.getMemberDTO().getMemberIdx());
         log.info("게시글 상세 페이지 => {}", communityDetail);
         return new ResponseEntity<>(communityDetail, HttpStatus.OK);
+    }
+
+    /** 좋아요 등록 */
+    @PostMapping("/like/{communityIdx}")
+    public ResponseEntity<?> addLike(@PathVariable int communityIdx,
+                                     @AuthenticationPrincipal CustomUser customUser){
+        boolean success = communityService.addLike(communityIdx, customUser.getMemberDTO().getMemberIdx());
+        if (success){
+            return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /** 좋아요 삭제 */
+    @DeleteMapping("/like/{communityIdx}")
+    public ResponseEntity<?> deleteLike(@PathVariable int communityIdx,
+                                     @AuthenticationPrincipal CustomUser customUser){
+        boolean success = communityService.removeLike(communityIdx, customUser.getMemberDTO().getMemberIdx());
+        if (success){
+            return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // 커뮤니티 글 작성 (로그인한 유저만 가능)
@@ -70,7 +95,7 @@ public class CommunityController {
                                         @AuthenticationPrincipal CustomUser customUser) {
         int loginMemberIdx = customUser.getMemberDTO().getMemberIdx();
 
-        CommunityDetailResponseDTO post = communityService.getCommunityByIdx(communityIdx);
+        CommunityDetailResponseDTO post = communityService.getCommunityByIdx(communityIdx, customUser.getMemberDTO().getMemberIdx());
         if (post == null) {
             return new ResponseEntity<>("게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
         }
@@ -100,7 +125,7 @@ public class CommunityController {
                                         @AuthenticationPrincipal CustomUser customUser) {
         int loginMemberIdx = customUser.getMemberDTO().getMemberIdx();
 
-        CommunityDetailResponseDTO originalPost = communityService.getCommunityByIdx(communityIdx);
+        CommunityDetailResponseDTO originalPost = communityService.getCommunityByIdx(communityIdx, customUser.getMemberDTO().getMemberIdx());
 
         if(originalPost == null){
             return new ResponseEntity<>("게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
