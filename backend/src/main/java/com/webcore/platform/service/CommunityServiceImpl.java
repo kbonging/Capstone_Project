@@ -24,9 +24,23 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Transactional
     @Override
-    public CommunityDetailResponseDTO getCommunityByIdx(int communityIdx) {
+    public CommunityDetailResponseDTO getCommunityByIdx(int communityIdx, int memberIdx) {
         communityDAO.increaseViewCount(communityIdx);
-        return communityDAO.getCommunityByIdx(communityIdx);
+        return communityDAO.getCommunityByIdx(communityIdx, memberIdx);
+    }
+
+    @Override
+    @Transactional
+    public boolean addLike(int communityIdx, int memberIdx) {
+        int result = communityDAO.insertLike(communityIdx, memberIdx);
+        return result > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean removeLike(int communityIdx, int memberIdx) {
+        int result = communityDAO.deleteLike(communityIdx, memberIdx);
+        return result > 0;
     }
 
     @Override
