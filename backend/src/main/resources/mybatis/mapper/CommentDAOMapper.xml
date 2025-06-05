@@ -56,7 +56,7 @@
 
     <!--댓글 1개 조회-->
     <select id="getCommentById" parameterType="int" resultType="com.webcore.platform.domain.CommentDTO">
-        SELECT COMMENT_IDX, COMMUNITY_IDX, MEMBER_IDX, CONTENT, PARENT_ID,
+        SELECT COMMENT_IDX, COMMUNITY_IDX, CAMPAIGN_IDX, MEMBER_IDX, CONTENT, PARENT_ID,
                 GROUP_ID, DEPTH, SORT_ORDER, COMMENT_TYPE, REG_DATE, MOD_DATE, DEL_YN
         FROM tb_comment
         WHERE COMMENT_IDX = #{commentIdx};
@@ -86,11 +86,11 @@
     <!-- 4. 최상위 댓글 등록 (parent_id 없음) -->
     <insert id="insertComment" parameterType="com.webcore.platform.domain.CommentDTO" useGeneratedKeys="true" keyProperty="commentIdx">
         INSERT INTO tb_comment (
-        community_idx, member_idx, content,
+        community_idx, campaign_idx, member_idx, content,
         depth, sort_order, comment_type,
         reg_date, del_yn
         ) VALUES (
-        #{communityIdx}, #{memberIdx}, #{content},
+        #{communityIdx}, #{campaignIdx}, #{memberIdx}, #{content},
         #{depth}, #{sortOrder}, #{commentType},
         NOW(), 'N'
         )
@@ -99,11 +99,11 @@
     <!-- 5. 대댓글 등록 -->
     <insert id="insertReply" parameterType="com.webcore.platform.domain.CommentDTO">
         INSERT INTO tb_comment (
-        community_idx, member_idx, content,
+        community_idx, campaign_idx, member_idx, content,
         parent_id, group_id, depth, sort_order,
         comment_type, reg_date, del_yn
         ) VALUES (
-        #{communityIdx}, #{memberIdx}, #{content},
+        #{communityIdx}, #{campaignIdx}, #{memberIdx}, #{content},
         #{parentId}, #{groupId}, #{depth}, #{sortOrder},
         #{commentType}, NOW(), 'N'
         )
@@ -123,6 +123,15 @@
             DEL_YN = 'Y',
             MOD_DATE = NOW()
         WHERE COMMENT_IDX = #{commentIdx}
-            AND MEMBER_IDX = #{memberIdx};
+            AND MEMBER_IDX = #{memberIdx}
+    </update>
+
+    <update id="updateComment" parameterType="com.webcore.platform.domain.CommentDTO">
+        UPDATE tb_comment
+        SET
+            CONTENT = #{content},
+            MOD_DATE = NOW()
+        WHERE COMMENT_IDX = #{commentIdx}
+            AND DEL_YN = 'N'
     </update>
 </mapper>

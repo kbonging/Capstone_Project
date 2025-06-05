@@ -6,6 +6,8 @@ import com.webcore.platform.domain.CommentDTO;
 import com.webcore.platform.response.CommentListResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,15 +42,17 @@ public class CommentServiceImpl implements CommentService {
     /**[댓글등록 서비스 로직] */
     @Override
     public void insertComment(CommentDTO commentDTO) {
+
         /**[정렬값 계산] */
         Integer maxSort = commentDAO.getMaxSortOrder(commentDTO.getCommunityIdx());
         int sortOrder = (maxSort != null ? maxSort + 1 : 1);
         commentDTO.setSortOrder(sortOrder);
+
         /** [댓글 구분 처리] */
         if (commentDTO.getParentId() == null) {
             /** [최상위 댓글로직] */
             commentDTO.setDepth(0);
-            commentDTO.setCommentType(CommentType.COMMUNITY);
+//            commentDTO.setCommentType(type);
             commentDAO.insertComment(commentDTO);
             commentDAO.updateGroupIdToSelf(commentDTO.getCommentIdx());
         } else {
@@ -58,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
 
             commentDTO.setGroupId(groupId);
             commentDTO.setDepth(depth + 1);
-            commentDTO.setCommentType(CommentType.COMMUNITY);
+//            commentDTO.setCommentType(type);
 
             commentDAO.insertReply(commentDTO);
         }
@@ -74,4 +78,27 @@ public class CommentServiceImpl implements CommentService {
         }
         return result;
     }
+
+    @Override
+    public ResponseEntity<?> updateComment(CommentDTO commentDTO) {
+        CommentDTO getComment = commentDAO.getCommentById(commentDTO.getCommentIdx());
+
+        if(getComment == null) {
+            log.info("수정할 게시글 없어 응애");
+            return ResponseEntity.status(HttpStatus.OK).body("댓글이 존재하지 않습니다.");
+        }
+
+        int loginMember = commentDTO.getMemberIdx();
+        int Member = getComment.getMemberIdx();
+
+        if(loginMember != Member) {
+            log.info(loginMember + "와" + Member +"가 달라요");
+            return ResponseEntity.status(HttpStatus.OK).body("댓글 작성자가 아닙니다.");
+        }
+
+        commentDAO.updateComment(commentDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body("댓글 수정이 완료되었습니다.");
+    }
+
 }

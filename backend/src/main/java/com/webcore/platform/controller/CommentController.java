@@ -42,7 +42,7 @@ public class CommentController {
             return ResponseEntity.ok("댓글 등록 성공");
         } catch (Exception e) {
             log.error("댓글 등록 실패", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body("댓글 등록 실패: " + e.getMessage());
         }
     }
@@ -54,11 +54,11 @@ public class CommentController {
 
         CommentDTO comment = commentService.getCommentById(commentIdx);
         if (comment == null) {
-            return new ResponseEntity<>("댓글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("댓글이 존재하지 않습니다.", HttpStatus.OK);
         }
 
         if (comment.getMemberIdx() != loginMemberIdx) {
-            return new ResponseEntity<>("본인이 작성한 댓글만 삭제할 수 있습니다.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("본인이 작성한 댓글만 삭제할 수 있습니다.", HttpStatus.OK);
         }
 
         CommentDTO dto = new CommentDTO();
@@ -71,7 +71,17 @@ public class CommentController {
             return new ResponseEntity<>("댓글이 삭제되었습니다.", HttpStatus.OK);
         } else {
             log.info("Community deletion failed");
-            return new ResponseEntity<>("삭제 권한이 없거나 댓글이 존재하지 않습니다.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("삭제 권한이 없거나 댓글이 존재하지 않습니다.", HttpStatus.OK);
         }
+    }
+
+    @PutMapping("/{commentIdx}")
+    public ResponseEntity<?> updateComment(@PathVariable int commentIdx,
+                              @RequestBody CommentDTO commentDTO,
+                              @AuthenticationPrincipal CustomUser customUser) {
+
+        commentDTO.setCommentIdx(commentIdx);
+        commentDTO.setMemberIdx(customUser.getMemberDTO().getMemberIdx());
+        return commentService.updateComment(commentDTO);
     }
 }
