@@ -1,6 +1,6 @@
 // src/pages/CommunityPage.jsx
 import React, { useState, useEffect, useContext } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import { fetchCommunityPosts } from "../api/communityApi";
 import CommuCateBtns from "../components/CommuCateBtns";
@@ -18,6 +18,7 @@ export default function CommunityPage() {
   const [error, setError] = useState(null);
   const { token } = useContext(AppContext);
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   // ✅ 검색 조건 상태
   const [params, setParams] = useState({
@@ -186,7 +187,7 @@ export default function CommunityPage() {
                     필독
                   </span>
               </td>
-              <td className="pl-8">
+              <td className="pl-8 cursor-pointer">
                 1:1 문의 방법 & 자주 묻는 질문
                 <span className="text-red-500 ml-1">[10]</span>
               </td>
@@ -211,7 +212,8 @@ export default function CommunityPage() {
                   return (
                       <tr
                           key={post.communityIdx}
-                          className="hover:bg-gray-50 border-b h-[70px] text-[15px]"
+                          onClick={()=>navigate(`/community/${post.communityIdx}`) }
+                          className="hover:bg-gray-50 border-b h-[70px] text-[15px] cursor-pointer"
                       >
                         <td className="py-2 font-bold  text-center">
                       <span
@@ -225,12 +227,7 @@ export default function CommunityPage() {
                       </span>
                         </td>
                         <td className="pl-8"> 
-                          <Link
-                              to={`/community/${post.communityIdx}`}
-                              className="hover:underline text-blue-600"
-                          >
                             {post.title}
-                          </Link>
                         </td>
                         <td>
                       <span className="text-gray-800">
@@ -266,7 +263,7 @@ export default function CommunityPage() {
                           {post.viewCount}
                         </td>
                         <td className="text-center">
-                          0
+                          {post.likeCount}
                         </td>
                       </tr>
                   );

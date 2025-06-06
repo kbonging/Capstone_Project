@@ -14,6 +14,7 @@
         <result property="title" column="title" />
         <result property="content" column="content" />
         <result property="viewCount" column="view_count" />
+        <result property="likeCount" column="like_count" />
         <result property="regDate" column="reg_date" />
         <result property="auth" column="auth" />
         <result property="writerName" column="writer_name" />
@@ -63,6 +64,11 @@
             cm.title,
             cm.content,
             cm.view_count,
+            (
+            SELECT COUNT(*)
+            FROM tb_like l
+            WHERE l.community_idx = cm.community_idx
+            ) AS like_count,
             cm.reg_date,
             ma.auth,
             CASE

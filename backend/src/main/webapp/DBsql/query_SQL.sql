@@ -92,6 +92,11 @@ SELECT
     cm.title,
     cm.content,
     cm.view_count,
+    (
+		SELECT COUNT(*)
+		FROM tb_like l
+		WHERE l.community_idx = cm.community_idx
+	) AS like_count,
     cm.reg_date,
     ma.auth,
     CASE
