@@ -189,7 +189,7 @@ CREATE TABLE tb_comment (
 --     (community_idx IS NULL AND campaign_idx IS NOT NULL)
 -- );
 
-	-- 좋아요 테이블
+###### 커무니티 좋아요 테이블 #####
     -- DROP TABLE tb_like
 CREATE TABLE tb_like (
 	like_idx		INT AUTO_INCREMENT PRIMARY KEY COMMENT '좋아요 고유번호',

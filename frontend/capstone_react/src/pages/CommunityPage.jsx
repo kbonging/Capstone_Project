@@ -4,7 +4,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import { fetchCommunityPosts } from "../api/communityApi";
 import CommuCateBtns from "../components/CommuCateBtns";
-import {Link} from "react-router-dom";
+import Pagination from "../components/community/Pagination";
+// import {Link} from "react-router-dom";
 
 const categoryColorMap = {
   COMMU001: "#FDD835",
@@ -15,6 +16,7 @@ const categoryColorMap = {
 
 export default function CommunityPage() {
   const [posts, setPosts] = useState([]);
+  const [pagination, setPagination] = useState(null);
   const [error, setError] = useState(null);
   const { token } = useContext(AppContext);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,6 +27,7 @@ export default function CommunityPage() {
     categoryId: searchParams.get("categoryId") || "",
     searchKeyword: searchParams.get("searchKeyword") || "",
     searchCondition: searchParams.get("searchCondition") || "",
+    page: parseInt(searchParams.get("page")) || 1,
   });
 
   // 🔁 입력 변경 핸들러 (URL에 영향 없음)
@@ -36,6 +39,20 @@ export default function CommunityPage() {
     }));
   };
 
+  // 🔍 검색 버튼 클릭 시 → URL 쿼리 반영
+  const onSearch = (customParams = params, pageReset = true) => {
+    const updateParams = {
+      ...customParams,
+      page: pageReset ? 1 : customParams.page, // 조건 검색 및 카테고리 검색 시 page 1로 초기화
+    }
+    setSearchParams(updateParams); // URL만 갱신됨
+  };
+
+  // ⌨️ Enter 키로 검색
+  const onKeyDown = (e) => {
+    if (e.keyCode === 13) {onSearch();}
+  };
+
   // 🔁 카테고리 변경 핸들러
   const onCategoryChange = (categoryCode) => {
     const updatedParams = {
@@ -45,15 +62,15 @@ export default function CommunityPage() {
     setParams(updatedParams);     // 상태 갱신
     onSearch(updatedParams);      // 최신 값으로 검색 실행
   };
-
-  // 🔍 검색 버튼 클릭 시 → URL 쿼리 반영
-  const onSearch = (customParams = params) => {
-    setSearchParams(customParams); // URL만 갱신됨
-  };
-
-  // ⌨️ Enter 키로 검색
-  const onKeyDown = (e) => {
-    if (e.keyCode === 13) {onSearch();}
+  
+  // 📃 페이지 변경 핸들러
+  const handlePageChange = (newPage) => {
+    const updatedParams = {
+      ...params,
+      page: newPage,
+    };
+    setParams(updatedParams);
+    onSearch(updatedParams, false); // URL 쿼리 갱신(page 유지)
   };
 
   // ✅ searchParams 변경 시 API 호출
@@ -62,11 +79,13 @@ export default function CommunityPage() {
 
     setError(null);
     fetchCommunityPosts(token, queryString)
-        .then((data) => setPosts(data))
-        .catch((err) => setError(err.message));
+      .then((data) => {
+        setPosts(data.communityList);
+        setPagination(data.paginationInfo);
+      })
+      .catch((err) => setError(err.message));
   }, [searchParams, token]);
-
-  // if (loading) return <p className="text-center py-8">로딩 중…</p>; 아진짜 개느리네
+      
   if (error)
     return (
         <p className="text-center py-8 text-red-500"> 
@@ -147,7 +166,7 @@ export default function CommunityPage() {
                     className="border px-3 py-3 pr-10 rounded-lg text-sm w-full focus:outline-none transition placeholder:text-xs"
                 />
                 <button
-                    onClick={onSearch}
+                    onClick={() => onSearch()}
                     className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-black text-lg"
                 >
                   <i className="fa fa-search" aria-hidden="true"></i>
@@ -271,6 +290,13 @@ export default function CommunityPage() {
             )}
             </tbody>
           </table>
+          {pagination && (
+            <Pagination
+              pagination={pagination}
+              onPageChange={handlePageChange}
+            />
+          )}
+
         </div>
       </div>
   );

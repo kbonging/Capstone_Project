@@ -22,7 +22,7 @@ FROM TB_MEMBER M LEFT JOIN TB_MEMBER_AUTH A
 ON M.member_idx = A.member_idx
 WHERE M.member_id = 'apple75391' AND M.del_yn = 'N';
 
-############### 전체 회원 조회(관리자 조회할때 사용중) #############
+############### 회원 조회(관리자 조회할때 사용중) #############
 select mb.member_idx, mb.member_id, mb.member_name, au.auth , member_email, profile_img_url, intro, heart_count, penalty, mb.del_yn
 FROM tb_member mb JOIN tb_member_auth au
 ON mb.member_idx = au.member_idx
@@ -115,6 +115,16 @@ WHERE cm.del_yn='N'
 ORDER BY cm.reg_date DESC
 LIMIT 0, 1000;
 
+### 게시글 전체 수 조회 ###
+SELECT COUNT(*)
+FROM tb_community cm
+JOIN tb_member m ON cm.member_idx = m.member_idx
+JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
+JOIN tb_common_code cc ON cm.category_id=cc.code_id
+LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
+LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
+WHERE cm.del_yn='N';
+
 ####커뮤니티 상세 조회#####
 SELECT
 	cm.community_idx,
@@ -155,7 +165,7 @@ LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
 LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
 WHERE cm.community_idx = 1
 	AND cm.del_yn = 'N';
-###### 좋아요 추가 #######
+###### 좋아요 등록 #######
 INSERT INTO tb_like (community_idx, member_idx, reg_date)
 VALUES (1, 1, now());
 select * from tb_like;
