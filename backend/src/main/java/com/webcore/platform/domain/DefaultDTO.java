@@ -19,8 +19,10 @@ public class DefaultDTO {
     /** 삭제여부 */
     private String delYn;
 
-    /** 페이징: 시작 인덱스 */
-    private int start;
-    /** 페이징: 조회 개수 */
-    private int end;
+    /** 현재 페이지 번호 (기본 1)*/
+    private int page = 1;
+    /** 조회 시작 인덱스 */
+    private int firstIndex;
+    /** 한 페이지당 조회 레코드 수 */
+    private int recordCount;
 }

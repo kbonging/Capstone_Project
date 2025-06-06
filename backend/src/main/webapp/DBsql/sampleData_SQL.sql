@@ -4,6 +4,7 @@
 ###############################################################################
 
 select * from tb_member;
+select count(*) from tb_member;
 #############################  tb_member 테이블 샘플 데이터 #############################
 -- INSERT INTO tb_member (member_id, member_pwd, member_name, member_email, member_nickname, profile_image_url, reg_date, mod_date)
 -- VALUES ('superadmin', '$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS', '메인관리자', 'apple75391@gmail.com', '총괄관리자', 'defaultProfile.png', NOW(), NULL);
@@ -122,7 +123,7 @@ VALUES
 ## 체험단_신청_상태_코드(CAM_APP_STA)
 INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
 VALUES
-('CAM_APP_STA', '', '신청상태', 10, 0, '체험단 신청 상태 코드', NOW()),
+('CAM_APP_STA', '', '신청상태', 10, 0, '체험단 신청 상태 그룹', NOW()),
 ('CAMAPP001', 'CAM_APP_STA', '대기', 10, 1, '체험단 신청 상태', NOW()),
 ('CAMAPP002', 'CAM_APP_STA', '탈락', 10, 2, '체험단 신청 상태', NOW()),
 ('CAMAPP003', 'CAM_APP_STA', '당첨', 10, 3, '체험단 신청 상태', NOW());
@@ -130,7 +131,7 @@ VALUES
 ## 댓글_타입_코드(COMMENT_TYPE)
 INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
 VALUES
-('COMMENT_TYPE', '', '댓글타입', 11, 0, '댓글 타입 코드', NOW()),
+('COMMENT_TYPE', '', '댓글타입', 11, 0, '댓글 타입 그룹', NOW()),
 ('COMMT001', 'COMMENT_TYPE', '커뮤니티댓글', 11, 1, '커뮤니티댓글', NOW()),
 ('COMMT002', 'COMMENT_TYPE', '캠페인댓글', 11, 2, '캠페인댓글', NOW());
 
@@ -181,6 +182,7 @@ VALUES
 
 
 ################# 커뮤니티 글 등록 ##################
+#! 회원 27명 등록 후 입력 !#
 INSERT INTO tb_community (
     member_idx, category_id, title, content, view_count, reg_date, mod_date, del_yn
 ) VALUES
@@ -226,4 +228,11 @@ INSERT INTO tb_community (
 (26, 'COMMU005', '배달 앱 리뷰 요청 전략', '배달 앱에서 좋은 리뷰를 유도하는 멘트, 어떻게 쓰고 계신가요?', 54, DATE_SUB(NOW(), INTERVAL 1 DAY), NULL, 'N'),
 (27, 'COMMU003', '계산 오류 발생 시 대처법?', '계산 실수로 고객에게 불신을 준 적이 있는데 어떻게 대처하시나요?', 18, DATE_SUB(NOW(), INTERVAL 9 DAY), NULL, 'N');
 
-
+######### 댓글 등록 ############
+INSERT INTO tb_comment (community_idx, member_idx, content, parent_id, group_id, depth, sort_order, comment_type, reg_date)
+VALUES
+(2, 2, '최상위 댓글', NULL, 1, 0, 1, 'COMMT001', NOW()), # commentidx 1
+(2, 3, '대댓글 1', 1, 1, 1, 2, 'COMMT001', NOW()), # 2
+(2, 4, '대댓글 2', 1, 1, 1, 4, 'COMMT001', NOW()), # 3
+(2, 2, '대대댓글 1-1', 2, 1, 2, 3, 'COMMT001', NOW()), # 4
+(2, 2, '대대댓글 2-1', 3, 1, 2, 5, 'COMMT001', NOW()); # 5

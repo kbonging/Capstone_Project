@@ -5,7 +5,7 @@
 
 <mapper namespace="com.webcore.platform.dao.CommunityDAO">
 
-    <!--게시글 조회 ResultMap-->
+    <!--게시글 목록 조회 ResultMap-->
     <resultMap id="CommunityResultMap" type="com.webcore.platform.response.CommunityListResponseDTO">
         <id property="communityIdx" column="community_idx" />
         <result property="memberIdx" column="member_idx" />
@@ -14,9 +14,26 @@
         <result property="title" column="title" />
         <result property="content" column="content" />
         <result property="viewCount" column="view_count" />
+        <result property="likeCount" column="like_count" />
         <result property="regDate" column="reg_date" />
         <result property="auth" column="auth" />
         <result property="writerName" column="writer_name" />
+    </resultMap>
+
+    <!-- 게시글 상세 페이지 조회-->
+    <resultMap id="CommunityDetailResultMap" type="com.webcore.platform.response.CommunityDetailResponseDTO">
+        <id property="communityIdx" column="community_idx" />
+        <result property="categoryId" column="category_id" />
+        <result property="categoryName" column="code_nm" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="viewCount" column="view_count" />
+        <result property="likeCount" column="like_count" />
+        <result property="likeByMe" column="liked_by_me" />
+        <result property="auth" column="auth" />
+        <result property="writerName" column="writer_name" />
+        <result property="regDate" column="reg_date" />
+        <result property="modDate" column="mod_date" />
     </resultMap>
 
     <!-- 검색키워드가 있을경우 -->
@@ -37,13 +54,7 @@
             AND category_id = #{categoryId}
         </if>
     </sql>
-<!--    &lt;!&ndash; 검색키워드 와 카테고리가 있을경우 &ndash;&gt;-->
-<!--    <sql id="searchWhere_Category">-->
-<!--        <if test="searchKeyword != null">-->
-<!--            and ${search_target} like CONCAT('%','${search_keyword}','%')-->
-<!--        </if>-->
-<!--    </sql>-->
-
+    <!--게시판 전체 목록 조회-->
     <select id="selectCommunityList" parameterType="com.webcore.platform.domain.CommunityDTO" resultMap="CommunityResultMap">
         SELECT
             cm.community_idx,
@@ -53,6 +64,11 @@
             cm.title,
             cm.content,
             cm.view_count,
+            (
+            SELECT COUNT(*)
+            FROM tb_like l
+            WHERE l.community_idx = cm.community_idx
+            ) AS like_count,
             cm.reg_date,
             ma.auth,
             CASE
@@ -70,23 +86,87 @@
         WHERE cm.del_yn='N'
         <include refid="searchWhere"></include>
         ORDER BY cm.reg_date DESC
-        <!--LIMIT #{start}, #{end}-->
+        LIMIT #{firstIndex}, #{recordCount}
     </select>
+    <!--게시글 수 조회-->
+    <select id="selectCommunityCount" parameterType="com.webcore.platform.domain.CommunityDTO" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_community cm
+        JOIN tb_member m ON cm.member_idx = m.member_idx
+        JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
+        JOIN tb_common_code cc ON cm.category_id=cc.code_id
+        LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
+        LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
+        WHERE cm.del_yn='N'
+        <include refid="searchWhere"></include>
+    </select>
+    <!--게시글 상세 정보 조회-->
+    <select id="getCommunityByIdx" parameterType="java.util.Map" resultMap="CommunityDetailResultMap">
+        SELECT
+            cm.community_idx,
+            cm.member_idx,
+            cm.category_id,
+            cc.code_nm,
+            cm.title,
+            cm.content,
+            cm.view_count,
+            cm.reg_date,
+            cm.mod_date,
+            (
+                SELECT COUNT(*)
+                FROM tb_like l
+                WHERE l.community_idx = cm.community_idx
+            ) AS like_count,
+            CASE
+                WHEN EXISTS(
+                SELECT 1
+                FROM tb_like l
+                WHERE l.community_idx = cm.community_idx
+                AND l.member_idx = #{memberIdx}
+                ) THEN 1
+                ELSE 0
+            END AS liked_by_me,
+            ma.auth,
+            CASE
+                WHEN ma.auth = 'ROLE_USER' THEN rp.nickname
+                WHEN ma.auth = 'ROLE_OWNER' THEN op.business_name
+                WHEN ma.auth = 'ROLE_ADMIN' THEN m.member_name
+                ELSE '알 수 없음'
+            END AS writer_name
+        FROM tb_community cm
+        JOIN tb_member m ON cm.member_idx = m.member_idx
+        JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
+        JOIN tb_common_code cc ON cm.category_id = cc.code_id
+        LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
+        LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
+        WHERE cm.community_idx = #{communityIdx}
+        AND cm.del_yn = 'N'
+    </select>
+    <!--좋아요 증가-->
+    <insert id="insertLike" parameterType="java.util.Map">
+        INSERT INTO tb_like (community_idx, member_idx, reg_date )
+        VALUES (#{communityIdx}, #{memberIdx}, NOW())
+    </insert>
+    <!--좋아요 취소(삭제)-->
+    <delete id="deleteLike" parameterType="java.util.Map">
+        DELETE FROM tb_like
+        WHERE community_idx = #{communityIdx} AND member_idx = #{memberIdx}
+    </delete>
 
-    <select id="getCommunityByIdx" parameterType="int" resultType="com.webcore.platform.domain.CommunityDTO">
-        SELECT COMMUNITY_IDX, MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, VIEW_COUNT, CONTENT, VIEW_COUNT, REG_DATE, MOD_DATE, DEL_YN
-        FROM TB_COMMUNITY
-        WHERE COMMUNITY_IDX = #{communityIdx};
-    </select>
+    <update id="increaseViewCount">
+        UPDATE tb_community
+        SET view_count = view_count + 1
+        WHERE community_idx = #{communityIdx}
+    </update>
 
     <insert id="insertCommunity" parameterType="com.webcore.platform.domain.CommunityDTO"
             useGeneratedKeys="true" keyProperty="communityIdx">
-        INSERT INTO TB_COMMUNITY (MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, REG_DATE)
+        INSERT INTO tb_community (MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, REG_DATE)
         VALUES (#{memberIdx}, #{categoryId}, #{title}, #{content}, NOW());
     </insert>
 
     <update id="deleteCommunity" parameterType="com.webcore.platform.domain.CommunityDTO">
-        UPDATE TB_COMMUNITY
+        UPDATE tb_community
         SET
             DEL_YN = 'Y',
             MOD_DATE = NOW()
@@ -95,7 +175,7 @@
     </update>
 
     <update id="updateCommunity" parameterType="com.webcore.platform.domain.CommunityDTO">
-        UPDATE TB_COMMUNITY
+        UPDATE tb_community
         SET
             CATEGORY_ID = #{categoryId},
             TITLE = #{title},
@@ -105,4 +185,5 @@
             AND MEMBER_IDX = #{memberIdx}
             AND DEL_YN='N';
     </update>
+
 </mapper>
