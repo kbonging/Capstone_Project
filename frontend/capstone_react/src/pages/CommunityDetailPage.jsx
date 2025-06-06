@@ -25,6 +25,7 @@ export default function CommunityDetailPage() {
       })
       .catch((err) => {
         console.error("게시글 상세 조회 실패:", err);
+        setPost(null);
       })
       .finally(() => setLoading(false));
   }, [communityIdx, token]);

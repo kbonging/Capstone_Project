@@ -58,12 +58,22 @@ export default function PostCard({post}) {
       {/* 좋아요 / 댓글 / 공유 */}
       <footer className="px-6 py-3 border-t border-gray-200 flex items-center justify-between">
         <div className="flex items-center space-x-6">
-          <button
-            onClick={handleLikeClick}
-            className={`flex items-center space-x-1 ${liked ? 'text-blue-600' : 'text-gray-500'} hover:text-blue-600 transition-colors`}>
-            <i className="fa-regular fa-thumbs-up w-5 h-5"></i>
-            <span className="text-sm font-medium">{likeCount}</span>
-          </button>
+          {/* ❤️ 좋아요 */}
+        <button
+          onClick={handleLikeClick}
+          className="flex items-center space-x-2 transition-colors"
+        >
+        <i
+          className={`relative ${
+            liked
+              ? "fa-solid fa-heart text-red-500 text-base translate-y-[-1px]"
+              : "fa-regular fa-heart text-gray-500 hover:text-red-500 text-base translate-y-[-1px]"
+          }`}
+        />
+          <span className={`text-sm font-medium ${liked ? "text-red-500 translate-y-[-1px]" : "text-gray-500 translate-y-[-1px] group-hover:text-red-500" }`}>
+            {likeCount}
+          </span>
+        </button>
           <button className="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
             <i className="fas fa-comment w-5 h-5"></i>
             <span className="text-sm font-medium">
