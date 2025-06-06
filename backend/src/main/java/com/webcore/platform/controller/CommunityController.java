@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * [GET]        /api/community  - 게시글 조회
@@ -31,10 +32,10 @@ public class CommunityController {
     @GetMapping("")
     public ResponseEntity<?> getCommunityList(CommunityDTO communityDTO){
         log.info("[GET] /api/community [Request] => {}",communityDTO.toString());
-        List<CommunityListResponseDTO> communityList = communityService.selectCommunityList(communityDTO);
-        log.info("게시글 전체 목록 => {}", communityList);
+        Map<String, Object> resultMap = communityService.getCommunityListResult(communityDTO);
+        log.info("게시글 조회 정보 => {}", resultMap);
         
-        return new ResponseEntity<>(communityList, HttpStatus.OK);
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
     /** 커뮤니티 상세페이지 조회*/

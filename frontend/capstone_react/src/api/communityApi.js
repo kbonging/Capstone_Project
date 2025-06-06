@@ -19,6 +19,7 @@ export async function fetchCommunityPosts(token, queryString) {
   return res.json();
 }
 
+// 이거 수정해야함 (Create - namk)
 export function getCommentsByCommunity(communityIdx, token) {
   return axios.get(`/api/community/${communityIdx}/comments`, {
     headers: {

@@ -86,7 +86,19 @@
         WHERE cm.del_yn='N'
         <include refid="searchWhere"></include>
         ORDER BY cm.reg_date DESC
-        LIMIT 0, 10
+        LIMIT #{firstIndex}, #{recordCount}
+    </select>
+    <!--게시글 수 조회-->
+    <select id="selectCommunityCount" parameterType="com.webcore.platform.domain.CommunityDTO" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_community cm
+        JOIN tb_member m ON cm.member_idx = m.member_idx
+        JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
+        JOIN tb_common_code cc ON cm.category_id=cc.code_id
+        LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
+        LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
+        WHERE cm.del_yn='N'
+        <include refid="searchWhere"></include>
     </select>
     <!--게시글 상세 정보 조회-->
     <select id="getCommunityByIdx" parameterType="java.util.Map" resultMap="CommunityDetailResultMap">

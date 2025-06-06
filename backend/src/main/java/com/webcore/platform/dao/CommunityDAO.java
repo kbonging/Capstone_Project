@@ -13,6 +13,9 @@ public interface CommunityDAO {
     /** 커뮤니티 글 전체 조회*/
     List<CommunityListResponseDTO> selectCommunityList(CommunityDTO communityDTO);
 
+    /** 게시글 수 조회 */
+    int selectCommunityCount(CommunityDTO communityDTO);
+
     /** 커뮤니티 글 상세정보 */
     CommunityDetailResponseDTO getCommunityByIdx(@Param("communityIdx") int communityIdx,
                                                  @Param("memberIdx") int memberIdx);

@@ -4,6 +4,7 @@
 ###############################################################################
 
 select * from tb_member;
+select count(*) from tb_member;
 #############################  tb_member 테이블 샘플 데이터 #############################
 -- INSERT INTO tb_member (member_id, member_pwd, member_name, member_email, member_nickname, profile_image_url, reg_date, mod_date)
 -- VALUES ('superadmin', '$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS', '메인관리자', 'apple75391@gmail.com', '총괄관리자', 'defaultProfile.png', NOW(), NULL);
@@ -181,6 +182,7 @@ VALUES
 
 
 ################# 커뮤니티 글 등록 ##################
+#! 회원 27명 등록 후 입력 !#
 INSERT INTO tb_community (
     member_idx, category_id, title, content, view_count, reg_date, mod_date, del_yn
 ) VALUES
