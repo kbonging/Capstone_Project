@@ -52,10 +52,9 @@ export default function PostCard({post}) {
       </header>
 
       {/* 게시글 본문 */}
-      <div className="px-6 py-5 space-y-4 text-gray-700">
+      <div className="relative top-[-100px] px-6 py-[130px] space-y-4 text-gray-700">
         <p>{post.content}</p>
       </div>
-
       {/* 좋아요 / 댓글 / 공유 */}
       <footer className="px-6 py-3 border-t border-gray-200 flex items-center justify-between">
         <div className="flex items-center space-x-6">
