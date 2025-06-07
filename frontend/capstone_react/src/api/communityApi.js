@@ -44,6 +44,20 @@ export function getCommunityDetail(communityIdx, token) {
   });
 }
 
+// 게시글 등록
+export function createPost(formData, token) {
+  return axios.post(
+    "/api/community", // URL
+    formData,         // POST body (자동으로 JSON.stringify 됨)
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
+
 // 좋아요 추가
 export function addLike(communityIdx, token) {
   return axios.post(`/api/community/like/${communityIdx}`, null, {

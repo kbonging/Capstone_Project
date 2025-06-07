@@ -8,6 +8,7 @@ import CommunityDetailPage from "../pages/CommunityDetailPage";
 import LoginPage from "../pages/LoginPage";
 // import SignupPage from '../pages/SignupPage';
 // import MyPage     from '../pages/MyPage';
+import CommunityForm from "../components/community/CommunityForm";
 
 export default function AppRouter() {
   return (
@@ -19,6 +20,7 @@ export default function AppRouter() {
       {/* <Route path="/events"     element={<Events     />} /> */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/community/:communityIdx" element={<CommunityDetailPage />} />
+      <Route path="/community/write" element={<CommunityForm mode="create"/>} />
       {/* <Route path="/signup"     element={<SignupPage />} /> */}
       {/* <Route path="/mypage"     element={<MyPage     />} /> */}
       {/* 404 페이지도 추가 가능  나중에 할거임*/}

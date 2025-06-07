@@ -1,6 +1,6 @@
 // src/pages/CommunityPage.jsx
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import { fetchCommunityPosts } from "../api/communityApi";
 import CommuCateBtns from "../components/CommuCateBtns";
@@ -110,9 +110,11 @@ export default function CommunityPage() {
           <h1 className="text-2xl font-bold">
             커뮤니티
           </h1>
-          <button className="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg font-semibold">
-            글 작성
-          </button>
+          <Link to="/community/write">
+            <button className="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg font-semibold">
+              글 작성
+            </button>
+          </Link>
         </div>
 
         {/* 검색창 */}
@@ -258,29 +260,24 @@ export default function CommunityPage() {
                           {post.title}
                       </td>
                       <td>
-                    <span className="text-gray-800">
-                      {
-                        post.writerName
-                      }
-                    </span>
-                        {post.auth ===
-                            "ROLE_OWNER" && (
-                                <span className="ml-2 text-xs font-semibold text-white bg-cyan-400 px-[2px] rounded">
-                        소
-                      </span>
-                            )}
-                        {post.auth ===
-                            "ROLE_USER" && (
-                                <span className="ml-2 text-xs font-semibold text-white bg-lime-500 px-[2px] rounded">
-                        리
-                      </span>
-                            )}
-                        {post.auth ===
-                            "ROLE_ADMIN" && (
-                                <span className="ml-2 text-xs font-semibold text-white bg-red-600 px-[2px] rounded">
-                        관
-                      </span>
-                            )}
+                        <span className="text-gray-800">
+                          {post.writerName}
+                        </span>
+                        {post.auth === "ROLE_OWNER" && (
+                          <span className="ml-2 text-[11px] font-semibold text-white bg-cyan-400 px-[2px] rounded">
+                            소
+                          </span>
+                        )}
+                        {post.auth === "ROLE_USER" && (
+                          <span className="ml-2 text-[11px] font-semibold text-white bg-lime-500 px-[2px] rounded">
+                            리
+                          </span>
+                        )}
+                        {post.auth === "ROLE_ADMIN" && (
+                          <span className="ml-2 text-[11px] font-semibold text-white bg-red-600 px-[2px] rounded">
+                            관
+                          </span>
+                        )}
                       </td>
                       <td className="text-center">
                         {new Date(
