@@ -73,12 +73,11 @@ public class CommunityController {
         }
     }
 
-    // 커뮤니티 글 작성 (로그인한 유저만 가능)
+    /** 커뮤니티 게시글 등록 */ 
     @PostMapping("")
     public ResponseEntity<?> createPost(@RequestBody CommunityDTO communityDTO,
                                    @AuthenticationPrincipal CustomUser customUser) {
-        int memberIdx = customUser.getMemberDTO().getMemberIdx();
-        communityDTO.setMemberIdx(memberIdx);
+        communityDTO.setMemberIdx(customUser.getMemberDTO().getMemberIdx());
         int result = communityService.createPost(communityDTO);
 
         if(result > 0){

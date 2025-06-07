@@ -1,10 +1,9 @@
 // components/community/PostHeader.jsx
-export default function PostHeader({title, categoryName}) {
+export default function PostHeader() {
+
   return (
-    <nav className="text-sm text-gray-500">
-      <a href="#" className="hover:underline">{categoryName}</a>
-      <span className="mx-2">/</span>
-      <a href="#" className="text-blue-600 hover:underline">{title}</a>
+    <nav className="text-2xl text-gray-800 font-semibold">
+      <h1>커뮤니티</h1>
     </nav>
   );
 }

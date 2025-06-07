@@ -31,7 +31,7 @@ export default function CommunityDetailPage() {
   }, [communityIdx, token]);
 
   return (
-    <div className="max-w-3xl mx-auto my-8 p-4 space-y-6 min-h-[80vh]">
+    <div className="max-w-4xl mx-auto my-8 p-4 space-y-6 min-h-[80vh]">
       {loading ? (
         <>
           <div className="min-h-[60vh] flex items-center justify-center">
@@ -40,7 +40,7 @@ export default function CommunityDetailPage() {
         </>
       ) : post ? (
         <>
-          <PostHeader title={post.title} categoryName={post.categoryName} />
+          <PostHeader post={post} />
           <PostCard post={post} />
           <div className="bg-white rounded-lg">
             <CommentForm />

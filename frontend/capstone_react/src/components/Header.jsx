@@ -37,9 +37,9 @@ export default function Header() {
           )}
 
           {/* 알림 아이콘 */}
-          <button className="relative p-1 hover:text-gray-500">
+          {/* <button className="relative p-1 hover:text-gray-500">
             <i className="fa-regular fa-bell text-xl"></i>
-          </button>
+          </button> */}
 
           {/* 프로필 아이콘 */}
           <Link to={user ? "/mypage" : "/login"} className="relative p-1 hover:text-gray-500">

@@ -75,12 +75,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public int createPost(CommunityDTO communityDTO) {
-        int result = communityDAO.insertCommunity(communityDTO);
-        if(result > 0) {
-            log.info("Insert community successfully!! insert user's idx : {}", communityDTO.getMemberIdx());
-        }
-
-        return result;
+        return communityDAO.insertCommunity(communityDTO);
     }
 
     @Override

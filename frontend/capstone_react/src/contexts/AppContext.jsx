@@ -13,6 +13,7 @@ export function AppProvider({ children }) {
     if (token && !user) {
       fetchUser(token)
         .then((userData) => {
+          console.log(userData);
           setUser(userData);
         })
         .catch((err) => {
@@ -23,7 +24,7 @@ export function AppProvider({ children }) {
     }
   }, [token, user]);
 
-  console.log(user);
+  //console.log(user);
 
   const logout = () => {
     setUser(null);
