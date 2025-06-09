@@ -13,7 +13,7 @@ export default defineConfig({
         secure: false,              // HTTPS 셀프사인 인증서 허용 여부
         rewrite: (path) => path,
       },
-      '/login': {
+      '/api/login': {
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,

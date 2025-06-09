@@ -1,7 +1,7 @@
 
 // 로그인 (토큰 발급)
 export async function loginUser({ memberId, memberPwd }) {
-  const res = await fetch("/login", {
+  const res = await fetch("/api/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ memberId, memberPwd }),
