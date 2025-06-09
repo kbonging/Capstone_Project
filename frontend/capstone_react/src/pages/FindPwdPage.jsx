@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import LogoImage from '../images/Logo.png';
 
 export default function FindPwd() {

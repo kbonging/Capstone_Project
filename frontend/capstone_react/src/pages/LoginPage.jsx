@@ -39,15 +39,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white font-['Noto_Sans_KR'] px-4">
+    <div className="min-screen flex flex-col items-center justify-center bg-white font-['Noto_Sans_KR'] px-4">
 
-  <div className="mb-[35px]">
+  <div className="mb-[35px] mt-[100px]">
     <img src={LogoImage} alt="Revory Logo" className="w-[200px] h-full" />
   </div>
 
   <form
     onSubmit={handleSubmit}
-    className="w-full max-w-[450px] bg-white rounded-[10px] p-[40px] text-center shadow-none"
+    className="w-full max-w-[450px] bg-white rounded-[10px] p-[40px] text-center shadow-none mb-[100px]"
   >
     <h2 className="text-2xl font-semibold mb-6 text-[#333]">로그인</h2>
 
