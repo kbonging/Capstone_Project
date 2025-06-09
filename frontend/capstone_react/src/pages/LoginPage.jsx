@@ -3,6 +3,7 @@ import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 import { loginUser } from "../api/authApi"; // 아래 예시처럼 구현해 두세요
+import LogoImage from '../images/Logo.png';
 
 export default function LoginPage() {
   const { setToken } = useContext(AppContext); //전역으로 할당
@@ -38,92 +39,91 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="h-screen grid place-items-center text-[#333]">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white w-[400px] rounded-lg p-8 shadow-[0_0_25px_rgba(0,0,0,0.2)]"
-      >
-        <h2 className="text-center capitalize text-3xl mb-6">login</h2>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white font-['Noto_Sans_KR'] px-4">
 
-        {/* <span className="block relative mb-5 text-center or">or</span> */}
+  <div className="mb-[35px]">
+    <img src={LogoImage} alt="Revory Logo" className="w-[200px] h-full" />
+  </div>
 
-        {/* 에러 메시지 */}
-        {error && (
-          <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
-        )}
+  <form
+    onSubmit={handleSubmit}
+    className="w-full max-w-[450px] bg-white rounded-[10px] p-[40px] text-center shadow-none"
+  >
+    <h2 className="text-2xl font-semibold mb-6 text-[#333]">로그인</h2>
 
-        {/* Email & Password */}
-        <div className="space-y-4 mb-6">
-          <div className="relative">
-            <input
-              id="memberId"
-              type="text"
-              placeholder="Enter your ID"
-              value={memberId}
-              onChange={(e) => setMemberId(e.target.value)}
-              className="border block w-full p-2 pl-12 rounded-md outline-none focus:border-blue-400 placeholder-gray-400 focus:placeholder-transparent"
-              required
-            />
-            <span className="absolute top-2 left-3 text-xl text-gray-300">
-              <i className="bx bx-envelope"></i>
-            </span>
-          </div>
+    {error && (
+      <p className="text-[#FF322E] text-sm mb-4 text-left">{error}</p>
+    )}
 
-          <div className="relative">
-            <input
-              id="user-pw"
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              value={memberPwd}
-              onChange={(e) => setMemberPwd(e.target.value)}
-              className="border block w-full p-2 pl-12 rounded-md outline-none focus:border-blue-400 placeholder-gray-400 focus:placeholder-transparent"
-              maxLength={12}
-              required
-            />
-            <span className="absolute top-2 left-3 text-xl text-gray-300">
-              <i className="bx bx-lock"></i>
-            </span>
-            <button
-              type="button"
-              onClick={togglePassword}
-              className="absolute top-2 right-3 text-xl text-gray-500 hover:text-gray-700"
-            >
-              <i className={`bx ${showPassword ? "bx-show" : "bx-hide"}`}></i>
-            </button>
-          </div>
-        </div>
-
-        {/* Save account & forgot */}
-        <div className="flex justify-between items-center mb-6 text-sm">
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={saveAccount}
-              onChange={(e) => setSaveAccount(e.target.checked)}
-              className="hidden peer"
-            />
-            <span className="inline-block w-5 h-5 mr-1 bg-[url('/images/icon-radio.png')] bg-no-repeat bg-left peer-checked:bg-right"></span>
-            save account
-          </label>
-          <Link to="/FindPwd" className="hover:underline">
-            forgot password?
-          </Link>
-        </div>
-
-        <button
-          type="submit"
-          className="bg-blue-500 text-white w-full text-center p-3 rounded-md hover:bg-blue-600 transition"
-        >
-          log in
-        </button>
-
-        <p className="text-center capitalize mt-4 text-sm">
-          don&apos;t have an account?{" "}
-          <Link to="/signup" className="text-blue-500 hover:underline">
-            sign up
-          </Link>
-        </p>
-      </form>
+    {/* input ID */}
+    <div className="flex items-center mb-3 rounded-[10px] border border-gray-300 overflow-hidden h-[55px]">
+      <div className="flex items-center justify-center w-[55px] bg-[#f7f9fc] border-r border-gray-300">
+        <i className="bx bx-user text-xl text-gray-500"></i>
+      </div>
+      <input
+        id="memberId"
+        type="text"
+        placeholder="아이디"
+        value={memberId}
+        onChange={(e) => setMemberId(e.target.value)}
+        className="w-full h-full px-3 text-[15px] outline-none"
+        required
+      />
     </div>
+
+    {/* input PWD */}
+    <div className="flex items-center mb-4 rounded-[10px] border border-gray-300 overflow-hidden h-[55px] relative">
+      <div className="flex items-center justify-center w-[55px] bg-[#f7f9fc] border-r border-gray-300">
+        <i className="bx bx-lock text-xl text-gray-500"></i>
+      </div>
+      <input
+        id="user-pw"
+        type={showPassword ? "text" : "password"}
+        placeholder="비밀번호"
+        value={memberPwd}
+        onChange={(e) => setMemberPwd(e.target.value)}
+        className="w-full h-full px-3 text-[15px] outline-none"
+        maxLength={12}
+        required
+      />
+      <button
+        type="button"
+        onClick={togglePassword}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-xl text-gray-500 hover:text-gray-700"
+      >
+        <i className={`bx ${showPassword ? "bx-show" : "bx-hide"}`}></i>
+      </button>
+    </div>
+
+    <div className="flex items-center justify-start mb-5 text-sm text-gray-600">
+      <input
+        type="checkbox"
+        checked={saveAccount}
+        onChange={(e) => setSaveAccount(e.target.checked)}
+        className="w-4 h-4 rounded mr-2 border border-gray-300"
+      />
+      <label>로그인 상태 유지</label>
+    </div>
+
+    <button
+      type="submit"
+      className="w-full h-[55px] bg-[#5f61f6] hover:bg-[#8687f9]  text-white text-lg rounded-[10px] transition"
+    >
+      로그인
+    </button>
+
+    {/* find, signup */}
+    <div className="mt-6 text-sm text-[#666] flex justify-center gap-3">
+      <Link to="/FindId" className="hover:text-[#1769FF]">아이디 찾기</Link>
+      <span className="text-gray-300">|</span>
+      {/* 아직 미적용 ↑ */}
+
+      <Link to="/FindPwd" className="hover:text-[#1769FF]">비밀번호 찾기</Link>
+      <span className="text-gray-300">|</span>
+
+      <Link to="/signup" className="hover:text-[#1769FF]">회원가입</Link>
+    </div>
+  </form>
+</div>
   );
 }
