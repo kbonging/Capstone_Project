@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { checkDuplicateId } from "../api/authApi";
 
 export default function ReviewerFormPage() {
   const [formData, setFormData] = useState({
@@ -31,6 +32,30 @@ export default function ReviewerFormPage() {
   const [emailLocked, setEmailLocked] = useState(false);
   const [emailAuthVisible, setEmailAuthVisible] = useState(false);
 
+  const [userIdChecked, setUserIdChecked] = useState(false);  // 중복 체크 상태 추가
+
+   // 아이디 중복 체크 함수
+  const handleCheckDuplicateId = async () => {
+    if (!formData.userId) {
+      alert("아이디를 입력해주세요.");
+      return;
+    }
+    try {
+      const response = await checkDuplicateId(formData.userId);
+      console.log(response);
+      // response가 중복 여부를 알려준다고 가정
+      if (response.data) {
+        alert("이미 사용 중인 아이디입니다.");
+        setUserIdChecked(false);
+      } else {
+        alert("사용 가능한 아이디입니다.");
+        setUserIdChecked(true);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("아이디 중복 체크 중 오류가 발생했습니다.");
+    }
+  };
 
   const emailInputRef = useRef(null);
   const authCodeRef = useRef(null);
@@ -150,7 +175,7 @@ export default function ReviewerFormPage() {
         <label className="font-bold block mb-[10px]" >아이디 *</label>
         <div className="flex gap-2">
           <input name="userId" value={formData.userId} onChange={handleChange} required placeholder="아이디를 입력하세요" className="w-full p-[10px] text-sm border border-gray-300 rounded-md" />
-          <button type="button" className="h-[42px] px-4 text-sm border border-gray-800 bg-white rounded-md whitespace-nowrap hover:bg-gray-100">중복확인</button>
+          <button type="button" onClick={()=>{handleCheckDuplicateId()}} className="h-[42px] px-4 text-sm border border-gray-800 bg-white rounded-md whitespace-nowrap hover:bg-gray-100">중복확인</button>
         </div>
         {errors.userId && <div className="text-xs text-red-500">{errors.userId}</div>}
 

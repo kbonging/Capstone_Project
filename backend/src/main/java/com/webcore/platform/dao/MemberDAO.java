@@ -13,5 +13,7 @@ public interface MemberDAO {
     /** 권한 등록 */
     int insertMemberAuth(MemberAuthDTO memberAuthDTO);
     /** 회원 고유번호로 정보 조회 */
-    MemberDTO selectMemberById(int memberIdx);
+    MemberDTO selectMemberByIdx(int memberIdx);
+    /** 아이디 중복 체크 */
+    int countByMemberId(String memberId);
 }

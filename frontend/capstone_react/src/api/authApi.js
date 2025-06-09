@@ -1,3 +1,5 @@
+// src/api/authApi.js
+import axios from "axios";
 
 // 로그인 (토큰 발급)
 export async function loginUser({ memberId, memberPwd }) {
@@ -39,4 +41,9 @@ export async function fetchUser(token){
   }
 
   return res.json();
+}
+
+// 아이디 중복 체크 함수
+export function checkDuplicateId(memberId){
+  return axios.get(`/api/members/check-id/${memberId}`);
 }

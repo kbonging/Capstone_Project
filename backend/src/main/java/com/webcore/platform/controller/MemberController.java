@@ -55,4 +55,10 @@ public class MemberController { // 현재 이거 안씀
         return new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
     }
 
+    @GetMapping("/check-id/{memberId}")
+    public ResponseEntity<?> checkDuplicateId(@PathVariable String memberId){
+        boolean isDuplicate = memberService.checkDuplicateId(memberId);
+        return ResponseEntity.ok(isDuplicate);
+    }
+
 }

@@ -88,6 +88,9 @@ public class SecurityConfig {
                         // 공통(common)
                         .requestMatchers("/api/common", "/api/common/**").permitAll()
 
+                        // 회원(members)
+                        .requestMatchers("/api/members/check-id/**").permitAll() // 아이디 중복 체크
+
                         // 리뷰어
                         .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 리뷰어 회원가입은 누구나 가능 (POST)
                         .requestMatchers("/api/reviewer", "/api/reviewer/**").hasRole("USER") // 회원 가입 제외 모든 경로는 권한 필요
