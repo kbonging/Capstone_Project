@@ -105,7 +105,7 @@ export default function LoginPage() {
             <span className="inline-block w-5 h-5 mr-1 bg-[url('/images/icon-radio.png')] bg-no-repeat bg-left peer-checked:bg-right"></span>
             save account
           </label>
-          <Link to="/forgot-password" className="hover:underline">
+          <Link to="/FindPwd" className="hover:underline">
             forgot password?
           </Link>
         </div>
