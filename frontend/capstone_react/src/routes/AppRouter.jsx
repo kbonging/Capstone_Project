@@ -10,7 +10,8 @@ import ReviewerFormPage from "../pages/ReviewerFormPage";
 import OwnerFormPage from "../pages/OwnerFormPage";
 import FindPwd from "../pages/FindPwdPage";
 import FindId from "../pages/FindIdPage";
-
+import MyPage     from '../pages/MyPage';
+import ProfileManagePage from '../pages/ProfileManagePage';
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
@@ -18,7 +19,7 @@ import FindId from "../pages/FindIdPage";
 // import Support    from '../pages/Support';
 // import Events     from '../pages/Events';
 // import SignupPage from '../pages/SignupPage';
-// import MyPage     from '../pages/MyPage';
+
 
 export default function AppRouter() {
   return (
@@ -50,7 +51,8 @@ export default function AppRouter() {
       <Route path="/signup/reviewer" element={<ReviewerFormPage />} />
       <Route path="/FindPwd" element={<FindPwd />} />
       <Route path="/FindId" element={<FindId />} />
-      {/* <Route path="/mypage"     element={<MyPage     />} /> */}
+      <Route path="/mypage"     element={<MyPage />} />
+      <Route path="/mypage/manage" element={<ProfileManagePage />} />
       {/* 404 페이지도 추가 가능  나중에 할거임*/}
     </Routes>
   );
