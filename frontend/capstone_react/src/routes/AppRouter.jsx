@@ -33,16 +33,26 @@ export default function AppRouter() {
           <CommunityPage/>
         </PrivateRoute>} 
       />
-      <Route path="/community/:communityIdx" element={
-        <PrivateRoute>
-          <CommunityDetailPage />
-        </PrivateRoute>} 
-      />
+      {/* 게시글 등록 */}
       <Route path="/community/write" element={
         <PrivateRoute>
           <CommunityForm mode="create"/>
         </PrivateRoute>} 
       />
+      {/* 게시글 수정 */}
+      <Route path="/community/edit/:communityIdx" element={
+        <PrivateRoute>
+          <CommunityForm mode="edit" />
+        </PrivateRoute>
+      } />
+      {/* 게시글 상세 페이지 */}
+      <Route path="/community/:communityIdx" element={
+        <PrivateRoute>
+          <CommunityDetailPage />
+        </PrivateRoute>} 
+      />
+
+      
       {/* <Route path="/search"     element={<SearchPage />} /> */}
       {/* <Route path="/support"    element={<Support    />} /> */}
       {/* <Route path="/events"     element={<Events     />} /> */}

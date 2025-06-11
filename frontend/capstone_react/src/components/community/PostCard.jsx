@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { AppContext } from "../../contexts/AppContext";
 import { addLike, deleteLike } from "../../api/communityApi";
+import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 
 const categoryColorMap = {
@@ -12,7 +13,10 @@ const categoryColorMap = {
 
 export default function PostCard({post}) {
   const { token } = useContext(AppContext);
+  const { user } = useContext(AppContext);
   const categoryColor = categoryColorMap[post.categoryId];
+
+  console.log(user);
 
   const [liked, setLiked] = useState(post.likeByMe);
   const [likeCount, setLikeCount] = useState(post.likeCount);
@@ -44,7 +48,7 @@ export default function PostCard({post}) {
             {post.title}
           </h1>
         </div>
-        <div className="flex items-center space-x-3 mb-3">
+        <div className="flex items-center space-x-3 mb-3 ">
           <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
             <span className="text-gray-500 font-semibold">
               {post.writerName?.charAt(0) || "익"}
@@ -67,22 +71,37 @@ export default function PostCard({post}) {
               </span>
             )}
         </div>
-        <div className="flex items-center text-sm text-gray-500 space-x-4">
+        <div className="flex items-center text-sm text-gray-500 space-x-4 ">
           <span>{dayjs(post.regDate).format("YYYY.MM.DD HH:mm")}</span>
           <span className="text-sm text-gray-400">
             조회 {post.viewCount}
           </span>
-          {post.modDate && (
+          {/* {post.modDate && (
             <span className="text-blue-600 hover:underline cursor-pointer">
               수정됨
             </span>
+            )} */}
+
+          {post.memberIdx === user.memberIdx && (
+            <div className="ml-auto flex space-x-2">
+              <Link to={`/community/edit/${post.communityIdx}`}>
+                <button className="bg-gray-200 text-gray-600 px-3 py-2 rounded-sm font-semibold">
+                  수정
+                </button>
+              </Link>
+              <Link to="#">
+                <button className="bg-gray-200 text-gray-600 px-3 py-2 rounded-sm font-semibold">
+                  삭제
+                </button>
+              </Link>
+            </div>
           )}
         </div>
       </header>
 
       {/* 게시글 본문 */}
       <div
-        className="relative top-[-100px] px-6 py-[130px] space-y-4 text-gray-700"
+        className=" px-6 py-[130px] space-y-4 text-gray-700"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
       {/* 좋아요 / 댓글 / 공유 */}

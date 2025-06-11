@@ -58,6 +58,20 @@ export function createPost(formData, token) {
   );
 }
 
+// 게시글 수정
+export function updatePost(communityIdx, formData, token){
+  return axios.put(
+    `/api/community/${communityIdx}`, // URL
+    formData,         
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
+
 // 좋아요 추가
 export function addLike(communityIdx, token) {
   return axios.post(`/api/community/like/${communityIdx}`, null, {

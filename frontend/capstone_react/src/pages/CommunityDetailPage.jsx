@@ -3,6 +3,7 @@ import PostHeader from "../components/community/PostHeader";
 import PostCard from "../components/community/PostCard";
 import CommentForm from "../components/community/CommentForm";
 import CommentList from "../components/community/CommentList";
+import { Link } from "react-router-dom";
 
 import { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
@@ -14,6 +15,7 @@ export default function CommunityDetailPage() {
   const { token } = useContext(AppContext);
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     if (!communityIdx) return;
@@ -46,6 +48,11 @@ export default function CommunityDetailPage() {
             <CommentForm />
             <CommentList id={communityIdx}/>
           </div>
+          {/* <Link to="/community/write">
+            <button className="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg font-semibold">
+              글 수정
+            </button>
+          </Link> */}
         </>
       ) : (
         <p className="text-center py-8">게시글을 찾을 수 없습니다.</p>

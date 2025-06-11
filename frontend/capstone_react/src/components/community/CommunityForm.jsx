@@ -1,30 +1,39 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../../contexts/AppContext";
-import { createPost } from "../../api/communityApi";
+import { createPost, updatePost, getCommunityDetail } from "../../api/communityApi";
 import { fetchCommonCode } from "../../api/commonApi";
 
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-export default function CommunityForm({ mode = "create", post = {} }) {
+export default function CommunityForm({ mode = "create"}) {
   const { user } = useContext(AppContext);
   const { token } = useContext(AppContext);
-  const isEdit = mode === "edit";
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
-  // 관리자 유무 확인인
-  const isAdmin = user?.authDTOList?.some(auth => auth.auth === "ROLE_ADMIN");
+  const { communityIdx } = useParams();
+  
+  const isEdit = mode === "edit"; // 수정 페이지 유무
+  const isAdmin = user?.authDTOList?.some(auth => auth.auth === "ROLE_ADMIN"); // 관리자 유무 확인
+
   // input에 포커스 주기 위한 ref 추가
   const titleRef = useRef(null);
   const contentRef = useRef(null);
   const categoryRef = useRef(null);
+  
+  // 전송 데이터
+  const [formData, setFormData] = useState({
+    title: "",
+    content:  "",
+    categoryId:  "",
+  });
 
-  useEffect(()=>{
+  useEffect(()=>{ // 카테고리 DB 조회
     fetchCommonCode('COMMU_CATE')
     .then((data)=>{
       if(!isAdmin){
-        data = data.filter((code) => code.codeId !== "COMMU004");
+        data = data.filter((code) => code.codeId !== "COMMU004"); // 관리자가 아닐경우 "공지" 항목을 빼고 노출
       }
       setCategories(data);
     })
@@ -33,12 +42,30 @@ export default function CommunityForm({ mode = "create", post = {} }) {
     });
   }, [isAdmin]);
 
-  // 전송 데이터
-  const [formData, setFormData] = useState({
-    title: post.title || "",
-    content: post.content || "",
-    categoryId: post.categoryId || "",
-  });
+  useEffect(() => {
+    if (isEdit && communityIdx) {
+      // 수정 모드일 경우 기존 데이터 불러오기
+    getCommunityDetail(communityIdx, token)
+      .then((res) => {
+        console.log(res.data);
+        const isPostAuthor = res.data.memberIdx === user.memberIdx;
+        if(!isPostAuthor){
+          alert("수정 권한이 없습니다.");
+          navigate("/community");
+        }
+        setFormData({
+          title: res.data.title,
+          content: res.data.content,
+          categoryId: res.data.categoryId,
+        });
+      })
+      .catch((err) => {
+        console.error("게시글 상세 조회 실패:", err);
+      })
+      .finally();
+    }
+  }, [communityIdx, isEdit, token]);
+
 
   // 일반 input/select 변경 처리 함수
   const handleChange = (e) => {
@@ -77,9 +104,9 @@ export default function CommunityForm({ mode = "create", post = {} }) {
     try {
       if (isEdit) {
         // 게시글 수정일 경우
-        // await updatePost(post.communityIdx, formData, token);
+        await updatePost(communityIdx, formData, token);
         alert("수정되었습니다.");
-        navigate(`/community/${post.communityIdx}`);
+        navigate(`/community/${communityIdx}`);
       } else {
         // 게시글 등록일 경우
         await createPost(formData, token);
@@ -112,7 +139,7 @@ export default function CommunityForm({ mode = "create", post = {} }) {
           onChange={handleChange}
           className="w-full px-4 py-2 border border-gray-300 "
           placeholder="제목을 입력하세요"
-          maxlength="200"
+          maxLength={200}
         />
       </div>
 
@@ -126,7 +153,7 @@ export default function CommunityForm({ mode = "create", post = {} }) {
           ref={categoryRef}
           className="w-full px-4 py-2 border border-gray-300 "
         >
-        <option value="">카테고리를 선택해주세요</option>
+        <option value="">선택</option>
         {categories.map((cat) => (
           <option key={cat.codeId} value={cat.codeId}>
             {cat.codeNm}
