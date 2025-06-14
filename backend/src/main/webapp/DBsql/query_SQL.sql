@@ -28,6 +28,9 @@ FROM tb_member mb JOIN tb_member_auth au
 ON mb.member_idx = au.member_idx
 WHERE mb.member_idx=29 AND mb.del_yn='N';
 
+###### 아이디 중복 체크 #######
+SELECT COUNT(*) FROM TB_MEMBER WHERE member_Id = 'apple75391';
+
 ##************************************************##
 ##********************** 리뷰어 ********************##
 ##************************************************##

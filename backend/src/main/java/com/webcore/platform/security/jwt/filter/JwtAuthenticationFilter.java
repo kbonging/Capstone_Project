@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,8 +41,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider=jwtTokenProvider;
-        // 필터 URL 경로 설정 : /login
-        setFilterProcessesUrl(JwtConstants.AUTH_LOGIN_URL);
+        // 필터 URL 경로 설정 : /login // 현재 GET방식도 통과하기 때문에 사용안함
+//        setFilterProcessesUrl(JwtConstants.AUTH_LOGIN_URL);
+
+        // ✅ POST 메서드로 제한된 /login 요청만 처리
+        this.setRequiresAuthenticationRequestMatcher(
+                new AntPathRequestMatcher(JwtConstants.AUTH_LOGIN_URL, "POST")
+        );
     }
 
     /**

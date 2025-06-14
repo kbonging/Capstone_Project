@@ -2,6 +2,7 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AppContext } from '../contexts/AppContext';
+import LogoImage from '../images/Logo.png';
 
 export default function Header() {
   const { user, logout } = useContext(AppContext);
@@ -11,7 +12,9 @@ export default function Header() {
       <div className="max-w-[1350px] mx-auto h-16 flex items-center justify-between px-4">
         {/* 로고 */}
         <h1 className="text-2xl font-bold uppercase text-black">
-          <Link to="/">revory</Link>
+          <Link to="/">
+            <img src={LogoImage} alt="Revory Logo" className="w-[90px] h-full inline-block" />
+          </Link>
         </h1>
 
         {/* 네비게이션 */}
@@ -37,9 +40,9 @@ export default function Header() {
           )}
 
           {/* 알림 아이콘 */}
-          <button className="relative p-1 hover:text-gray-500">
+          {/* <button className="relative p-1 hover:text-gray-500">
             <i className="fa-regular fa-bell text-xl"></i>
-          </button>
+          </button> */}
 
           {/* 프로필 아이콘 */}
           <Link to={user ? "/mypage" : "/login"} className="relative p-1 hover:text-gray-500">

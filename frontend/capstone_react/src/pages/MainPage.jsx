@@ -8,7 +8,7 @@ const MainPage = () => {
         <Header/>
         <main style={styles.main}>
         <h2>Welcome to Revory</h2>
-        <p>남국아 부탁한다.</p>
+        <p>남국아 부탁한다.!</p>
         </main>
         <Footer/>
     </>

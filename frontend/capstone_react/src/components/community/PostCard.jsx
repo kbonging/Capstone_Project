@@ -1,9 +1,22 @@
 import { useState, useContext } from "react";
 import { AppContext } from "../../contexts/AppContext";
 import { addLike, deleteLike } from "../../api/communityApi";
+import { Link } from "react-router-dom";
+import dayjs from "dayjs";
+
+const categoryColorMap = {
+  COMMU001: "#FDD835",
+  COMMU002: "#4DB6AC",
+  COMMU003: "#7986CB",
+  COMMU004: "#dc2626",
+};
 
 export default function PostCard({post}) {
   const { token } = useContext(AppContext);
+  const { user } = useContext(AppContext);
+  const categoryColor = categoryColorMap[post.categoryId];
+
+  console.log(user);
 
   const [liked, setLiked] = useState(post.likeByMe);
   const [likeCount, setLikeCount] = useState(post.likeCount);
@@ -28,55 +41,99 @@ export default function PostCard({post}) {
       {/* 게시글 헤더 */}
       <header className="px-6 py-5 border-b border-gray-200">
         <div className="flex items-center space-x-3 mb-3">
+          <h1 className="text-2xl mb-2 font-semibold"  style={{color:categoryColor}}>
+            {post.categoryName}
+          </h1>
+          <h1 className="text-2xl  text-gray-900 mb-2">
+            {post.title}
+          </h1>
+        </div>
+        <div className="flex items-center space-x-3 mb-3 ">
           <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
             <span className="text-gray-500 font-semibold">
               {post.writerName?.charAt(0) || "익"}
             </span>
           </div>
           <span className="font-medium text-gray-700">{post.writerName}</span>
+            {post.auth === "ROLE_OWNER" && (
+              <span className="ml-2 text-[11px] font-semibold text-white bg-cyan-400 px-[2px] rounded">
+                소
+              </span>
+            )}
+            {post.auth === "ROLE_USER" && (
+              <span className="ml-2 text-[11px] font-semibold text-white bg-lime-500 px-[2px] rounded">
+                리
+              </span>
+            )}
+            {post.auth === "ROLE_ADMIN" && (
+              <span className="ml-2 text-[11px] font-semibold text-white bg-red-600 px-[2px] rounded">
+                관
+              </span>
+            )}
         </div>
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-          {post.title}
-        </h1>
-        <div className="flex items-center text-sm text-gray-500 space-x-4">
-          <span>{new Date(post.regDate).toLocaleString()}</span>
-          <span className="before:content-['·'] before:mx-2">
-            {post.viewCount}
+        <div className="flex items-center text-sm text-gray-500 space-x-4 ">
+          <span>{dayjs(post.regDate).format("YYYY.MM.DD HH:mm")}</span>
+          <span className="text-sm text-gray-400">
+            조회 {post.viewCount}
           </span>
-          {post.modDate && (
+          {/* {post.modDate && (
             <span className="text-blue-600 hover:underline cursor-pointer">
               수정됨
             </span>
+            )} */}
+
+          {post.memberIdx === user.memberIdx && (
+            <div className="ml-auto flex space-x-2">
+              <Link to={`/community/edit/${post.communityIdx}`}>
+                <button className="bg-gray-200 text-gray-600 px-3 py-2 rounded-sm font-semibold">
+                  수정
+                </button>
+              </Link>
+              <Link to="#">
+                <button className="bg-gray-200 text-gray-600 px-3 py-2 rounded-sm font-semibold">
+                  삭제
+                </button>
+              </Link>
+            </div>
           )}
         </div>
       </header>
 
       {/* 게시글 본문 */}
-      <div className="px-6 py-5 space-y-4 text-gray-700">
-        <p>{post.content}</p>
-      </div>
-
+      <div
+        className=" px-6 py-[130px] space-y-4 text-gray-700"
+        dangerouslySetInnerHTML={{ __html: post.content }}
+      />
       {/* 좋아요 / 댓글 / 공유 */}
       <footer className="px-6 py-3 border-t border-gray-200 flex items-center justify-between">
         <div className="flex items-center space-x-6">
+          {/* ❤️ 좋아요 */}
           <button
             onClick={handleLikeClick}
-            className={`flex items-center space-x-1 ${liked ? 'text-blue-600' : 'text-gray-500'} hover:text-blue-600 transition-colors`}>
-            <i className="fa-regular fa-thumbs-up w-5 h-5"></i>
-            <span className="text-sm font-medium">{likeCount}</span>
+            className="flex items-center space-x-2 transition-colors"
+          >
+          <i
+            className={`relative ${
+              liked
+                ? "fa-solid fa-heart text-red-500 text-base "
+                : "fa-regular fa-heart text-gray-500 hover:text-red-500 text-base"
+            }`}
+          />
+            <span className={`text-sm font-medium ${liked ? "text-red-500 " : "text-gray-500  group-hover:text-red-500" }`}>
+              좋아요 {likeCount}
+            </span>
           </button>
-          <button className="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
-            <i className="fas fa-comment w-5 h-5"></i>
-            <span className="text-sm font-medium">
+          <button className="flex items-center space-x-1 text-gray-500">
+            <i className="far fa-comment-dots w-5 h-5 translate-y-[1px]"></i>
+            <span className="text-sm font-medium ">
               댓글 {post.commentCount || 0}
             </span>
           </button>
           <button className="flex items-center space-x-1 text-gray-500 hover:text-green-600 transition-colors">
-            <i className="fas fa-share w-5 h-5"></i>
-            <span className="text-sm font-medium">공유</span>
+            <i className="fas fa-share w-5 h-5 translate-y-[1px]"></i>
+            <span className="text-sm font-medium translate-y-[1px]">공유</span>
           </button>
         </div>
-        <div className="text-sm text-gray-400">조회 {post.viewCount}</div>
       </footer>
     </article>
   );

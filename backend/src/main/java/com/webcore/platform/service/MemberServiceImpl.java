@@ -31,7 +31,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public Object loadUserInfoByMemberIdx(int memberIdx, List<MemberAuthDTO> authList) {
         if(authList.stream().anyMatch(auth -> AuthRole.ADMIN.equals(auth.getAuth()))){
-            return memberDAO.selectMemberById(memberIdx);
+            return memberDAO.selectMemberByIdx(memberIdx);
         }
         if (authList.stream().anyMatch(auth -> AuthRole.REVIEWER.equals(auth.getAuth()))) {
             return reviewerService.selectReviewerByIdx(memberIdx);
@@ -40,6 +40,11 @@ public class MemberServiceImpl implements MemberService{
             return ownerService.selectOwnerByIdx(memberIdx);
         }
         return null;
+    }
+
+    @Override
+    public boolean checkDuplicateId(String memberId) {
+        return memberDAO.countByMemberId(memberId) > 0;
     }
 
 }

@@ -78,13 +78,18 @@ public class SecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // 정적 자원 허용 (필요 시)
                         .requestMatchers("/").permitAll()
                         //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 이게 없으면 OPTIONS가 막힙니다 (필요없을 수도)
-                        .requestMatchers("/login").permitAll()
+                        //.requestMatchers(HttpMethod.GET, "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+                        .requestMatchers("/index.html").permitAll()
 
                         // 테스트 설정
                         .requestMatchers("/api/test").permitAll()
 
                         // 공통(common)
                         .requestMatchers("/api/common", "/api/common/**").permitAll()
+
+                        // 회원(members)
+                        .requestMatchers("/api/members/check-id/**").permitAll() // 아이디 중복 체크
 
                         // 리뷰어
                         .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 리뷰어 회원가입은 누구나 가능 (POST)

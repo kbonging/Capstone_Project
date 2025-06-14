@@ -19,11 +19,18 @@ export async function fetchCommunityPosts(token, queryString) {
   return res.json();
 }
 
-// 이거 수정해야함 (Create - namk)
-export function getCommentsByCommunity(communityIdx, token) {
-  return axios.get(`/api/community/${communityIdx}/comments`, {
+/**
+ * 공통 댓글 조회 함수
+ * @param {string} type     - "COMMT001" (커뮤니티 댓글) 또는 "COMMT002" (캠페인 댓글)
+ * @param {number|string} idx - 해당 글의 고유번호
+ * @param {string} token    - 로그인 시 발급받은 Bearer 토큰
+ * @returns {Promise}       - 댓글 데이터 배열이 담긴 axios Response
+ */
+export function getCommentsByCommunity(type, communityIdx, token) {
+  return axios.get(`/api/comments/${type}/${communityIdx}`, {
     headers: {
       Authorization: `Bearer ${token}`,
+      Accept: "application/json",
     },
   });
 }
@@ -35,6 +42,34 @@ export function getCommunityDetail(communityIdx, token) {
       Authorization: `Bearer ${token}`,
     },
   });
+}
+
+// 게시글 등록
+export function createPost(formData, token) {
+  return axios.post(
+    "/api/community", // URL
+    formData,         // POST body (자동으로 JSON.stringify 됨)
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
+
+// 게시글 수정
+export function updatePost(communityIdx, formData, token){
+  return axios.put(
+    `/api/community/${communityIdx}`, // URL
+    formData,         
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 }
 
 // 좋아요 추가

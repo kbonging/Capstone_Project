@@ -48,7 +48,7 @@
     </select>
 
     <!--회원 고유 번호로 회원 정보 조회-->
-    <select id="selectMemberById" parameterType="java.lang.Integer" resultMap="MemberResultMap">
+    <select id="selectMemberByIdx" parameterType="java.lang.Integer" resultMap="MemberResultMap">
         select mb.member_idx, mb.member_id, mb.member_name, au.auth , member_email, profile_img_url, intro, heart_count, penalty, mb.del_yn
         FROM tb_member mb JOIN tb_member_auth au
         ON mb.member_idx = au.member_idx
@@ -68,4 +68,8 @@
         INSERT INTO TB_MEMBER_AUTH( MEMBER_IDX, AUTH ) values( #{memberIdx}, #{auth} );
     </insert>
 
+    <!--아이디 중복 체크-->
+    <select id="countByMemberId" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM TB_MEMBER WHERE member_id = #{memberId};
+    </select>
 </mapper>
