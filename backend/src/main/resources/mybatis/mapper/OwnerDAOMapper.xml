@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.webcore.platform.dao.OwnerDAO">
+<mapper namespace="com.webcore.platform.owner.OwnerDAO">
     <!--소상공인 정보 ResultMap-->
-    <resultMap id="memberWithOwnerResultMap" type="com.webcore.platform.domain.OwnerDTO">
+    <resultMap id="memberWithOwnerResultMap" type="com.webcore.platform.owner.dto.OwnerDTO">
         <!-- TB_MEMBER -->
         <id property="memberIdx" column="member_idx" />
         <result property="memberId" column="member_id" />
@@ -24,7 +24,7 @@
         <result property="businessUrl" column="business_url" />
 
         <!-- auth 리스트 -->
-        <collection property="authDTOList" ofType="com.webcore.platform.domain.MemberAuthDTO">
+        <collection property="authDTOList" ofType="com.webcore.platform.member.dto.MemberAuthDTO">
             <result property="auth" column="auth" />
         </collection>
     </resultMap>

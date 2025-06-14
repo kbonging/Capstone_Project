@@ -3,12 +3,12 @@
             PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.webcore.platform.dao.CommentDAO">
+<mapper namespace="com.webcore.platform.comment.CommentDAO">
 
 <!-- 커뮤니티 댓글 조회-->
 <!--
         필요 없을지도?
-        <resultMap id="CommentResultMap" type="com.webcore.platform.response.CommentListResponseDTO">
+        <resultMap id="CommentResultMap" type="com.webcore.platform.comment.dto.CommentListResponseDTO">
         <id property="commentIdx" column="comment_idx" />
         <result property="communityIdx" column="community_idx" />
         <result property="content" column="content" />
@@ -22,7 +22,7 @@
         <result property="" column="" />
     </resultMap>-->
 
-    <select id="selectCommentListByCommunityIdx" parameterType="com.webcore.platform.domain.CommentDTO" resultType="com.webcore.platform.response.CommentListResponseDTO">
+    <select id="selectCommentListByCommunityIdx" parameterType="com.webcore.platform.comment.dto.CommentDTO" resultType="com.webcore.platform.comment.dto.CommentListResponseDTO">
         SELECT
         c.comment_idx,
         c.community_idx,
@@ -55,7 +55,7 @@
     </select>
 
     <!--댓글 1개 조회-->
-    <select id="getCommentById" parameterType="int" resultType="com.webcore.platform.domain.CommentDTO">
+    <select id="getCommentById" parameterType="int" resultType="com.webcore.platform.comment.dto.CommentDTO">
         SELECT COMMENT_IDX, COMMUNITY_IDX, CAMPAIGN_IDX, MEMBER_IDX, CONTENT, PARENT_ID,
                 GROUP_ID, DEPTH, SORT_ORDER, COMMENT_TYPE, REG_DATE, MOD_DATE, DEL_YN
         FROM tb_comment
@@ -91,7 +91,7 @@
     </select>
 
     <!-- 최상위 댓글 달기 -->
-    <insert id="insertComment" parameterType="com.webcore.platform.domain.CommentDTO" useGeneratedKeys="true" keyProperty="commentIdx">
+    <insert id="insertComment" parameterType="com.webcore.platform.comment.dto.CommentDTO" useGeneratedKeys="true" keyProperty="commentIdx">
         INSERT INTO tb_comment (
         community_idx, campaign_idx, member_idx, content,
         depth, sort_order, comment_type,
@@ -104,7 +104,7 @@
     </insert>
 
     <!-- 대댓글 달기 -->
-    <insert id="insertReply" parameterType="com.webcore.platform.domain.CommentDTO">
+    <insert id="insertReply" parameterType="com.webcore.platform.comment.dto.CommentDTO">
         INSERT INTO tb_comment (
         community_idx, campaign_idx, member_idx, content,
         parent_id, group_id, depth, sort_order,
@@ -124,7 +124,7 @@
     </update>
 
     <!--커뮤니티 댓글 삭제-->
-    <update id="deleteComment" parameterType="com.webcore.platform.domain.CommentDTO">
+    <update id="deleteComment" parameterType="com.webcore.platform.comment.dto.CommentDTO">
         UPDATE tb_comment
         SET
             DEL_YN = 'Y',
@@ -133,7 +133,7 @@
             AND MEMBER_IDX = #{memberIdx}
     </update>
 
-    <update id="updateComment" parameterType="com.webcore.platform.domain.CommentDTO">
+    <update id="updateComment" parameterType="com.webcore.platform.comment.dto.CommentDTO">
         UPDATE tb_comment
         SET
             CONTENT = #{content},
