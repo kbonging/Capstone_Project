@@ -72,4 +72,9 @@
     <select id="countByMemberId" parameterType="String" resultType="int">
         SELECT COUNT(*) FROM TB_MEMBER WHERE member_id = #{memberId};
     </select>
+
+    <!--이메일 중복 체크-->
+    <select id="countByMemberEmail" parameterType="String" resultType="int">
+        SELECT count(*) from tb_member where member_email = #{memberEmail};
+    </select>
 </mapper>

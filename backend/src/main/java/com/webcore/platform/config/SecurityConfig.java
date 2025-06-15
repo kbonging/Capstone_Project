@@ -86,10 +86,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/test").permitAll()
 
                         // 공통(common)
-                        .requestMatchers("/api/common", "/api/common/**").permitAll()
+                        .requestMatchers( "/api/common/**").permitAll()
 
                         // 회원(members)
                         .requestMatchers("/api/members/check-id/**").permitAll() // 아이디 중복 체크
+
+                        // 이메일(emails)
+                        .requestMatchers( "/api/emails/**").permitAll()
 
                         // 리뷰어
                         .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 리뷰어 회원가입은 누구나 가능 (POST)

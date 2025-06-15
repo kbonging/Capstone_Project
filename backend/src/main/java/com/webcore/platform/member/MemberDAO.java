@@ -16,4 +16,6 @@ public interface MemberDAO {
     MemberDTO selectMemberByIdx(int memberIdx);
     /** 아이디 중복 체크 */
     int countByMemberId(String memberId);
+    /** 이메일 중복 체크*/
+    int countByMemberEmail(String memberEmail);
 }

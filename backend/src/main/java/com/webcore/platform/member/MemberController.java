@@ -25,7 +25,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
-public class MemberController { // 현재 이거 안씀
+public class MemberController {
     private final MemberService memberService;
     private final ReviewerService reviewerService;
     private final OwnerService ownerService;
@@ -55,6 +55,7 @@ public class MemberController { // 현재 이거 안씀
         return new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
     }
 
+    /** 아이디 중복 채크 */
     @GetMapping("/check-id/{memberId}")
     public ResponseEntity<?> checkDuplicateId(@PathVariable String memberId){
         boolean isDuplicate = memberService.checkDuplicateId(memberId);

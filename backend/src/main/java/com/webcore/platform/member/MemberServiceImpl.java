@@ -41,4 +41,9 @@ public class MemberServiceImpl implements MemberService {
         return memberDAO.countByMemberId(memberId) > 0;
     }
 
+    @Override
+    public boolean isEmailExists(String memberEmail) {
+        return memberDAO.countByMemberEmail(memberEmail) > 0;
+    }
+
 }

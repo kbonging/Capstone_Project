@@ -25,11 +25,13 @@ WHERE M.member_id = 'apple75391' AND M.del_yn = 'N';
 ############### 회원 조회(관리자 조회할때 사용중) #############
 select mb.member_idx, mb.member_id, mb.member_name, au.auth , member_email, profile_img_url, intro, heart_count, penalty, mb.del_yn
 FROM tb_member mb JOIN tb_member_auth au
-ON mb.member_idx = au.member_idx
-WHERE mb.member_idx=29 AND mb.del_yn='N';
+ON mb.member_idx = au.member_idx;
+# WHERE mb.member_idx=29 AND mb.del_yn='N';
 
 ###### 아이디 중복 체크 #######
 SELECT COUNT(*) FROM TB_MEMBER WHERE member_Id = 'apple75391';
+##### 이메일 중복 체크 ######
+SELECT count(*) from tb_member where member_email = 'apple75391@gmail.com';
 
 ##************************************************##
 ##********************** 리뷰어 ********************##

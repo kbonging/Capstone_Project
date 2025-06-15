@@ -1,5 +1,6 @@
 // /src/api/commonApi.js
 
+// 공통 코드 조회
 export async function fetchCommonCode(groupCode) {
     const res = await fetch(`/api/common/code/${groupCode}`,{
       method:'GET',
