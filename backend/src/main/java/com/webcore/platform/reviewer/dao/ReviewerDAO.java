@@ -1,4 +1,4 @@
-package com.webcore.platform.reviewer;
+package com.webcore.platform.reviewer.dao;
 
 import com.webcore.platform.reviewer.dto.ReviewerChannelDTO;
 import com.webcore.platform.reviewer.dto.ReviewerDTO;

@@ -1,7 +1,8 @@
 package com.webcore.platform.reviewer;
 
-import com.webcore.platform.member.MemberDAO;
+import com.webcore.platform.member.dao.MemberDAO;
 import com.webcore.platform.member.dto.MemberAuthDTO;
+import com.webcore.platform.reviewer.dao.ReviewerDAO;
 import com.webcore.platform.reviewer.dto.ReviewerChannelDTO;
 import com.webcore.platform.reviewer.dto.ReviewerDTO;
 import lombok.RequiredArgsConstructor;

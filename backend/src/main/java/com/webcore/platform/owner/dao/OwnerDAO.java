@@ -1,4 +1,4 @@
-package com.webcore.platform.owner;
+package com.webcore.platform.owner.dao;
 
 import com.webcore.platform.owner.dto.OwnerDTO;
 import org.apache.ibatis.annotations.Mapper;

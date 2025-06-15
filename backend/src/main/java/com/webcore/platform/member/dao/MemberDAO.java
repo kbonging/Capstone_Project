@@ -1,4 +1,4 @@
-package com.webcore.platform.member;
+package com.webcore.platform.member.dao;
 
 import com.webcore.platform.member.dto.MemberAuthDTO;
 import com.webcore.platform.member.dto.MemberDTO;

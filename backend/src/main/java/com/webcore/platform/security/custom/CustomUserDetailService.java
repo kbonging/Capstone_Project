@@ -1,6 +1,6 @@
 package com.webcore.platform.security.custom;
 
-import com.webcore.platform.member.MemberDAO;
+import com.webcore.platform.member.dao.MemberDAO;
 import com.webcore.platform.member.dto.MemberDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.webcore.platform.common;
+package com.webcore.platform.common.dao;
 
 import com.webcore.platform.common.dto.CmmCodeDTO;
 import org.apache.ibatis.annotations.Mapper;

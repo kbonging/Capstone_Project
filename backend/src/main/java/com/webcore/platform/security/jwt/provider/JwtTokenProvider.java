@@ -1,6 +1,6 @@
 package com.webcore.platform.security.jwt.provider;
 
-import com.webcore.platform.member.MemberDAO;
+import com.webcore.platform.member.dao.MemberDAO;
 import com.webcore.platform.security.custom.CustomUser;
 import com.webcore.platform.member.dto.MemberAuthDTO;
 import com.webcore.platform.member.dto.MemberDTO;

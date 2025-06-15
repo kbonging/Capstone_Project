@@ -1,4 +1,4 @@
-package com.webcore.platform.community;
+package com.webcore.platform.community.dao;
 
 import com.webcore.platform.community.dto.CommunityDTO;
 import com.webcore.platform.community.dto.CommunityDetailResponseDTO;

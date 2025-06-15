@@ -1,4 +1,4 @@
-package com.webcore.platform.comment;
+package com.webcore.platform.comment.dao;
 
 import com.webcore.platform.comment.dto.CommentDTO;
 import com.webcore.platform.comment.dto.CommentListResponseDTO;

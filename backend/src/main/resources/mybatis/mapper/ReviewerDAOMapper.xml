@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.webcore.platform.reviewer.ReviewerDAO">
+<mapper namespace="com.webcore.platform.reviewer.dao.ReviewerDAO">
 
     <!--리뷰어 정보 ResultMap-->
     <resultMap id="memberWithReviewerResultMap" type="com.webcore.platform.reviewer.dto.ReviewerDTO">

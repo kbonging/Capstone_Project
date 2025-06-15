@@ -1,6 +1,7 @@
 package com.webcore.platform.member;
 
 import com.webcore.platform.constants.AuthRole;
+import com.webcore.platform.member.dao.MemberDAO;
 import com.webcore.platform.member.dto.MemberAuthDTO;
 import com.webcore.platform.owner.OwnerService;
 import com.webcore.platform.reviewer.ReviewerService;

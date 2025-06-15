@@ -1,5 +1,6 @@
 package com.webcore.platform.comment;
 
+import com.webcore.platform.comment.dao.CommentDAO;
 import com.webcore.platform.constants.CommentType;
 import com.webcore.platform.comment.dto.CommentDTO;
 import com.webcore.platform.comment.dto.CommentListResponseDTO;

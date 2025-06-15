@@ -1,6 +1,7 @@
 package com.webcore.platform.community;
 
 import com.webcore.platform.common.PaginationInfo;
+import com.webcore.platform.community.dao.CommunityDAO;
 import com.webcore.platform.constants.Paging;
 import com.webcore.platform.community.dto.CommunityDTO;
 import com.webcore.platform.community.dto.CommunityDetailResponseDTO;

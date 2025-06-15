@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.webcore.platform.owner.OwnerDAO">
+<mapper namespace="com.webcore.platform.owner.dao.OwnerDAO">
     <!--소상공인 정보 ResultMap-->
     <resultMap id="memberWithOwnerResultMap" type="com.webcore.platform.owner.dto.OwnerDTO">
         <!-- TB_MEMBER -->

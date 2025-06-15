@@ -1,5 +1,6 @@
 package com.webcore.platform.common;
 
+import com.webcore.platform.common.dao.CommonDAO;
 import com.webcore.platform.common.dto.CmmCodeDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

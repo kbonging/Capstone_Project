@@ -1,7 +1,8 @@
 package com.webcore.platform.owner;
 
-import com.webcore.platform.member.MemberDAO;
+import com.webcore.platform.member.dao.MemberDAO;
 import com.webcore.platform.member.dto.MemberAuthDTO;
+import com.webcore.platform.owner.dao.OwnerDAO;
 import com.webcore.platform.owner.dto.OwnerDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
