@@ -152,19 +152,19 @@
         DELETE FROM tb_like
         WHERE community_idx = #{communityIdx} AND member_idx = #{memberIdx}
     </delete>
-
+    <!--조회수 증가-->
     <update id="increaseViewCount">
         UPDATE tb_community
         SET view_count = view_count + 1
         WHERE community_idx = #{communityIdx}
     </update>
-
+    <!--게시글 작성-->
     <insert id="insertCommunity" parameterType="com.webcore.platform.community.dto.CommunityDTO"
             useGeneratedKeys="true" keyProperty="communityIdx">
         INSERT INTO tb_community (MEMBER_IDX, CATEGORY_ID, TITLE, CONTENT, REG_DATE)
         VALUES (#{memberIdx}, #{categoryId}, #{title}, #{content}, NOW());
     </insert>
-
+    <!--게시글 삭제-->
     <update id="deleteCommunity" parameterType="com.webcore.platform.community.dto.CommunityDTO">
         UPDATE tb_community
         SET
@@ -173,7 +173,7 @@
         WHERE COMMUNITY_IDX = #{communityIdx}
             AND MEMBER_IDX = #{memberIdx};
     </update>
-
+    <!--게시글 수정-->
     <update id="updateCommunity" parameterType="com.webcore.platform.community.dto.CommunityDTO">
         UPDATE tb_community
         SET
