@@ -126,9 +126,13 @@ export default function CommunityPage() {
                 onCategoryChange={onCategoryChange}
             />
           </div>
-
           {/* 오른쪽: 구분 + 검색 */}
           <div className="flex items-center gap-2">
+            {/* 내글 체크박스 */}
+            <div className="flex items-center gap-1">
+              <input type="checkbox" />
+              <label className="text-gray-400 text-sm">내글</label>
+            </div>
             <div className="relative">
               <select
                   name="searchCondition"
