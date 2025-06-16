@@ -15,7 +15,7 @@ export default function CommunityDetailPage() {
   const { token } = useContext(AppContext);
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [refreshKey, setRefreshKey] = useState(0); //다댓글 등록시 자동으로 리프레쉬 (새로고침 해야해서 만들었습니다)
 
   useEffect(() => {
     if (!communityIdx) return;
@@ -45,8 +45,16 @@ export default function CommunityDetailPage() {
           <PostHeader post={post} />
           <PostCard post={post} />
           <div className="bg-white rounded-lg">
-            <CommentForm />
-            <CommentList id={communityIdx}/>
+            <CommentForm
+              postReviewerIdx={post.memberIdx}
+              communityIdx={post.communityIdx}
+              onCommentAdded={() => setRefreshKey((prev) => prev + 1)}
+            />
+            <CommentList
+              key={refreshKey}
+              id={communityIdx}
+              onCommentAdded={() => setRefreshKey((prev) => prev + 1)}
+            />
           </div>
           {/* <Link to="/community/write">
             <button className="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg font-semibold">

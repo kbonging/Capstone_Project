@@ -26,6 +26,7 @@
         SELECT
         c.comment_idx,
         c.community_idx,
+        c.member_idx,
         c.content,
         c.comment_type,
         CASE
@@ -37,6 +38,7 @@
         ma.auth,
         c.parent_id,
         c.depth,
+        c.del_yn,
         DATE_FORMAT(c.reg_date, '%Y-%m-%d %H:%i:%s') AS reg_date,
         DATE_FORMAT(c.mod_date, '%Y-%m-%d %H:%i:%s') AS mod_date
         FROM tb_comment c
@@ -44,10 +46,7 @@
         JOIN tb_member_auth ma ON m.member_idx = ma.member_idx
         LEFT JOIN tb_reviewer_profile rp ON m.member_idx = rp.member_idx
         LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
-        WHERE c.del_yn = 'N'
-        <if test="communityIdx != null">
-            AND c.community_idx = #{communityIdx}
-        </if>
+        WHERE c.community_idx = #{communityIdx}
         <if test="campaignIdx != null">
             AND c.campaign_idx = #{campaignIdx}
         </if>

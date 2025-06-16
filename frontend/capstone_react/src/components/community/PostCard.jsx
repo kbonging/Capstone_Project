@@ -11,7 +11,7 @@ const categoryColorMap = {
   COMMU004: "#dc2626",
 };
 
-export default function PostCard({post}) {
+export default function PostCard({ post }) {
   const { token } = useContext(AppContext);
   const { user } = useContext(AppContext);
   const categoryColor = categoryColorMap[post.categoryId];
@@ -41,12 +41,13 @@ export default function PostCard({post}) {
       {/* 게시글 헤더 */}
       <header className="px-6 py-5 border-b border-gray-200">
         <div className="flex items-center space-x-3 mb-3">
-          <h1 className="text-2xl mb-2 font-semibold"  style={{color:categoryColor}}>
+          <h1
+            className="text-2xl mb-2 font-semibold"
+            style={{ color: categoryColor }}
+          >
             {post.categoryName}
           </h1>
-          <h1 className="text-2xl  text-gray-900 mb-2">
-            {post.title}
-          </h1>
+          <h1 className="text-2xl  text-gray-900 mb-2">{post.title}</h1>
         </div>
         <div className="flex items-center space-x-3 mb-3 ">
           <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
@@ -55,27 +56,25 @@ export default function PostCard({post}) {
             </span>
           </div>
           <span className="font-medium text-gray-700">{post.writerName}</span>
-            {post.auth === "ROLE_OWNER" && (
-              <span className="ml-2 text-[11px] font-semibold text-white bg-cyan-400 px-[2px] rounded">
-                소
-              </span>
-            )}
-            {post.auth === "ROLE_USER" && (
-              <span className="ml-2 text-[11px] font-semibold text-white bg-lime-500 px-[2px] rounded">
-                리
-              </span>
-            )}
-            {post.auth === "ROLE_ADMIN" && (
-              <span className="ml-2 text-[11px] font-semibold text-white bg-red-600 px-[2px] rounded">
-                관
-              </span>
-            )}
+          {post.auth === "ROLE_OWNER" && (
+            <span className="ml-2 text-[11px] font-semibold text-white bg-cyan-400 px-[2px] rounded">
+              소
+            </span>
+          )}
+          {post.auth === "ROLE_USER" && (
+            <span className="ml-2 text-[11px] font-semibold text-white bg-lime-500 px-[2px] rounded">
+              리
+            </span>
+          )}
+          {post.auth === "ROLE_ADMIN" && (
+            <span className="ml-2 text-[11px] font-semibold text-white bg-red-600 px-[2px] rounded">
+              관
+            </span>
+          )}
         </div>
         <div className="flex items-center text-sm text-gray-500 space-x-4 ">
-          <span>{dayjs(post.regDate).format("YYYY.MM.DD HH:mm")}</span>
-          <span className="text-sm text-gray-400">
-            조회 {post.viewCount}
-          </span>
+          <span className="w-1/6">{dayjs(post.regDate).format("YYYY.MM.DD HH:mm")}</span>
+          <span className="w-1/6 text-sm text-gray-400">조회 {post.viewCount}</span>
           {/* {post.modDate && (
             <span className="text-blue-600 hover:underline cursor-pointer">
               수정됨
@@ -83,7 +82,7 @@ export default function PostCard({post}) {
             )} */}
 
           {post.memberIdx === user.memberIdx && (
-            <div className="ml-auto flex space-x-2">
+            <div className="flex space-x-2 justify-end w-5/6">
               <Link to={`/community/edit/${post.communityIdx}`}>
                 <button className="bg-gray-200 text-gray-600 px-3 py-2 rounded-sm font-semibold">
                   수정
@@ -112,14 +111,20 @@ export default function PostCard({post}) {
             onClick={handleLikeClick}
             className="flex items-center space-x-2 transition-colors"
           >
-          <i
-            className={`relative ${
-              liked
-                ? "fa-solid fa-heart text-red-500 text-base "
-                : "fa-regular fa-heart text-gray-500 hover:text-red-500 text-base"
-            }`}
-          />
-            <span className={`text-sm font-medium ${liked ? "text-red-500 " : "text-gray-500  group-hover:text-red-500" }`}>
+            <i
+              className={`relative ${
+                liked
+                  ? "fa-solid fa-heart text-red-500 text-base "
+                  : "fa-regular fa-heart text-gray-500 hover:text-red-500 text-base"
+              }`}
+            />
+            <span
+              className={`text-sm font-medium ${
+                liked
+                  ? "text-red-500 "
+                  : "text-gray-500  group-hover:text-red-500"
+              }`}
+            >
               좋아요 {likeCount}
             </span>
           </button>
