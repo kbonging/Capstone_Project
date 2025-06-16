@@ -13,6 +13,8 @@ public class CommentListResponseDTO extends DefaultDTO {
     private int commentIdx;
     /** 게시글 고유번호 */
     private int communityIdx;
+    /** 회원 고유 번호 (FK)*/
+    private int memberIdx;
     /** 댓글 내용 */
     private String content;
     /** 댓글 타입 */

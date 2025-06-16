@@ -35,6 +35,38 @@ export function getCommentsByCommunity(type, communityIdx, token) {
   });
 }
 
+// 댓글 등록
+export function postComment(data, token) {
+  return axios.post("/api/comments", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+// 댓글 삭제
+export async function deleteComment(commentIdx, token) {
+  return fetch(`/api/comments/${commentIdx}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+//댓글 수정
+export async function updateComment(commentIdx, body, token) {
+  return fetch(`/api/comments/${commentIdx}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+
 // 게시글 상세 조회
 export function getCommunityDetail(communityIdx, token) {
   return axios.get(`/api/community/${communityIdx}`, {
