@@ -1,13 +1,13 @@
-// CommentList.jsx (수정된 전체 코드)
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getCommentsByCommunity, postComment, deleteComment, updateComment } from "../../api/communityApi";
+import { getCommentsByCommunity, deleteComment, updateComment } from "../../api/communityApi";
 import { AppContext } from "../../contexts/AppContext";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import ReplyForm from "./ReplyForm"; 
 dayjs.extend(relativeTime);
 
-export default function CommentList({ refreshKey ,onCommentAdded }) {
+export default function CommentList({ refreshKey, onCommentAdded }) {
   const { communityIdx } = useParams();
   const { token, user } = useContext(AppContext);
   const [flatComments, setFlatComments] = useState([]);
@@ -15,7 +15,6 @@ export default function CommentList({ refreshKey ,onCommentAdded }) {
   const [error, setError] = useState(null);
   const [collapsedIds, setCollapsedIds] = useState({});
   const [replyBoxVisibleFor, setReplyBoxVisibleFor] = useState(null);
-  const [replyContent, setReplyContent] = useState("");
   const [editContent, setEditContent] = useState("");
   const [editTarget, setEditTarget] = useState(null);
 
@@ -25,7 +24,6 @@ export default function CommentList({ refreshKey ,onCommentAdded }) {
     setError(null);
     getCommentsByCommunity("COMMT001", communityIdx, token)
       .then((res) => {
-        console.log(res);
         const data = Array.isArray(res.data) ? res.data : [];
         setFlatComments(data);
         const initState = {};
@@ -64,23 +62,6 @@ export default function CommentList({ refreshKey ,onCommentAdded }) {
       ...prev,
       [rootCommentIdx]: !prev[rootCommentIdx],
     }));
-  };
-
-  const handleReplySubmit = async (parentCommentIdx) => {
-    if (!replyContent.trim()) return;
-    try {
-      await postComment({
-        communityIdx: parseInt(communityIdx),
-        parentId: parentCommentIdx,
-        content: replyContent.trim(),
-      }, token);
-      setReplyBoxVisibleFor(null);
-      setReplyContent("");
-      onCommentAdded?.();
-    } catch (err) {
-      console.error("대댓글 등록 실패", err);
-      alert("대댓글 등록 중 오류가 발생했습니다.");
-    }
   };
 
   const handleDelete = async (commentIdx) => {
@@ -182,23 +163,17 @@ export default function CommentList({ refreshKey ,onCommentAdded }) {
                       </>
                     )}
                   </div>
+
+                  {/*  ReplyForm 컴포넌트 */}
                   {replyBoxVisibleFor === commentIdx && delYn !== 'Y' && (
-                    <form onSubmit={(e) => {
-                      e.preventDefault();
-                      handleReplySubmit(commentIdx);
-                    }} className="mt-2">
-                      <textarea
-                        rows="2"
-                        className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-                        placeholder="답글을 입력하세요"
-                        value={replyContent}
-                        onChange={(e) => setReplyContent(e.target.value)}
-                      />
-                      <div className="flex justify-end mt-1 space-x-2">
-                        <button type="button" onClick={() => setReplyBoxVisibleFor(null)} className="text-gray-400 text-sm">취소</button>
-                        <button type="submit" className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">답글 등록</button>
-                      </div>
-                    </form>
+                    <ReplyForm
+                      communityIdx={communityIdx}
+                      parentCommentIdx={commentIdx}
+                      onReplyAdded={() => {
+                        setReplyBoxVisibleFor(null);
+                        onCommentAdded?.();
+                      }}
+                    />
                   )}
                 </div>
               </div>

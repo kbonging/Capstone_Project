@@ -1,4 +1,3 @@
-// pages/CommunityDetailPage.jsx
 import PostHeader from "../components/community/PostHeader";
 import PostCard from "../components/community/PostCard";
 import CommentForm from "../components/community/CommentForm";
