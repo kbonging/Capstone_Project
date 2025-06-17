@@ -129,9 +129,8 @@
             DEL_YN = 'Y',
             MOD_DATE = NOW()
         WHERE COMMENT_IDX = #{commentIdx}
-            AND MEMBER_IDX = #{memberIdx}
     </update>
-
+    <!--커뮤니티 댓글 수정-->
     <update id="updateComment" parameterType="com.webcore.platform.comment.dto.CommentDTO">
         UPDATE tb_comment
         SET

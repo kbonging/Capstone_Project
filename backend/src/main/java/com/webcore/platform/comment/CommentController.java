@@ -1,6 +1,7 @@
 package com.webcore.platform.comment;
 
 import com.webcore.platform.comment.dto.CommentDTO;
+import com.webcore.platform.member.dto.MemberDTO;
 import com.webcore.platform.security.custom.CustomUser;
 import com.webcore.platform.comment.dto.CommentListResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -46,17 +47,24 @@ public class CommentController {
         }
     }
 
+    /** 댓글 삭제 */
     @DeleteMapping("/{commentIdx}")
     public ResponseEntity<?> deleteComment(@PathVariable int commentIdx,
                                            @AuthenticationPrincipal CustomUser customUser) {
-        int loginMemberIdx = customUser.getMemberDTO().getMemberIdx();
+        MemberDTO loginMember = customUser.getMemberDTO();
+        int loginMemberIdx = loginMember.getMemberIdx();
 
         CommentDTO comment = commentService.getCommentById(commentIdx);
+
+        //관리자 권한 확인
+        boolean isAdmin = loginMember.getAuthDTOList().stream()
+                .anyMatch(auth -> "ROLE_ADMIN".equals(auth.getAuth()));
+
         if (comment == null) {
             return new ResponseEntity<>("댓글이 존재하지 않습니다.", HttpStatus.OK);
         }
 
-        if (comment.getMemberIdx() != loginMemberIdx) {
+        if (comment.getMemberIdx() != loginMemberIdx && !isAdmin) {
             return new ResponseEntity<>("본인이 작성한 댓글만 삭제할 수 있습니다.", HttpStatus.OK);
         }
 
@@ -74,6 +82,7 @@ public class CommentController {
         }
     }
 
+    /** 댓글 수정 */
     @PutMapping("/{commentIdx}")
     public ResponseEntity<?> updateComment(@PathVariable int commentIdx,
                               @RequestBody CommentDTO commentDTO,

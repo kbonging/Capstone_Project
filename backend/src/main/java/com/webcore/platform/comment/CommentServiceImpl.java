@@ -81,6 +81,7 @@ public class CommentServiceImpl implements CommentService {
         log.info("댓글 등록 성공: {}", commentDTO);
     }
 
+    /** 댓글 삭제 */
     @Override
     public int deleteComment(CommentDTO commentDTO) {
         int result = commentDAO.deleteComment(commentDTO);
@@ -90,6 +91,7 @@ public class CommentServiceImpl implements CommentService {
         return result;
     }
 
+    /** 댓글 수정 */
     @Override
     public ResponseEntity<?> updateComment(CommentDTO commentDTO) {
         CommentDTO getComment = commentDAO.getCommentById(commentDTO.getCommentIdx());
