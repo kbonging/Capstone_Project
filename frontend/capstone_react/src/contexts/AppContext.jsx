@@ -1,5 +1,5 @@
 // src/contexts/AppContext.jsx
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useMemo } from 'react';
 import { fetchUser } from '../api/authApi';
 
 export const AppContext = createContext();
@@ -33,6 +33,9 @@ export function AppProvider({ children }) {
 
   //console.log(user);
 
+  const isAdmin = useMemo(() => {
+    return user?.authDTOList?.some(auth => auth.auth === 'ROLE_ADMIN') ?? false;
+  }, [user]);
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -41,7 +44,7 @@ export function AppProvider({ children }) {
   };
 
   return (
-    <AppContext.Provider value={{ user, setUser, token, setToken, logout, loading }}>
+    <AppContext.Provider value={{ user, setUser, token, setToken, logout, loading, isAdmin }}>
       {children}
     </AppContext.Provider>
   );

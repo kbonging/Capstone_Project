@@ -81,7 +81,7 @@ export default function PostCard({ post }) {
             </span>
             )} */}
 
-          {post.memberIdx === user.memberIdx && (
+          {(post.memberIdx === user.memberIdx || user.authDTOList?.some(auth => auth.auth === 'ROLE_ADMIN')) && (
             <div className="flex space-x-2 justify-end w-5/6">
               <Link to={`/community/edit/${post.communityIdx}`}>
                 <button className="bg-gray-200 text-gray-600 px-3 py-2 rounded-sm font-semibold">

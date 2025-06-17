@@ -145,7 +145,14 @@ INSERT INTO tb_member (member_id, member_pwd, member_name, member_email, member_
 VALUES ('superadmin','$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS', '리보리', 'revoryadmin@revory.com', '010-1111-9999', NOW());
 ## 권한 등록
 INSERT INTO tb_member_auth(member_idx, auth) values(29, 'ROLE_ADMIN');
+-- 개발팀 관리자 계정
+INSERT INTO tb_member (member_id, member_pwd, member_name, member_email, member_phone, reg_date)
+VALUES ('devadmin','$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS', '개발1팀', 'dev1admin@revory.com', '010-2222-6666', NOW());
+## 권한 등록
+INSERT INTO tb_member_auth(member_idx, auth) values(50, 'ROLE_ADMIN');
 
+update tb_member set member_pwd='$2a$10$Ax3c0sOPU0UqbzEqA9IRIOZB4SuBQhHpsl7BN/wBWpxMSDdXxUsmS' where member_idx=48;
+delete from tb_member where member_idx=49;
 ################ 리뷰어 회원가입 ################
 # 리뷰어 회원 가입 시 아래 쿼리문 동시 insert #
 INSERT INTO tb_member (member_id, member_pwd, member_name, member_email, member_phone, reg_date)

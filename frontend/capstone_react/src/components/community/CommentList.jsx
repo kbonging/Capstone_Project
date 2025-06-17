@@ -9,7 +9,7 @@ dayjs.extend(relativeTime);
 
 export default function CommentList({ refreshKey, onCommentAdded }) {
   const { communityIdx } = useParams();
-  const { token, user } = useContext(AppContext);
+  const { token, user, isAdmin } = useContext(AppContext);
   const [flatComments, setFlatComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -150,7 +150,7 @@ export default function CommentList({ refreshKey, onCommentAdded }) {
                           <i className="fa-regular fa-thumbs-up w-4 h-4"></i>
                           <span>{likeCount}</span>
                         </button>
-                        {isOwner && (
+                        {(isOwner || isAdmin) && (
                           <>
                             <button className="text-blue-600 hover:underline" onClick={() => {
                               setEditTarget(commentIdx);
