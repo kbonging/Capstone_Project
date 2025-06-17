@@ -171,7 +171,6 @@
             DEL_YN = 'Y',
             MOD_DATE = NOW()
         WHERE COMMUNITY_IDX = #{communityIdx}
-            AND MEMBER_IDX = #{memberIdx};
     </update>
     <!--게시글 수정-->
     <update id="updateCommunity" parameterType="com.webcore.platform.community.dto.CommunityDTO">
@@ -182,8 +181,6 @@
             CONTENT = #{content},
             MOD_DATE = NOW()
         WHERE COMMUNITY_IDX = #{communityIdx}
-            AND MEMBER_IDX = #{memberIdx}
-            AND DEL_YN='N';
     </update>
 
 </mapper>

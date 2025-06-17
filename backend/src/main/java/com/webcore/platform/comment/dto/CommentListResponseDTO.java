@@ -21,8 +21,6 @@ public class CommentListResponseDTO extends DefaultDTO {
     private String commentType;
     /** 작성자 닉네임, 상호명 */
     private String writerName;
-    /** 작성자 권한 (USER, OWNER, ADMIN) */
-    private String auth;
     /** 부모 댓글 고유번호 */
     private Integer parentId;
     /** 계층(0:댓글, 1:대댓글, 2:대대댓글) */
