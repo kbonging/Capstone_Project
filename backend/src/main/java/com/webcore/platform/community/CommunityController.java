@@ -94,16 +94,17 @@ public class CommunityController {
         MemberDTO loginMember = customUser.getMemberDTO();
         int loginMemberIdx = loginMember.getMemberIdx();
 
-        CommunityDetailResponseDTO post = communityService.getCommunityByIdx(communityIdx, loginMemberIdx);
-
         //관리자 권한 확인
         boolean isAdmin = loginMember.getAuthDTOList().stream()
                 .anyMatch(auth -> "ROLE_ADMIN".equals(auth.getAuth()));
+
+        CommunityDetailResponseDTO post = communityService.getCommunityByIdx(communityIdx, loginMemberIdx);
 
         if (post == null) {
             return new ResponseEntity<>("게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
         }
 
+        // 작성자이지 않고 관리자가 아닐 때
         if (post.getMemberIdx() != loginMemberIdx && !isAdmin) {
             return new ResponseEntity<>("본인이 작성한 글만 삭제할 수 있습니다.", HttpStatus.FORBIDDEN);
         }
@@ -134,13 +135,15 @@ public class CommunityController {
         // 기존 게시글 정보 조회
         CommunityDetailResponseDTO originalPost = communityService.getCommunityByIdx(communityIdx, loginMemberIdx);
 
+        // 게시글 존재 여부 ->
+        if(originalPost == null){
+            return new ResponseEntity<>("게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
+
         //관리자 권한 확인
         boolean isAdmin = loginMember.getAuthDTOList().stream()
                 .anyMatch(auth -> "ROLE_ADMIN".equals(auth.getAuth()));
 
-        if(originalPost == null){
-            return new ResponseEntity<>("게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
-        }
 
         //작성자 또는 관리자만 수정 가능
         if(originalPost.getMemberIdx() != loginMemberIdx && !isAdmin) {
