@@ -82,14 +82,11 @@ public class CommentController {
         }
     }
 
-    /** 댓글 수정 */
     @PutMapping("/{commentIdx}")
     public ResponseEntity<?> updateComment(@PathVariable int commentIdx,
-                              @RequestBody CommentDTO commentDTO,
-                              @AuthenticationPrincipal CustomUser customUser) {
-
-        commentDTO.setCommentIdx(commentIdx);
-        commentDTO.setMemberIdx(customUser.getMemberDTO().getMemberIdx());
-        return commentService.updateComment(commentDTO);
+        @RequestBody CommentDTO commentDTO,
+        @AuthenticationPrincipal CustomUser customUser) {
+        return commentService.updateComment(commentIdx, commentDTO, customUser.getMemberDTO());
     }
+
 }

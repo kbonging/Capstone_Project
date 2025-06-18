@@ -4,6 +4,7 @@ import com.webcore.platform.comment.dao.CommentDAO;
 import com.webcore.platform.constants.CommentType;
 import com.webcore.platform.comment.dto.CommentDTO;
 import com.webcore.platform.comment.dto.CommentListResponseDTO;
+import com.webcore.platform.member.dto.MemberDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -93,25 +94,38 @@ public class CommentServiceImpl implements CommentService {
 
     /** 댓글 수정 */
     @Override
-    public ResponseEntity<?> updateComment(CommentDTO commentDTO) {
-        CommentDTO getComment = commentDAO.getCommentById(commentDTO.getCommentIdx());
+    public ResponseEntity<?> updateComment(int commentIdx, CommentDTO commentDTO, MemberDTO loginMember) {
+        CommentDTO getComment = commentDAO.getCommentById(commentIdx);
 
-        if(getComment == null) {
-            log.info("수정할 게시글 없어 응애");
+        if (getComment == null) {
+            log.info("수정할 댓글이 없습니다");
             return ResponseEntity.status(HttpStatus.OK).body("댓글이 존재하지 않습니다.");
         }
 
-        int loginMember = commentDTO.getMemberIdx();
-        int Member = getComment.getMemberIdx();
+        int loginMemberIdx = loginMember.getMemberIdx();
+        int writerMemberIdx = getComment.getMemberIdx();
 
-        if(loginMember != Member) {
-            log.info(loginMember + "와" + Member +"가 달라요");
+        // 관리자 권한 확인
+        boolean isAdmin = loginMember.getAuthDTOList().stream()
+            .anyMatch(auth -> "ROLE_ADMIN".equals(auth.getAuth()));
+
+        // 작성자 본인 또는 관리자만 수정 가능
+        if (loginMemberIdx != writerMemberIdx && !isAdmin) {
+            log.info(loginMemberIdx + "와 " + writerMemberIdx + "가 달라요 (관리자 아님)");
             return ResponseEntity.status(HttpStatus.OK).body("댓글 작성자가 아닙니다.");
         }
 
-        commentDAO.updateComment(commentDTO);
+        // 수정할 내용 설정
+        commentDTO.setCommentIdx(commentIdx);         // URL path에서 받은 idx
+        commentDTO.setMemberIdx(loginMemberIdx);      // 로그인 사용자 idx (관리자)
 
-        return ResponseEntity.status(HttpStatus.OK).body("댓글 수정이 완료되었습니다.");
+        int result = commentDAO.updateComment(commentDTO);
+
+        if (result > 0) {
+            return ResponseEntity.status(HttpStatus.OK).body("댓글 수정이 완료되었습니다.");
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body("댓글 수정에 실패했습니다.");
+        }
     }
 
 }
