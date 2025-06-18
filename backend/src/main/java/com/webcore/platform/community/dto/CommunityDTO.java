@@ -21,4 +21,7 @@ public class CommunityDTO extends DefaultDTO {
     private String content;
     /** 조회수 */
     private int viewCount;
+
+    /** 내 글만 보기 여부 (true or "")*/
+    private String showMycommunitiesParam;
 }

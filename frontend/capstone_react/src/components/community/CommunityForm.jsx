@@ -8,14 +8,13 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 export default function CommunityForm({ mode = "create"}) {
-  const { user } = useContext(AppContext);
+  const { user, isAdmin } = useContext(AppContext);
   const { token } = useContext(AppContext);
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const { communityIdx } = useParams();
   
   const isEdit = mode === "edit"; // 수정 페이지 유무
-  const isAdmin = user?.authDTOList?.some(auth => auth.auth === "ROLE_ADMIN"); // 관리자 유무 확인
 
   // input에 포커스 주기 위한 ref 추가
   const titleRef = useRef(null);
@@ -49,7 +48,7 @@ export default function CommunityForm({ mode = "create"}) {
       .then((res) => {
         console.log(res.data);
         const isPostAuthor = res.data.memberIdx === user.memberIdx;
-        if(!isPostAuthor){
+        if(!isPostAuthor && !isAdmin){
           alert("수정 권한이 없습니다.");
           navigate("/community");
         }

@@ -28,8 +28,14 @@ public class CommunityController {
 
     /** 커뮤니티 리스트 목록*/
     @GetMapping("")
-    public ResponseEntity<?> getCommunityList(CommunityDTO communityDTO){
+    public ResponseEntity<?> getCommunityList(CommunityDTO communityDTO,
+                                              @AuthenticationPrincipal CustomUser customUser){
         log.info("[GET] /api/community [Request] => {}",communityDTO.toString());
+        // 내글 체크되었을 때만 현재 로그인한 유저의 고유번호를 세팅
+        String showMycommunitiesParam = communityDTO.getShowMycommunitiesParam() != null ? communityDTO.getShowMycommunitiesParam() : "";
+        if(showMycommunitiesParam.equals("true")){
+            communityDTO.setMemberIdx(customUser.getMemberDTO().getMemberIdx());
+        }
         Map<String, Object> resultMap = communityService.getCommunityListResult(communityDTO);
         log.info("게시글 조회 정보 => {}", resultMap);
         

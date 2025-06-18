@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { checkDuplicateId, isEmailExists, sendVerificationCode, verifyAuthCode } from "../api/authApi";
 import { signUpReviewer } from "../api/reviewerApi";
 import { validateInput, formatPhoneNumber } from "../utils/common";
+import {useNavigate} from "react-router-dom";
 
 export default function ReviewerFormPage() {
   const platformList = [ // 추후 공통코드 항목으로 가져올 예정
@@ -72,6 +73,7 @@ export default function ReviewerFormPage() {
   const [errors, setErrors] = useState({}); 
   const [confirmPwdError, setConfirmPwdError] = useState("");   // 비밀번호, 비밀번호 확인 값 일치 여부상태
   const [showmemberPwd, setShowmemberPwd] = useState(false); 
+  const nav = useNavigate();
 
   // ########## 아이디 중복 체크 관련 ############ //
   const [memberIdChecked, setMemberIdChecked] = useState(false);  // 아이디 중복 체크 상태
@@ -321,8 +323,8 @@ export default function ReviewerFormPage() {
       setIdCheckMessage("아이디를 입력해주세요.");
       return;
     }
-    if (!validateInput(formData.memberId, '^[a-z0-9]{8,12}$')) {
-      setIdCheckMessage("아이디는 소문자와 숫자 조합 8~12자리여야 합니다.");
+    if (!validateInput(formData.memberId, /^(?=.*[a-z])(?=.*\d)[a-z\d]{8,15}$/)) {
+      setIdCheckMessage("아이디는 소문자와 숫자 조합 8~15자리여야 합니다.");
       setMemberIdChecked(false);
       return;
     }
@@ -358,7 +360,7 @@ export default function ReviewerFormPage() {
       await signUpReviewer(payload);
       alert("리뷰어 회원가입이 완료되었습니다.");
       // TODO: 회원가입 후 페이지 이동 등 추가 처리
-      // navigate("/login"); // 예: react-router-dom 사용 시
+      nav("/login"); // 예: react-router-dom 사용 시
     } catch (error) {
       console.error("회원가입 오류:", error);
       alert("회원가입 중 오류가 발생했습니다. 만일 문제가 계속될 경우 고객센터(02-1234-5678)로 연락해주세요.");
@@ -403,7 +405,7 @@ export default function ReviewerFormPage() {
         {/* 비밀번호 */}
         <label className="font-bold block mb-[10px] mt-5">비밀번호 *</label>
         <div className="relative">
-          <input name="memberPwd" type={showmemberPwd ? "text" : "password"} value={formData.memberPwd} onChange={handleChange} required placeholder="비밀번호를 입력하세요" minLength="1" maxLength="30" 
+          <input name="memberPwd" type={showmemberPwd ? "text" : "password"} value={formData.memberPwd} onChange={handleChange} required placeholder="비밀번호를 입력하세요" minLength="8" maxLength="30" 
           className="w-full p-[10px] text-sm border border-gray-300 rounded-md" />
 
           <button type="button" onClick={() => setShowmemberPwd(!showmemberPwd)} className="absolute top-1/2 right-2 -translate-y-1/2 bg-none border-none p-0 cursor-pointer">
@@ -415,7 +417,7 @@ export default function ReviewerFormPage() {
         {/* 비밀번호 확인 */}
         <label className="font-bold block mb-[10px] mt-5">비밀번호 확인*</label>
         <div className="relative">
-          <input name="confirmPwd" type={showmemberPwd ? "text" : "password"} value={formData.confirmPwd} onChange={handleChange} required placeholder="비밀번호를 확인하세요" minLength="1" maxLength="30"
+          <input name="confirmPwd" type={showmemberPwd ? "text" : "password"} value={formData.confirmPwd} onChange={handleChange} required placeholder="비밀번호를 확인하세요" minLength="8" maxLength="30"
           className="w-full p-[10px] text-sm border border-gray-300 rounded-md">
           </input>
         </div>

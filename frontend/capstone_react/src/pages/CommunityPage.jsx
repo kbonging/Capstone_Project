@@ -28,10 +28,11 @@ export default function CommunityPage() {
     categoryId: searchParams.get("categoryId") || "",
     searchKeyword: searchParams.get("searchKeyword") || "",
     searchCondition: searchParams.get("searchCondition") || "",
+    showMycommunitiesParam: searchParams.get("showMycommunitiesParam") || "",
     page: parseInt(searchParams.get("page")) || 1,
   });
 
-  // 🔁 입력 변경 핸들러 (URL에 영향 없음)
+  // 🔁 검색창 입력 변경 핸들러 (URL에 영향 없음)
   const onChangeSearchInput = (e) => {
     const { name, value } = e.target;
     setParams((prev) => ({
@@ -74,10 +75,20 @@ export default function CommunityPage() {
     onSearch(updatedParams, false); // URL 쿼리 갱신(page 유지)
   };
 
+  // ✅ 내글 체크박스 핸들러
+  const handleMycommunities = (e) =>{
+    const checked = e.target.checked;
+    const updatedParams ={
+      ...params,
+      showMycommunitiesParam: checked? "true" : "",
+    };
+    setParams(updatedParams);
+    onSearch(updatedParams);
+  }
+
   // ✅ searchParams 변경 시 API 호출
   useEffect(() => {
     const queryString = new URLSearchParams(searchParams).toString();
-
     setError(null);
     fetchCommunityPosts(token, queryString)
       .then((data) => {
@@ -129,8 +140,12 @@ export default function CommunityPage() {
           {/* 오른쪽: 구분 + 검색 */}
           <div className="flex items-center gap-2">
             {/* 내글 체크박스 */}
-            <div className="flex items-center gap-1">
-              <input type="checkbox" />
+            <div className="flex items-center gap-1 mr-2">
+              <input 
+                type="checkbox" 
+                checked={params.showMycommunitiesParam === "true"}
+                onChange={(e)=>handleMycommunities(e)} 
+              />
               <label className="text-gray-400 text-sm">내글</label>
             </div>
             <div className="relative">
