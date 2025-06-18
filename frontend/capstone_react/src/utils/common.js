@@ -6,7 +6,8 @@
  * @param {string} pattern - 정규식 패턴 (문자열 형식)
  * @returns {boolean} 패턴과 일치하면 true, 그렇지 않으면 false
  */
-export function validateInput(input, pattern) {
+
+export function validateInput(input, pattern) { // OwnerFormPage는 pattern 자체가 객체라 regex에 넣을 필요 없는데 ReviewerFormPage는 regex 없으면 터짐짐
     const regex = new RegExp(pattern);
     return regex.test(input);
 }
