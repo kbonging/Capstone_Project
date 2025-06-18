@@ -25,7 +25,6 @@ public class CommunityServiceImpl implements CommunityService {
     public Map<String, Object> getCommunityListResult(CommunityDTO communityDTO) {
         // 1. 전체 게시글 수 조회
         int totalRecord = communityDAO.selectCommunityCount(communityDTO);
-        log.info("게시글 목록 전달객체 communityDTO : {}",communityDTO);
         // 2. PaginationInfo 객체 셍성 및 세팅
         PaginationInfo paginationInfo = new PaginationInfo();
         paginationInfo.setCurrentPage(communityDTO.getPage() <= 0 ? 1 : communityDTO.getPage());
@@ -42,6 +41,7 @@ public class CommunityServiceImpl implements CommunityService {
         communityDTO.setRecordCount(recordCnt);
 
         // 5. 게시글 목록 조회
+        log.info("게시글 목록 전달객체 communityDTO : {}",communityDTO);
         List<CommunityListResponseDTO> communityList = communityDAO.selectCommunityList(communityDTO);
 
         Map<String, Object> result = new HashMap<>();

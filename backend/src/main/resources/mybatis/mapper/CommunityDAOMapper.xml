@@ -54,7 +54,7 @@
             AND category_id = #{categoryId}
         </if>
 
-        <if test="showMycommunitiesParam != null and showMycommunitiesParam == 'ture' and memberIdx != 0">
+        <if test="showMycommunitiesParam != null and showMycommunitiesParam == 'true' and memberIdx != 0">
             AND cm.member_idx = #{memberIdx}
         </if>
     </sql>
