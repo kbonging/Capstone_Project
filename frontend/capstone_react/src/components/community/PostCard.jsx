@@ -72,7 +72,7 @@ export default function PostCard({ post }) {
             </span>
           )}
         </div>
-        <div className=" text-sm text-gray-500 space-x-2">
+        <div className="flex items-center text-sm text-gray-500 space-x-2">
           <span className="w-1/6">{dayjs(post.regDate).format("YYYY.MM.DD HH:mm")}</span>
           <span className="w-1/6 text-sm text-gray-400">조회 {post.viewCount}</span>
           {/* {post.modDate && (

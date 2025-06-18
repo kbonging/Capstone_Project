@@ -8,7 +8,7 @@ export default function CommentForm({ postReviewerIdx, communityIdx, onCommentAd
   const isLoggedIn = !!token;
   const isPostOwner = currentUserIdx === postReviewerIdx;
 
-  const canWriteComment = isLoggedIn && !isPostOwner;
+  const canWriteComment = isLoggedIn && !isPostOwner ;  //&& !isPostOwner   <<  이거 조건 없애면 자기가 쓴 첫댓글도 쓸수있음
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
 
