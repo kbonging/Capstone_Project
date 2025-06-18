@@ -37,7 +37,6 @@ export default function ReviewerFormPage() {
     memberPhone: "",
     birthDate: "",
     gender: "",
-    // RevCategory: "", //-> 이거 뭐임? - 봉
     platforms: [], // ['INF001', 'INF002'] // 해당 유형을 체크 했는지 안했는지 저장
     links: {      // 각 유형에 대한 실제 URL을 저장
       INF001: "",
@@ -463,7 +462,7 @@ export default function ReviewerFormPage() {
 
         {/* 이름 */}
         <label className="font-bold block mb-[5px] mt-5">이름 *</label>
-        <div className="text-xs text-gray-500 mb-1 s mt-1">실명으로 등록하지 않을 경우 리뷰어 인증이 있을 수 있습니다</div>
+        <div className="text-xs text-gray-500 mb-1 mt-1">실명으로 등록하지 않을 경우 리뷰어 인증이 있을 수 있습니다</div>
         <input name="memberName" value={formData.memberName} onChange={handleChange} required className="w-full p-[10px] text-sm border border-gray-300 rounded-md" />
         {errors.memberName && <div className="text-xs ml-1 text-red-500">{errors.memberName}</div>}
 

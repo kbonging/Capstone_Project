@@ -33,7 +33,7 @@ export default function OwnerFormPage() {
     const [emailVerified, setEmailVerified] = useState(false);
     const [isSendingEmailCode, setIsSendingEmailCode] = useState(false);
     const [emailCooldown, setEmailCooldown] = useState(0);
-    const [emailAuthMessage, setEmailAuthMessage] = useState("");
+    const [emailAuthMessage, setEmailAuthMessage] = useState(""); // 이메일 인증 관련 성공/실패 메시지용
     const [emailAuthVisible, setEmailAuthVisible] = useState(false);
     const [emailLocked, setEmailLocked] = useState(false);
     const [authCodeExpireCountdown, setAuthCodeExpireCountdown] = useState(0);
@@ -41,12 +41,12 @@ export default function OwnerFormPage() {
     const emailCooldownTimerRef = useRef(null);
 
     const validationPatterns = {
-        memberId: /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,12}$/,
+        memberId: /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,15}$/,
         memberPwd: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[a-zA-Z\d!@#$%^&*()_+]{8,}$/,
         memberName: /^[가-힣a-zA-Z]{2,10}$/,
         memberEmail: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        memberPhone: /^01(?:0|1|[6-9])-(?:\d{3}|\d{4})-\d{4}$/,
-        businessName: /.{2,50}/,
+        memberPhone: /^01(?:0|1|[6-9])\d{7,8}$/,
+        businessName: /.{1,50}/,
         businessUrl: /^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/[a-zA-Z0-9]+\.[^\s]{2,}|[a-zA-Z0-9]+\.[^\s]{2,})$|^$/,
     };
 
@@ -62,15 +62,18 @@ export default function OwnerFormPage() {
     }, [emailCooldown]);
 
     useEffect(() => {
-        if (authCodeExpireCountdown > 0 && emailAuthVisible && !emailVerified) {
+        if (authCodeExpireCountdown > 0) {
             authCodeExpireTimerRef.current = setInterval(() => {
                 setAuthCodeExpireCountdown((prev) => prev - 1);
             }, 1000);
-        } else if (authCodeExpireCountdown === 0 && emailAuthVisible && !emailVerified) {
+        } else if (authCodeExpireCountdown === 0 && (emailAuthVisible || emailVerified)) {
+            // 이메일 인증이 만료되었을 때
             setEmailAuthMessage("인증번호가 만료되었습니다. 다시 시도해주세요.");
             setEmailLocked(false);
-            setEmailVerified(false);
+            setEmailVerified(false); // 인증 상태를 false로 변경
+            setEmailAuthVisible(false); // 인증번호 입력 필드 숨김
             setErrors((prev) => ({ ...prev, memberEmail: '인증번호가 만료되었습니다. 다시 인증해주세요.' }));
+            clearInterval(authCodeExpireTimerRef.current); // 타이머 종료
         }
         return () => clearInterval(authCodeExpireTimerRef.current);
     }, [authCodeExpireCountdown, emailAuthVisible, emailVerified]);
@@ -85,7 +88,7 @@ export default function OwnerFormPage() {
         } else if (pattern && !validateInput(value, pattern)) {
             switch (name) {
                 case "memberId":
-                    error = "아이디는 영문, 숫자 조합 8~12자리여야 합니다.";
+                    error = "아이디는 영문, 숫자 조합 8~15자리여야 합니다.";
                     break;
                 case "memberPwd":
                     error = "비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.";
@@ -97,10 +100,10 @@ export default function OwnerFormPage() {
                     error = "유효한 이메일 주소를 입력해주세요.";
                     break;
                 case "memberPhone":
-                    error = "유효한 휴대폰 번호 (예: 010-1234-5678)를 입력해주세요.";
+                    error = "유효한 휴대폰 번호를 입력해주세요. (10~11자리 숫자)";
                     break;
                 case "businessName":
-                    error = "상호명은 2자 이상 50자 이하로 입력해주세요.";
+                    error = "상호명은 1자 이상 50자 이하로 입력해주세요.";
                     break;
                 case "businessUrl":
                     error = "유효한 홈페이지 URL을 입력해주세요.";
@@ -118,7 +121,8 @@ export default function OwnerFormPage() {
         let newValue = type === "checkbox" ? checked : value;
 
         if (name === "memberPhone") {
-            newValue = formatPhoneNumber(newValue);
+            newValue = newValue.replace(/[^0-9]/g, '');
+            setErrors((prev) => ({ ...prev, [name]: "" }));
         }
 
         setFormData((prev) => ({
@@ -131,12 +135,11 @@ export default function OwnerFormPage() {
             setIdDuplicateMessage("");
             setErrors((prev) => ({ ...prev, memberId: "" }));
         }
-        // 이메일 필드 변경 시 에러 및 인증 상태 초기화 (실시간 유효성 검사는 여기서 안 함)
         if (name === "memberEmail") {
             setEmailVerified(false);
-            setEmailAuthVisible(false);
+            setEmailAuthVisible(false); // 이메일 변경 시 인증 필드 숨김
             setEmailLocked(false);
-            setEmailAuthMessage("");
+            setEmailAuthMessage(""); // 이메일 필드 변경 시 인증 관련 메시지 초기화
             clearInterval(authCodeExpireTimerRef.current);
             setAuthCodeExpireCountdown(0);
             setEmailCooldown(0);
@@ -158,10 +161,9 @@ export default function OwnerFormPage() {
             }
         }
 
-        // memberId와 memberEmail을 제외한 다른 필드들은 실시간 유효성 검사
-        if (name !== "memberId" && name !== "memberEmail" && newValue.trim() !== "") {
+        if (name !== "memberId" && name !== "memberEmail" && name !== "memberPhone" && newValue.trim() !== "") {
             runFieldValidation(name, newValue);
-        } else if (name !== "memberId" && name !== "memberEmail") {
+        } else if (name !== "memberId" && name !== "memberEmail" && name !== "memberPhone") {
             setErrors((prev) => ({ ...prev, [name]: "" }));
         }
     };
@@ -179,7 +181,7 @@ export default function OwnerFormPage() {
 
         const isIdFormatValid = runFieldValidation("memberId", memberId);
         if (!isIdFormatValid) {
-            setIdDuplicateMessage("아이디는 영문, 숫자 조합 8~12자리여야 합니다.");
+            setIdDuplicateMessage("아이디는 영문, 숫자 조합 8~15자리여야 합니다.");
             return;
         }
 
@@ -206,25 +208,20 @@ export default function OwnerFormPage() {
     const handleSendVerificationCode = async () => {
         const memberEmail = formData.memberEmail.trim();
 
-        // 1. 이메일 입력 여부 확인
         if (!memberEmail) {
             setErrors((prev) => ({ ...prev, memberEmail: "이메일을 입력하세요." }));
-            setEmailAuthMessage(""); // 기존 메시지 초기화
+            setEmailAuthMessage("");
             return;
         }
 
-        // 2. 이메일 형식 유효성 검사 (버튼 클릭 시에만 에러 메시지 표시)
         const isEmailFormatValid = runFieldValidation("memberEmail", memberEmail);
         if (!isEmailFormatValid) {
-            // runFieldValidation이 이미 errors.memberEmail을 "유효한 이메일 주소를 입력해주세요."로 설정했을 것임.
-            // emailAuthMessage는 이 경우에 설정하지 않아 중복 방지
-            setEmailAuthMessage(""); // 이전에 설정된 성공 메시지나 다른 메시지 초기화
+            setEmailAuthMessage("");
             return;
         }
 
-        // 에러가 없다면 에러 메시지를 지우고 진행
         setErrors((prev) => ({ ...prev, memberEmail: "" }));
-        setEmailAuthMessage(""); // 메시지 초기화
+        setEmailAuthMessage(""); // 기존 메시지 초기화 (성공/실패 관련)
 
         setIsSendingEmailCode(true);
 
@@ -233,25 +230,18 @@ export default function OwnerFormPage() {
             const exists = emailExistsResponse.data;
 
             if (exists) {
-                setEmailAuthMessage("이미 가입된 이메일입니다.");
                 setErrors((prev) => ({ ...prev, memberEmail: "이미 가입된 이메일입니다." }));
+                setEmailAuthMessage("");
                 setIsSendingEmailCode(false);
                 return;
             }
 
+            // 이메일 중복이 아닐 경우에만 인증 코드 관련 로직 실행
             clearTimeout(authCodeExpireTimerRef.current);
-            setAuthCodeExpireCountdown(300);
-            authCodeExpireTimerRef.current = setTimeout(() => {
-                setAuthCodeExpireCountdown(0);
-                setEmailAuthVisible(false);
-                setEmailVerified(false);
-                setEmailLocked(false);
-                setEmailAuthMessage("인증번호가 만료되었습니다. 다시 시도해주세요.");
-                setErrors((prev) => ({ ...prev, memberEmail: '인증번호가 만료되었습니다. 다시 인증해주세요.' }));
-            }, 300 * 1000);
+            setAuthCodeExpireCountdown(300); // 5분 = 300초
 
             clearInterval(emailCooldownTimerRef.current);
-            setEmailCooldown(60);
+            setEmailCooldown(10);
             emailCooldownTimerRef.current = setInterval(() => {
                 setEmailCooldown((prev) => {
                     if (prev <= 1) {
@@ -263,15 +253,16 @@ export default function OwnerFormPage() {
             }, 1000);
 
             await sendVerificationCode({ memberEmail });
-            setEmailAuthVisible(true);
+            setEmailAuthVisible(true); // 인증번호 입력 필드 보이기
             setEmailLocked(true);
+            setEmailVerified(false); // 인증번호 재전송 시 인증 상태 초기화
             setEmailAuthMessage("인증번호가 발송되었습니다. 이메일을 확인해주세요.");
             alert("인증번호가 발송되었습니다. 이메일을 확인해주세요.");
         } catch (error) {
             console.error("인증번호 발송 실패:", error);
             setEmailAuthMessage("인증번호 발송에 실패했습니다. 다시 시도해주세요.");
             setErrors((prev) => ({ ...prev, memberEmail: "인증번호 발송 실패" }));
-            setEmailAuthVisible(false);
+            setEmailAuthVisible(false); // 실패 시 입력 필드 숨김
             setEmailLocked(false);
             setAuthCodeExpireCountdown(0);
             setEmailCooldown(0);
@@ -292,11 +283,10 @@ export default function OwnerFormPage() {
         try {
             await verifyAuthCode({ memberEmail: formData.memberEmail, authCode });
             setEmailVerified(true);
-            setEmailAuthMessage("이메일 인증이 완료되었습니다.");
-            setEmailAuthVisible(false);
-            clearInterval(authCodeExpireTimerRef.current);
+            setEmailAuthMessage("이메일 인증이 완료되었습니다. 5분 후에 인증이 만료됩니다.");
+            setEmailAuthVisible(false); // 인증 성공 후에는 인증번호 입력 필드 숨김
             setErrors((prev) => ({ ...prev, memberEmail: "" }));
-            alert("이메일 인증이 완료되었습니다.");
+            alert("이메일 인증이 완료되었습니다!");
         } catch (error) {
             console.error("인증 실패:", error);
             setEmailAuthMessage("잘못된 인증번호이거나 만료되었습니다. 다시 시도해주세요.");
@@ -315,24 +305,31 @@ export default function OwnerFormPage() {
                 return;
             }
             if (!value.trim()) {
-                newErrors[name] = `${name === "memberId" ? "아이디" :
-                    name === "memberPwd" ? "비밀번호" :
-                        name === "memberName" ? "이름" :
-                            name === "memberEmail" ? "이메일" :
-                                name === "memberPhone" ? "휴대폰 번호" :
-                                    name === "businessName" ? "상호명" :
-                                        name === "businessUrl" ? "홈페이지 주소" : "이 필드"
-                    }를 입력해주세요.`;
+                const fieldNameKor = {
+                    memberId: "아이디",
+                    memberPwd: "비밀번호",
+                    memberName: "이름",
+                    memberEmail: "이메일",
+                    memberPhone: "휴대폰 번호",
+                    businessName: "상호명",
+                    businessUrl: "홈페이지 주소"
+                }[name] || "이 필드";
+                newErrors[name] = `${fieldNameKor}를 입력해주세요.`;
                 allFieldsValid = false;
             } else if (name === "memberId") {
                 if (!runFieldValidation(name, value)) {
                     allFieldsValid = false;
                     newErrors[name] = errors.memberId || "아이디 형식이 올바르지 않습니다.";
                 }
-            } else if (name === "memberEmail") { // 이메일은 최종 제출 시에도 형식 검증
+            } else if (name === "memberEmail") {
                 if (!runFieldValidation(name, value)) {
                     allFieldsValid = false;
                     newErrors[name] = errors.memberEmail || "이메일 형식이 올바르지 않습니다.";
+                }
+            } else if (name === "memberPhone") {
+                if (!runFieldValidation(name, value)) {
+                    allFieldsValid = false;
+                    newErrors[name] = errors.memberPhone || "유효한 휴대폰 번호 (예: 01012345678)를 입력해주세요.";
                 }
             }
             else if (!runFieldValidation(name, value)) {
@@ -353,7 +350,8 @@ export default function OwnerFormPage() {
             allFieldsValid = false;
         }
 
-        if (!emailVerified) {
+        // 이메일 인증이 완료되지 않았거나, 완료되었더라도 타이머가 만료되었으면 유효성 검사 실패
+        if (!emailVerified || authCodeExpireCountdown === 0) {
             newErrors.memberEmail = newErrors.memberEmail || "이메일 인증을 완료해주세요.";
             allFieldsValid = false;
         }
@@ -365,6 +363,19 @@ export default function OwnerFormPage() {
 
         setErrors(newErrors);
         return allFieldsValid && Object.keys(newErrors).length === 0;
+    };
+
+
+    const createSubmitPayload = (data) => {
+        return {
+            memberId: data.memberId,
+            memberPwd: data.memberPwd,
+            memberName: data.memberName,
+            memberEmail: data.memberEmail,
+            memberPhone: data.memberPhone,
+            businessName: data.businessName,
+            businessUrl: data.businessUrl,
+        };
     };
 
     const handleSubmit = async (e) => {
@@ -379,7 +390,7 @@ export default function OwnerFormPage() {
             alert("아이디 중복 확인을 완료해주세요.");
             return;
         }
-        if (!emailVerified) {
+        if (!emailVerified || authCodeExpireCountdown === 0) {
             alert("이메일 인증을 완료해주세요.");
             return;
         }
@@ -388,16 +399,20 @@ export default function OwnerFormPage() {
             return;
         }
 
+        const formattedPhoneNumber = formatPhoneNumber(formData.memberPhone);
+
         const requestbody = {
             memberId: formData.memberId,
             memberPwd: formData.memberPwd,
             memberName: formData.memberName,
             memberEmail: formData.memberEmail,
-            memberPhone: formData.memberPhone,
+            memberPhone: formattedPhoneNumber,
             businessName: formData.businessName,
             businessUrl: formData.businessUrl,
             marketingOptIn: terms3,
         };
+
+        console.log("전송 requestbody:", requestbody);
 
         try {
             await signUpOwner(requestbody);
@@ -422,13 +437,18 @@ export default function OwnerFormPage() {
         formData.memberName.trim() !== "" &&
         formData.memberEmail.trim() !== "" &&
         emailVerified &&
+        authCodeExpireCountdown > 0 && // 인증번호 타이머가 유효할 때만 활성화
         formData.memberPhone.trim() !== "" &&
         formData.businessName.trim() !== "" &&
         terms1 &&
         terms2 &&
-        // `errors.memberEmail`은 여기서는 이메일 인증이 완료되었는지 여부만으로 충분히 판단되므로 제거.
-        // `Object.values(errors).every((error) => !error)`는 memberEmail에 대한 실시간 에러를 이미 포함하지 않으므로 문제 없음.
-        Object.values(errors).every((error) => !error);
+        Object.values(errors).every((error) => !error) &&
+        Object.values(formData).every(value => {
+            if (value === formData.businessUrl) {
+                return true;
+            }
+            return value.trim() !== '';
+        });
 
 
     return (
@@ -445,10 +465,10 @@ export default function OwnerFormPage() {
                         value={formData.memberId}
                         onChange={handleChange}
                         required
-                        placeholder="아이디를 입력하세요 (영문 소문자, 숫자 조합 8~12자)"
+                        placeholder="아이디를 입력하세요 (영문 소문자, 숫자 조합 8~15자)"
                         className="w-full p-[10px] text-sm border border-gray-300 rounded-md"
                         minLength="8"
-                        maxLength="12"
+                        maxLength="15"
                     />
                     <button
                         type="button"
@@ -537,6 +557,7 @@ export default function OwnerFormPage() {
                         type="button"
                         onClick={handleSendVerificationCode}
                         className="h-[42px] px-4 text-sm border border-gray-800 bg-white rounded-md whitespace-nowrap hover:bg-gray-100"
+                        disabled={isSendingEmailCode || emailCooldown > 0}
                     >
                         {isSendingEmailCode
                             ? "전송 중..."
@@ -545,11 +566,10 @@ export default function OwnerFormPage() {
                                 : "인증번호 전송"}
                     </button>
                 </div>
-                {/* errors.memberEmail은 handleSendVerificationCode에서만 설정되도록 변경됨 */}
                 {errors.memberEmail && (
                     <div className="text-xs text-red-500">{errors.memberEmail}</div>
                 )}
-                {emailAuthMessage && (
+                {emailAuthMessage && !errors.memberEmail && (
                     <div
                         className={`text-xs mt-1 ${emailVerified ? "text-blue-500" : "text-red-500"
                             }`}
@@ -558,7 +578,8 @@ export default function OwnerFormPage() {
                     </div>
                 )}
 
-                {emailAuthVisible && !emailVerified && (
+                {/* emailAuthVisible 상태로 인증번호 입력 필드 표시 여부 제어 */}
+                {emailAuthVisible && (
                     <div className="mt-2 flex gap-2">
                         <input
                             type="text"
@@ -575,7 +596,7 @@ export default function OwnerFormPage() {
                         </button>
                     </div>
                 )}
-                {emailAuthVisible && !emailVerified && authCodeExpireCountdown > 0 && (
+                {authCodeExpireCountdown > 0 && (
                     <div className="text-xs text-gray-500 mt-1">
                         인증번호 만료까지:{" "}
                         {Math.floor(authCodeExpireCountdown / 60)}분{" "}
@@ -584,7 +605,10 @@ export default function OwnerFormPage() {
                 )}
 
                 {/* 이름 */}
-                <label className="font-bold block mb-[10px] mt-5">이름 *</label>
+                <label className="font-bold block mb-[5px] mt-5">이름 *</label>
+                <div className="text-xs text-gray-500 mb-1 s mt-1">
+                    실명으로 등록하지 않을 경우 소상공인 인증이 어려울 수 있습니다.
+                </div>
                 <input
                     name="memberName"
                     value={formData.memberName}
@@ -593,9 +617,6 @@ export default function OwnerFormPage() {
                     placeholder="이름을 입력하세요 (한글/영문 2~10자)"
                     className="w-full p-[10px] text-sm border border-gray-300 rounded-md"
                 />
-                <div className="text-xs text-gray-500 ml-[5px] mt-[5px]">
-                    실명으로 등록하지 않을 경우 소상공인 인증이 어려울 수 있습니다.
-                </div>
                 {errors.memberName && (
                     <div className="text-xs text-red-500">{errors.memberName}</div>
                 )}
@@ -608,9 +629,9 @@ export default function OwnerFormPage() {
                     name="memberPhone"
                     value={formData.memberPhone}
                     onChange={handleChange}
-                    placeholder="010-1234-5678"
+                    placeholder="'-' 빼고 숫자만 입력해주세요."
                     className="w-full p-[10px] text-sm border border-gray-300 rounded-md"
-                    maxLength="13"
+                    maxLength="11"
                 />
                 {errors.memberPhone && (
                     <div className="text-xs text-red-500">{errors.memberPhone}</div>
@@ -623,7 +644,7 @@ export default function OwnerFormPage() {
                     value={formData.businessName}
                     onChange={handleChange}
                     required
-                    placeholder="상호명을 입력하세요 (2~50자)"
+                    placeholder="상호명을 입력하세요 (1~50자)"
                     className="w-full p-[10px] text-sm border border-gray-300 rounded-md"
                 />
                 {errors.businessName && (
