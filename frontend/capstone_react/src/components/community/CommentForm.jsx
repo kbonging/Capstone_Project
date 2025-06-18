@@ -12,7 +12,7 @@ export default function CommentForm({ postReviewerIdx, communityIdx, onCommentAd
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ 댓글 등록 요청 (JSON으로 전송)
+  // 댓글 등록 요청 (JSON으로 전송)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!content.trim()) return;
