@@ -25,6 +25,8 @@ public class CommunityListResponseDTO extends DefaultDTO {
     private int likeCount;
     /** 조회수 */
     private int viewCount;
+    /** 댓글 수 */
+    private int commentCount;
     /** 권한 정보 */
     private String auth;
     /** 작성자 (닉네임 or 상호명) */

@@ -15,6 +15,7 @@
         <result property="content" column="content" />
         <result property="viewCount" column="view_count" />
         <result property="likeCount" column="like_count" />
+        <result property="commentCount" column="comment_count" />
         <result property="regDate" column="reg_date" />
         <result property="auth" column="auth" />
         <result property="writerName" column="writer_name" />
@@ -29,6 +30,7 @@
         <result property="content" column="content" />
         <result property="viewCount" column="view_count" />
         <result property="likeCount" column="like_count" />
+        <result property="commentCount" column="comment_count" />
         <result property="likeByMe" column="liked_by_me" />
         <result property="auth" column="auth" />
         <result property="writerName" column="writer_name" />
@@ -70,10 +72,15 @@
             cm.content,
             cm.view_count,
             (
-            SELECT COUNT(*)
-            FROM tb_like l
-            WHERE l.community_idx = cm.community_idx
+                SELECT COUNT(*)
+                FROM tb_like l
+                WHERE l.community_idx = cm.community_idx
             ) AS like_count,
+            (
+                SELECT COUNT(*)
+                FROM tb_comment cmmt
+                where cmmt.community_idx = cm.community_idx
+            ) AS comment_count,
             cm.reg_date,
             ma.auth,
             CASE
@@ -122,6 +129,11 @@
                 FROM tb_like l
                 WHERE l.community_idx = cm.community_idx
             ) AS like_count,
+            (
+                SELECT COUNT(*)
+                FROM tb_comment cmmt
+                where cmmt.community_idx = cm.community_idx
+            ) AS comment_count,
             CASE
                 WHEN EXISTS(
                 SELECT 1

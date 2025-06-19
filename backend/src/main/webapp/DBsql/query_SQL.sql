@@ -102,6 +102,11 @@ SELECT
 		FROM tb_like l
 		WHERE l.community_idx = cm.community_idx
 	) AS like_count,
+    (
+		SELECT COUNT(*)
+        FROM tb_comment cmmt
+        where cmmt.community_idx = cm.community_idx
+    ) AS comment_count,
     cm.reg_date,
     ma.auth,
     CASE
@@ -146,6 +151,11 @@ SELECT
 		FROM tb_like l
 		WHERE l.community_idx = cm.community_idx
 	) AS like_count,
+	(
+		SELECT COUNT(*)
+		FROM tb_comment cmmt
+		where cmmt.community_idx = cm.community_idx
+	) AS comment_count,
     CASE
 		WHEN EXISTS(
 			SELECT 1

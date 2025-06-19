@@ -277,6 +277,9 @@ export default function CommunityPage() {
                       </td>
                       <td className="pl-8"> 
                           {post.title}
+                          {post.commentCount > 0 &&(
+                            <span className="text-red-500 ml-1">[{post.commentCount}]</span>
+                          )}
                       </td>
                       <td>
                         <span className="text-gray-800">
