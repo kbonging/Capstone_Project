@@ -41,7 +41,7 @@ export default function LoginPage() {
   return (
     <div className="min-screen flex flex-col items-center justify-center bg-white font-['Noto_Sans_KR'] px-4">
 
-  <div className="mb-[35px] mt-[100px]">
+  <div className="mb-[20px] mt-[100px]">
     <img src={LogoImage} alt="Revory Logo" className="w-[200px] h-full" />
   </div>
 
@@ -49,15 +49,11 @@ export default function LoginPage() {
     onSubmit={handleSubmit}
     className="w-full max-w-[450px] bg-white rounded-[10px] p-[40px] text-center shadow-none mb-[100px]"
   >
-    <h2 className="text-2xl font-semibold mb-6 text-[#333]">로그인</h2>
-
-    {error && (
-      <p className="text-[#FF322E] text-sm mb-4 text-left">{error}</p>
-    )}
+    <h2 className="text-2xl font-semibold mb-[50px] text-[#333]">로그인</h2>
 
     {/* input ID */}
     <div className="flex items-center mb-3 rounded-[10px] border border-gray-300 overflow-hidden h-[55px]">
-      <div className="flex items-center justify-center w-[55px] bg-[#f7f9fc] border-r border-gray-300">
+      <div className="flex items-center justify-center w-[55px] border-r border-gray-300">
         <i className="bx bx-user text-xl text-gray-500"></i>
       </div>
       <input
@@ -73,7 +69,7 @@ export default function LoginPage() {
 
     {/* input PWD */}
     <div className="flex items-center mb-4 rounded-[10px] border border-gray-300 overflow-hidden h-[55px] relative">
-      <div className="flex items-center justify-center w-[55px] bg-[#f7f9fc] border-r border-gray-300">
+      <div className="flex items-center justify-center w-[55px] border-r border-gray-300">
         <i className="bx bx-lock text-xl text-gray-500"></i>
       </div>
       <input
@@ -94,6 +90,11 @@ export default function LoginPage() {
         <i className={`bx ${showPassword ? "bx-show" : "bx-hide"}`}></i>
       </button>
     </div>
+
+    {error && (
+      <p className="text-[#FF322E] text-sm mb-4 text-left">{error}</p>
+    )}
+
 
     <div className="flex items-center justify-start mb-5 text-sm text-gray-600">
       <input
