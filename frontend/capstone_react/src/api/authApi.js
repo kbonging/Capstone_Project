@@ -11,7 +11,10 @@ export async function loginUser({ memberId, memberPwd }) {
 
   if (!res.ok) {
     const errorText = await res.text(); // Spring은 에러 메시지를 JSON으로 주지 않을 수 있음
-    throw new Error(errorText || "로그인 실패");
+    throw new Error(
+      errorText ||
+        "아이디 또는 비밀번호가 잘못 되었습니다. 아이디와 비밀번호를 정확히 입력해 주세요."
+    );
   }
 
   // ✅ JWT 추출: 응답 헤더에서 Authorization 읽기
@@ -29,9 +32,9 @@ export async function loginUser({ memberId, memberPwd }) {
 }
 
 // 토큰으로 회원 정보 조회 API
-export async function fetchUser(token){
+export async function fetchUser(token) {
   const res = await fetch("/api/members/info", {
-    headers:{
+    headers: {
       Authorization: `Bearer ${token}`,
     },
   });
@@ -44,12 +47,12 @@ export async function fetchUser(token){
 }
 
 // 아이디 중복 체크 함수 API
-export function checkDuplicateId(memberId){
+export function checkDuplicateId(memberId) {
   return axios.get(`/api/members/check-id/${memberId}`);
 }
 
 // 이메일 중복 체크 API
-export function isEmailExists(memberEmail){
+export function isEmailExists(memberEmail) {
   return axios.get(`/api/emails/exists/${memberEmail}`);
 }
 
@@ -58,8 +61,8 @@ export function isEmailExists(memberEmail){
  * @param {{ memberEmail: string }} data
  * @returns {Promise<{ success: boolean, message: string }>}
  */
-export function sendVerificationCode(data){
-  return axios.post('/api/emails/verification-code', data);
+export function sendVerificationCode(data) {
+  return axios.post("/api/emails/verification-code", data);
 }
 
 /**
@@ -68,5 +71,5 @@ export function sendVerificationCode(data){
  * @returns {Promise<{ success: boolean, message: string }>}
  */
 export function verifyAuthCode(data) {
-  return axios.post('/api/emails//verification-code/validate', data);
+  return axios.post("/api/emails//verification-code/validate", data);
 }

@@ -91,20 +91,21 @@ export default function LoginPage() {
       </button>
     </div>
 
-    {error && (
-      <p className="text-[#FF322E] text-sm mb-4 text-left">{error}</p>
-    )}
 
 
-    <div className="flex items-center justify-start mb-5 text-sm text-gray-600">
+    <div className="flex items-center justify-start mb-4 text-sm text-gray-600">
       <input
         type="checkbox"
         checked={saveAccount}
         onChange={(e) => setSaveAccount(e.target.checked)}
         className="w-4 h-4 rounded mr-2 border border-gray-300"
-      />
+        />
       <label>로그인 상태 유지</label>
     </div>
+
+        {error && (
+          <p className="text-[#FF322E] text-sm mb-5 text-left">{error}</p>
+        )}
 
     <button
       type="submit"
