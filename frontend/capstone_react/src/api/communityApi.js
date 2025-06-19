@@ -66,7 +66,6 @@ export async function updateComment(commentIdx, body, token) {
   });
 }
 
-
 // 게시글 상세 조회
 export function getCommunityDetail(communityIdx, token) {
   return axios.get(`/api/community/${communityIdx}`, {
@@ -80,7 +79,7 @@ export function getCommunityDetail(communityIdx, token) {
 export function createPost(formData, token) {
   return axios.post(
     "/api/community", // URL
-    formData,         // POST body (자동으로 JSON.stringify 됨)
+    formData, // POST body (자동으로 JSON.stringify 됨)
     {
       headers: {
         "Content-Type": "application/json",
@@ -91,10 +90,10 @@ export function createPost(formData, token) {
 }
 
 // 게시글 수정
-export function updatePost(communityIdx, formData, token){
+export function updatePost(communityIdx, formData, token) {
   return axios.put(
     `/api/community/${communityIdx}`, // URL
-    formData,         
+    formData,
     {
       headers: {
         "Content-Type": "application/json",
@@ -102,6 +101,16 @@ export function updatePost(communityIdx, formData, token){
       },
     }
   );
+}
+
+// 게시글 삭제
+export function deleteCommunityPost(communityIdx, token) {
+  return axios.delete(`/api/community/${communityIdx}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
 }
 
 // 좋아요 추가

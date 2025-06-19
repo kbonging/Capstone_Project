@@ -11,7 +11,7 @@ const categoryColorMap = {
   COMMU004: "#dc2626",
 };
 
-export default function PostCard({ post }) {
+export default function PostCard({ post, onDelete}) {
   const { token } = useContext(AppContext);
   const { user } = useContext(AppContext);
   const categoryColor = categoryColorMap[post.categoryId];
@@ -88,11 +88,10 @@ export default function PostCard({ post }) {
                   수정
                 </button>
               </Link>
-              <Link to="#">
-                <button className="bg-gray-200 text-gray-600 px-3 py-2 rounded-sm font-semibold">
-                  삭제
+                <button onClick={() => onDelete(post.communityIdx)} 
+                   className="bg-gray-200 text-gray-600 px-3 py-2 rounded-sm font-semibold">
+                     삭제
                 </button>
-              </Link>
             </div>
           )}
         </div>

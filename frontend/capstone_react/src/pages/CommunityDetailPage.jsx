@@ -5,9 +5,10 @@ import CommentList from "../components/community/CommentList";
 import { Link } from "react-router-dom";
 
 import { useEffect, useState, useContext } from "react";
-import { useParams } from "react-router-dom";
-import { getCommunityDetail } from "../api/communityApi";
+import { useParams , useNavigate} from "react-router-dom";
+import { getCommunityDetail , deleteCommunityPost } from "../api/communityApi";
 import { AppContext } from "../contexts/AppContext";
+
 
 export default function CommunityDetailPage() {
   const { communityIdx } = useParams();
@@ -15,6 +16,7 @@ export default function CommunityDetailPage() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0); //다댓글 등록시 자동으로 리프레쉬 (새로고침 해야해서 만들었습니다)
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!communityIdx) return;
@@ -31,6 +33,19 @@ export default function CommunityDetailPage() {
       .finally(() => setLoading(false));
   }, [communityIdx, token]);
 
+const handleDelete = async (communityIdx) => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+
+    try {
+      await deleteCommunityPost(communityIdx, token);
+      alert("삭제가 완료되었습니다.");
+      navigate("/community");
+    } catch (err) {
+      console.error("삭제 실패:", err);
+      alert("삭제에 실패했습니다.");
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto my-8 p-4 space-y-6 min-h-[80vh]">
       {loading ? (
@@ -42,7 +57,7 @@ export default function CommunityDetailPage() {
       ) : post ? (
         <>
           <PostHeader post={post} />
-          <PostCard post={post} />
+          <PostCard post={post} onDelete={handleDelete} />
           <div className="bg-white rounded-lg">
             <CommentForm
               postReviewerIdx={post.memberIdx}
