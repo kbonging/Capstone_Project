@@ -71,5 +71,5 @@ export function sendVerificationCode(data) {
  * @returns {Promise<{ success: boolean, message: string }>}
  */
 export function verifyAuthCode(data) {
-  return axios.post("/api/emails//verification-code/validate", data);
+  return axios.post("/api/emails/verification-code/validate", data);
 }
