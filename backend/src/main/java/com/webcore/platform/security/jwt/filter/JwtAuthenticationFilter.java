@@ -1,8 +1,8 @@
 package com.webcore.platform.security.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.webcore.platform.domain.CustomUser;
-import com.webcore.platform.domain.MemberDTO;
+import com.webcore.platform.security.custom.CustomUser;
+import com.webcore.platform.member.dto.MemberDTO;
 import com.webcore.platform.security.jwt.constants.JwtConstants;
 import com.webcore.platform.security.jwt.provider.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
@@ -11,11 +11,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 

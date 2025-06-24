@@ -3,10 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.webcore.platform.dao.ReviewerDAO">
+<mapper namespace="com.webcore.platform.reviewer.dao.ReviewerDAO">
 
     <!--리뷰어 정보 ResultMap-->
-    <resultMap id="memberWithReviewerResultMap" type="com.webcore.platform.domain.ReviewerDTO">
+    <resultMap id="memberWithReviewerResultMap" type="com.webcore.platform.reviewer.dto.ReviewerDTO">
         <!-- TB_MEMBER -->
         <id property="memberIdx" column="member_idx" />
         <result property="memberId" column="member_id" />
@@ -31,13 +31,13 @@
         <result property="detailAddress" column="detail_address" />
 
         <!--Reviewer 채널 리스트-->
-        <collection property="reviewerChannelList" ofType="com.webcore.platform.domain.ReviewerChannelDTO">
+        <collection property="reviewerChannelList" ofType="com.webcore.platform.reviewer.dto.ReviewerChannelDTO">
             <result property="infTypeCodeId" column="inf_type_code_id"/>
             <result property="channelUrl" column="channel_url"/>
         </collection>
 
         <!-- auth 리스트 -->
-        <collection property="authDTOList" ofType="com.webcore.platform.domain.MemberAuthDTO">
+        <collection property="authDTOList" ofType="com.webcore.platform.member.dto.MemberAuthDTO">
             <result property="auth" column="auth" />
         </collection>
     </resultMap>

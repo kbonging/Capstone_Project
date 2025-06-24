@@ -1,7 +1,8 @@
 package com.webcore.platform.service;
 
-import com.webcore.platform.domain.ReviewerChannelDTO;
-import com.webcore.platform.domain.ReviewerDTO;
+import com.webcore.platform.reviewer.dto.ReviewerChannelDTO;
+import com.webcore.platform.reviewer.dto.ReviewerDTO;
+import com.webcore.platform.reviewer.ReviewerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

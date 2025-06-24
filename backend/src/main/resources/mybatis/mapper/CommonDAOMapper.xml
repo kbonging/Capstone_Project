@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.webcore.platform.dao.CommonDAO">
+<mapper namespace="com.webcore.platform.common.dao.CommonDAO">
 
-    <select id="selectCmmCodeByGroupCode" parameterType="String" resultType="com.webcore.platform.domain.CmmCodeDTO">
+    <select id="selectCmmCodeByGroupCode" parameterType="String" resultType="com.webcore.platform.common.dto.CmmCodeDTO">
         SELECT code_id, group_code, code_nm, image_url, group_sort, sort, code_dc, del_yn
         FROM tb_common_code
         WHERE group_code=#{groupCode} AND del_yn='N'
