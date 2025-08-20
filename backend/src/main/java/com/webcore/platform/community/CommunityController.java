@@ -38,7 +38,7 @@ public class CommunityController {
         }
         Map<String, Object> resultMap = communityService.getCommunityListResult(communityDTO);
         log.info("게시글 조회 정보 => {}", resultMap);
-        
+
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
