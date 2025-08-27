@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -35,6 +36,7 @@ public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailService customUserDetailService;
+
 
     // PasswordEncoder 빈 등록
     // 암호화 알고리즘 방식 : Bcrypt
@@ -79,6 +81,10 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 이게 없으면 OPTIONS가 막힙니다 (필요없을 수도)
                         //.requestMatchers(HttpMethod.GET, "/login").permitAll()
+                        //테스트 이미지 업로드 때문에 허용
+                        .requestMatchers("/img/**", "/uploads/**").permitAll()
+                        //인증된 사용자만 사진등록 가능 api풀어줘야함
+                        .requestMatchers(HttpMethod.POST, "/api/members/*/profile-image").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers("/index.html").permitAll()
 

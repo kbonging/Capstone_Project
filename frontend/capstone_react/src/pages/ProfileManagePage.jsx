@@ -3,6 +3,7 @@ import React from "react";
 import MyPageLayout from "../components/mypage/MyPageLayout";
 import ProfileTabs from "../components/mypage/ProfileTabs";
 import ProfileManageForm from "../components/mypage/ProfileManageForm";
+import ImageUploadTest from "../components/mypage/ImageUploadTest";
 
 export default function ProfileManagePage() {
   return (
@@ -11,6 +12,7 @@ export default function ProfileManagePage() {
       <ProfileTabs />
       {/* 프로필 관리 폼 */}
       <ProfileManageForm />
+      
     </MyPageLayout>
   );
 }

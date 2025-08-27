@@ -22,6 +22,13 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+       // 🔹 정적 리소스도 백엔드로 프록시
+      // static/img 사용 시
+      '/img': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
     }
   }
 });
