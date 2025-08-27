@@ -12,6 +12,7 @@ import FindPwd from "../pages/FindPwdPage";
 import FindId from "../pages/FindIdPage";
 import MyPage     from '../pages/MyPage';
 import ProfileManagePage from '../pages/ProfileManagePage';
+import ImageUploadTest from "../components/mypage/ImageUploadTest";
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
@@ -63,6 +64,7 @@ export default function AppRouter() {
       <Route path="/FindId" element={<FindId />} />
       <Route path="/mypage"     element={<MyPage />} />
       <Route path="/mypage/manage" element={<ProfileManagePage />} />
+      <Route path="/test/image-upload" element={<ImageUploadTest />} />
       {/* 404 페이지도 추가 가능  나중에 할거임*/}
     </Routes>
   );
