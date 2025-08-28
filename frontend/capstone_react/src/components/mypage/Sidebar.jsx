@@ -1,13 +1,34 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
   const [activeMenu, setActiveMenu] = useState("프로필"); // 초기 활성화 항목
+  const navigate = useNavigate(); // 라우터 이동 함수
 
   const menus = {
-    체험단: ["체험단 관리", "체험단 모집"],
+    체험단: ["📋 체험단 관리", "📄 체험단 모집"],
     커뮤니티: ["커뮤니티", "캠페인"],
     "내 정보 관리": ["프로필", "포인트", "쿠폰 사용"],
     고객센터: ["자주 묻는 질문", "공지/이벤트", "문의내역", "이용 가이드"],
+  };
+
+  const handleClick = (item) => {
+    setActiveMenu(item);
+
+    // 메뉴 클릭 시 라우팅
+    switch (item) {
+      case "📋 체험단 관리":
+        navigate("/campaign/manage");
+        break;
+      case "📄 체험단 모집":
+        navigate("/campaign/create");
+        break;
+      case "프로필":
+        navigate("/mypage");
+        break;
+      default:
+        break;
+    }
   };
 
   return (
@@ -26,7 +47,7 @@ export default function Sidebar() {
               {items.map((item) => (
                 <li
                   key={item}
-                  onClick={() => setActiveMenu(item)}
+                  onClick={() => handleClick(item)}
                   className={`px-3 py-2 rounded-md cursor-pointer transition 
                     ${
                       activeMenu === item

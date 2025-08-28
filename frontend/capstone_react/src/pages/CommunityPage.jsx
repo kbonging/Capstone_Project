@@ -119,7 +119,14 @@ export default function CommunityPage() {
         {/* 헤더 */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">
-            커뮤니티
+          <div className="relative two">
+            <h1 className="relative text-[40px] font-light font-[Raleway] text-[#080808] transition-all duration-400 ease-in-out capitalize">
+              커뮤니티
+              <span className="block text-[13px] font-medium uppercase tracking-[4px] leading-[3em] pl-1 text-black/40 pb-[10px]">
+                사람들과 함께 나누는 이야기
+              </span>
+            </h1>
+          </div>
           </h1>
           <Link to="/community/write">
             <button className="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg font-semibold">

@@ -214,6 +214,7 @@ CREATE TABLE `TB_CAMPAIGN` (
 	`CAMPAIGN_IDX`		INT AUTO_INCREMENT PRIMARY KEY 	COMMENT '캠페인 고유번호',
 	`MEMBER_IDX`		INT NOT NULL 					COMMENT '소상공인 고유번호',
 	`TITLE`				VARCHAR(255) NOT NULL			COMMENT '체험단 제목',
+    `SHOP_NAME`			varchar(100) NOT NULL 			COMMENT '캠페인 상호명',
 	`THUMBNAIL_URL` 	VARCHAR(255) NOT NULL			COMMENT '썸네일 이미지 경로',
 	`CONTACT_PHONE`		VARCHAR(20) NOT NULL			COMMENT '담당자 연락처',
 	`CAMPAIGN_TYPE`		VARCHAR(20) NOT NULL 			COMMENT '캠페인 홍보 유형(CAM_PROM)',
@@ -237,7 +238,7 @@ CREATE TABLE `TB_CAMPAIGN` (
 	`REG_DATE`	DATETIME	NOT NULL,
 	`MOD_DATE`	DATETIME	NULL
 );
-
+-- drop table TB_CAMPAIGN; 
 ############ 방문형/포장형 테이블 ###############
 CREATE TABLE `TB_CAMPAIGN_VISIT` (
 	`CAMPAIGN_IDX`		INT				PRIMARY KEY 		COMMENT '켐페인 고유번호',
@@ -251,7 +252,7 @@ CREATE TABLE `TB_CAMPAIGN_VISIT` (
 		on delete cascade
 		on update cascade
 );
-
+-- drop table TB_CAMPAIGN_VISIT;
 ########## 배송형/구매형 #############
 CREATE TABLE `TB_CAMPAIGN_DELIVERY` (
 	`CAMPAIGN_IDX`	INT	PRIMARY KEY	COMMENT '켐페인 고유번호',
@@ -260,4 +261,5 @@ CREATE TABLE `TB_CAMPAIGN_DELIVERY` (
 		on delete cascade
 		on update cascade
 );
+-- drop table TB_CAMPAIGN_DELIVERY;
 
