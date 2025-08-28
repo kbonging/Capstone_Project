@@ -1,0 +1,1 @@
+export const fmtDate = (d) => new Date(d).toLocaleDateString("ko-KR", { year: "numeric", month: "short", day: "numeric" });
