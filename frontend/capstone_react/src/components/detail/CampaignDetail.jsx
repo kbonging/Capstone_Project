@@ -13,7 +13,10 @@ import {
   FiImage,
   FiChevronDown,
   FiChevronUp,
+  FiLink,
+  FiAlertCircle, // ✅ 공정위 표기 아이콘(대체)
 } from "react-icons/fi";
+import { TbArticle } from "react-icons/tb"; // ✅ 1,000자 아이콘
 import CampaignCalendar from "./CampaignCalendar";
 
 /* 작은 공용 컴포넌트 */
@@ -31,22 +34,6 @@ const Badge = ({ children, tone = "green" }) => (
   </span>
 );
 
-const InfoRow = ({ label, children, icon }) => (
-  <div className="grid grid-cols-[150px_1fr] gap-4 border-b border-stone-200 py-3">
-    <div className="flex items-start gap-1 text-lg font-medium text-stone-700">
-      {icon ? <span className="mt-0.5">{icon}</span> : null}
-      <span>{label}</span>
-    </div>
-    <div className="text-base text-stone-800">{children}</div>
-  </div>
-);
-
-const Chip = ({ children }) => (
-  <span className="inline-flex items-center rounded-md border border-stone-200 bg-white px-2 py-1 text-xs text-stone-700">
-    {children}
-  </span>
-);
-
 const f = (d) =>
   new Date(d).toLocaleDateString("ko-KR", {
     year: "numeric",
@@ -58,6 +45,7 @@ const f = (d) =>
 export default function CampaignDetail({ campaign }) {
   const [openScheduleInfo, setOpenScheduleInfo] = useState(false); // 일정 텍스트 토글
   const navigate = useNavigate(); //라우트용
+
   // 데모 데이터 (API 연동 시 props로 대체)
   const data = campaign ?? {
     campaignIdx: 101,
@@ -76,10 +64,27 @@ export default function CampaignDetail({ campaign }) {
     keyword3: "제습기",
     productUrl: "https://bit.ly/4mwl0eB",
     mission: `
-      <ul class="list-disc pl-4 space-y-2">
+      <ul class="list-none pl-4 space-y-2">
         <li>제품 수령 후 언박싱 사진 3장 이상 + 사용영상 1개 또는 GIF</li>
         <li>키워드 <b>‘제습기’</b>, <b>‘LG전자 휘센’</b> 포함</li>
-        <li>리뷰어 도매체에 동일 후기 복붙 금지</li>
+        <li>1. 리뷰노트에서 새롭게 오픈한 시스템</li>
+        <li>2. 고가의 제품을 로또처럼 신청자 중 랜덤 룰렛을 통해 추첨</li>
+        <li>3. 제품 소개가 아닌 리뷰노또 당첨 후기 블로그+릴스 작성</li>
+        <li>4. 리뷰노트 커뮤니티에 간단한 당첨 후기 작성</li>
+        <li>(제목에 '리뷰노또' 키워드를 포함해 주세요.)</li>
+        <li>5. 인스타그램 reviewnote_in 계정 팔로우 필수</li>
+        (당첨 후 팔로우가 되어 있지 않을 경우 취소될 수 있습니다.)
+        <li>6. 당첨되신 분께는 개별적으로 연락드립니다.</li>
+        <li>7. 당첨 영상은 인스타그램 reviewnote_in 계정에서 확인</li>
+        <li>(8월 29일 금요일 오후 5시 당첨자 발표 영상 업로드 예정)</li>
+        <br>
+        <br>
+        <li>📍가이드라인 (블로그)</li>
+          <ul>
+            <li>사진 최소 15장 이상</li>
+            <li>텍스트 1,000자 이상</li>
+            <li>리뷰 발행 시 스크랩 (블로그/카페 공유, 외부 공유 허용) 허용</li>
+          </ul>   
       </ul>
     `,
     dates: {
@@ -134,94 +139,171 @@ export default function CampaignDetail({ campaign }) {
 
       {/* 본문 2컬럼 */}
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        {/* 좌측 카드 */}
-        <div className="rounded-2xl  bg-white ">
-          <div className="border-b  px-5 pt-4 pb-2">
-            <div className="text-xl font-bold text-stone-900">제공상품/물품</div>
-            <div className="mt-1  text-stone-900">{data.benefitDetail}</div>
+        {/* 좌측 카드 (리디자인) */}
+        <div className="rounded-2xl  border-stone-200 bg-white">
+          {/* 상단 제목/요약 */}
+          <div className="px-5 pt-5 pb-3 border-b border-stone-200">
+            <div className="text-sm text-stone-500">제공상품/물품</div>
+            <div className="mt-1 text-[15px] md:text-base font-medium text-stone-900">
+              {data.benefitDetail}
+            </div>
           </div>
 
-          <div className="px-5 ">
-            <InfoRow label="배송 및 구매 안내" icon={<FiTruck />} >
-              <ul className="text-xl list-disc space-y-1 pl-4">
-                <li>선정되면 등록 프로필 배송지로 제품 발송</li>
-                <li>
-                  배송 시작 이후 제품하자 아닌 단순취소 시 왕복배송비 청구
-                </li>
-              </ul>
-            </InfoRow>
+          {/* 항목 리스트 */}
+          <div className="px-5 py-2">
+            {/* 주최자 */}
+            <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-6">
+              <div className="flex items-center gap-2 text-[15px] font-semibold text-stone-800">
+                <FiLock className="translate-y-[-1px]" />
+                <span>주최자</span>
+              </div>
+              <div className="text-[15px] text-stone-900">{data.shopName}</div>
+            </div>
 
-            <InfoRow label="키워드 정보" icon={<FiTag />}>
-              <div className="flex flex-wrap gap-2 text-xl">
+            {/* 배송 및 구매 안내 */}
+            <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-6">
+              <div className="flex items-center gap-2 text-[15px] font-semibold text-stone-800">
+                <FiTruck className="translate-y-[-1px]" />
+                <span>배송 및 구매 안내</span>
+              </div>
+              <div className="text-[15px] text-stone-800">
+                <ul className="list-none pl-5 space-y-1 leading-6">
+                  <li>선정되면 등록된 프로필 배송지로 제품 발송</li>
+                  <li>제품 하자 외 단순변심 취소 시 왕복배송비 청구</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* 키워드 정보 */}
+            <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-6">
+              <div className="flex items-center gap-2 text-[15px] font-semibold text-stone-800">
+                <FiTag className="translate-y-[-1px]" />
+                <span>키워드 정보</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
                 {[data.keyword1, data.keyword2, data.keyword3]
                   .filter(Boolean)
                   .map((k, i) => (
-                    <Chip key={i}>{k}</Chip>
+                    <span
+                      key={i}
+                      className="inline-flex items-center rounded-md border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs text-stone-700"
+                    >
+                      {k}
+                    </span>
                   ))}
               </div>
-            </InfoRow>
+            </div>
 
-            <InfoRow label="상품정보 URL" icon={<FiExternalLink />}>
-              <a
-                href={data.productUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="break-all text-sky-600 underline text-xl"
-              >
-                {data.productUrl}
-              </a>
-            </InfoRow>
-
-            <InfoRow label="체험단 미션" icon={<FiImage />}>
-              <div
-                className="prose prose-sm max-w-none prose-li:marker:text-stone-400"
-                dangerouslySetInnerHTML={{ __html: data.mission }} // sanitize 권장
-              />
-              <div className="mt-3 flex flex-wrap gap-3 text-xs text-stone-600">
-                <span className="inline-flex items-center gap-1">
-                  <FiImage /> 사진 15장↑
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <FiVideo /> 영상 or GIF 1
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <FiTag /> 키워드 필수
-                </span>
+            {/* 상품정보 URL */}
+            <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-10">
+              <div className="flex items-center gap-2 text-[15px] font-semibold text-stone-800">
+                <FiExternalLink className="translate-y-[-1px]" />
+                <span>상품정보 URL</span>
               </div>
-            </InfoRow>
+              <div className="text-[15px]">
+                <a
+                  href={data.productUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="break-all text-sky-600 underline underline-offset-2 hover:text-sky-700"
+                >
+                  {data.productUrl}
+                </a>
+              </div>
+            </div>
 
-            <InfoRow label="일정 요약" icon={<FiCalendar />}>
-              추후 작업
-            </InfoRow>
+            {/* 체험단 미션 (스샷 스타일: 탭 + 아이콘 그리드) */}
+            <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-8">
+              <div className="flex items-start gap-2 text-[15px] font-semibold text-stone-800">
+                <FiImage className="translate-y-[3px]" />
+                <span className="">체험단 미션</span>
+              </div>
+              
+              <div>
+                {/* 상단 탭 느낌 */}
+                <div className="mb-3 w-full rounded bg-stone-200 py-1 text-center text-sm font-medium text-stone-700">
+                  블로그
+                </div>
+
+                {/* 아이콘 6개 그리드 */}
+                <div className="grid grid-cols-6 gap-4 text-center text-xs font-medium text-stone-700">
+                  <div className="flex flex-col items-center gap-1">
+                    <FiTag size={22} />
+                    <span>키워드</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <FiImage size={22} />
+                    <span>15장 이상</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <TbArticle size={22} />
+                    <span>1,000자</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <FiLink size={22} />
+                    <span>링크 첨부</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <FiVideo size={22} />
+                    <span>동영상 or GIF</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <FiAlertCircle size={22} />
+                    <span>공정위 표기</span>
+                  </div>
+                </div>
+
+                {/* 필요 시 상세 가이드(에디터 HTML) */}
+                <div
+                  className="mt-4 prose prose-sm max-w-none prose-li:marker:text-stone-400 "
+                  dangerouslySetInnerHTML={{ __html: data.mission }}
+                />
+              </div>
+            </div>
+
+            {/* 일정 요약 */}
+            <div className="grid grid-cols-[120px_1fr] gap-4 py-3">
+              <div className="flex items-center gap-2 text-[15px] font-semibold text-stone-800">
+                <FiCalendar className="translate-y-[-1px]" />
+                <span>일정 요약</span>
+              </div>
+              <div className="text-[15px] text-stone-800 space-y-1">
+                <div>
+                  신청기간: {f(data.dates.applyStart)} ~{" "}
+                  {f(data.dates.applyEnd)}
+                </div>
+                <div>발표: {f(data.dates.announce)}</div>
+                <div>
+                  체험기간: {f(data.dates.expStart)} ~ {f(data.dates.expEnd)}
+                </div>
+                <div>리뷰 마감: {f(data.dates.deadline)}</div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* 우측 사이드 */}
         <aside className="space-y-4">
-          <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white ">
+          <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
             <img
               src={data.thumbnailUrl}
               alt="thumbnail"
               className="h-64 w-full object-cover"
               loading="lazy"
             />
-            <div className="space-y-3 p-4 ">
+            <div className="space-y-3 p-4">
               {/* 일정 텍스트 토글 */}
               <div className="flex items-center justify-between border-b">
-                <div className="text-sm font-semibold ">체험단 일정</div>
+                <div className="text-sm font-semibold">체험단 일정</div>
                 <button
                   type="button"
                   onClick={() => setOpenScheduleInfo((v) => !v)}
-                  className="rounded-md border px-2 py-1 text-xs text-stone-600 hover:bg-stone-50 mb-1"
+                  className="mb-1 rounded-md border px-2 py-1 text-xs text-stone-600 hover:bg-stone-50"
                 >
                   {openScheduleInfo ? (
-                    <>
-                      <FiChevronUp className="inline" />
-                    </>
+                    <FiChevronUp className="inline" />
                   ) : (
-                    <>
-                      <FiChevronDown className="inline" />
-                    </>
+                    <FiChevronDown className="inline" />
                   )}
                 </button>
               </div>
@@ -266,35 +348,28 @@ export default function CampaignDetail({ campaign }) {
                 </div>
               )}
 
-              {/* 달력은 항상 표시 */}
+              {/* 달력 */}
               <CampaignCalendar
                 initialMonth={new Date(data.dates.applyEnd)}
                 ranges={[
-                  // 모집 (회색)
                   {
                     start: new Date(2025, 6, 31),
                     end: new Date(2025, 7, 29),
                     label: "모집",
                     tone: "muted",
                   },
-
-                  // 체험기간 (초록) — ✅ 연속 바로
                   {
                     start: new Date(2025, 8, 5),
                     end: new Date(2025, 8, 12),
                     label: "체험기간",
                     tone: "green",
                   },
-
-                  // 발표 (분홍) — 단일일 bar
                   {
                     start: new Date(2025, 7, 30),
                     end: new Date(2025, 7, 30),
                     label: "발표",
                     tone: "amber",
                   },
-
-                  // 리뷰마감 (보라) — 단일일 bar
                   {
                     start: new Date(2025, 8, 13),
                     end: new Date(2025, 8, 13),
@@ -305,7 +380,8 @@ export default function CampaignDetail({ campaign }) {
                 bottomLabel="체험&리뷰"
               />
 
-              <button onClick={() => navigate(`/campaigns/${data.campaignIdx}/apply`)}
+              <button
+                onClick={() => navigate(`/campaigns/${data.campaignIdx}/apply`)}
                 className={`mt-2 w-full rounded-xl px-4 py-3 text-sm font-semibold ${
                   isRecruitOpen
                     ? "bg-sky-600 text-white hover:bg-sky-700"
@@ -318,7 +394,7 @@ export default function CampaignDetail({ campaign }) {
             </div>
           </div>
 
-          {/* 방문형 안내 (선택) */}
+          {/* 방문형 안내 */}
           {data.campaignType === "CAMP001" && data.visitInfo && (
             <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
               <div className="mb-2 flex items-center gap-2 text-sm font-medium">
