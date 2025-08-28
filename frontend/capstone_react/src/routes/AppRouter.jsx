@@ -15,6 +15,8 @@ import ProfileManagePage from '../pages/ProfileManagePage';
 import ImageUploadTest from "../components/mypage/ImageUploadTest";
 import CampaignCreate from "../pages/CampaignCreate";
 import CampaignMabge from "../pages/CampaignManage";
+import CampaignDetail from "../components/detail/CampaignDetail";
+import CampaignApply from "../pages/CampaignApply";
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
@@ -52,6 +54,20 @@ export default function AppRouter() {
       <Route path="/community/:communityIdx" element={
         <PrivateRoute>
           <CommunityDetailPage />
+        </PrivateRoute>} 
+      />
+
+      {/* 켐페인 상세 페이지 */}
+      <Route path="/campaign/:id" element={
+        <PrivateRoute>
+          <CampaignDetail />
+        </PrivateRoute>} 
+      />
+       
+      {/* 켐페인 신청  페이지 */}
+      <Route path="/campaigns/:id/apply" element={
+        <PrivateRoute>
+          <CampaignApply />
         </PrivateRoute>} 
       />
 
