@@ -243,3 +243,48 @@ VALUES
 (2, 4, '대댓글 2', 1, 1, 1, 4, 'COMMT001', NOW()), # 3
 (2, 2, '대대댓글 1-1', 2, 1, 2, 3, 'COMMT001', NOW()), # 4
 (2, 2, '대대댓글 2-1', 3, 1, 2, 5, 'COMMT001', NOW()); # 5
+
+-- ==========================================
+-- TB_CAMPAIGN 샘플 데이터 (방문형)
+-- ==========================================
+INSERT INTO TB_CAMPAIGN (
+    MEMBER_IDX, TITLE, SHOP_NAME, THUMBNAIL_URL, CONTACT_PHONE,
+    CAMPAIGN_TYPE, CAM_CATE_CODE, CHANNEL_CODE, MISSION,
+    KEYWORD_1, KEYWORD_2, KEYWORD_3, BENEFIT_DETAIL, RECRUIT_COUNT,
+    APPLY_START_DATE, APPLY_END_DATE, ANNOUNCE_DATE,
+    EXP_START_DATE, EXP_END_DATE, DEADLINE_DATE,
+    CAMPAIGN_STATUS, RECRUIT_STATUS, DEL_YN, REG_DATE
+) VALUES
+(56, '맛집 체험단 모집', '맛집 1번지', '/images/thumb1.jpg', '010-1234-5678',
+ 'CAMP001', 'CAMT001', 'CAMC001', '음식 체험 및 후기 작성',
+ '맛집', '리뷰', '체험', '1인 식사권 제공', 10,
+ '2025-09-01', '2025-09-10', '2025-09-12',
+ '2025-09-15', '2025-09-20', '2025-09-25',
+ 'CAMS001', 'REC001', 'N', NOW());
+ INSERT INTO TB_CAMPAIGN (
+    MEMBER_IDX, TITLE, SHOP_NAME, THUMBNAIL_URL, CONTACT_PHONE,
+    CAMPAIGN_TYPE, CAM_CATE_CODE, CHANNEL_CODE, MISSION,
+    KEYWORD_1, KEYWORD_2, KEYWORD_3, BENEFIT_DETAIL, RECRUIT_COUNT,
+    APPLY_START_DATE, APPLY_END_DATE, ANNOUNCE_DATE,
+    EXP_START_DATE, EXP_END_DATE, DEADLINE_DATE,
+    CAMPAIGN_STATUS, RECRUIT_STATUS, DEL_YN, REG_DATE
+) VALUES
+(56, '뷰티 체험단 모집', '뷰티샵 2호점', '/images/thumb2.jpg', '010-9876-5432',
+ 'CAMP001', 'CAMT003', 'CAMC002', '뷰티 제품 체험 및 후기 작성',
+ '뷰티', '후기', NULL, '제품 샘플 제공', 15,
+ '2025-09-05', '2025-09-15', '2025-09-17',
+ '2025-09-18', '2025-09-25', '2025-09-30',
+ 'CAMS001', 'REC001', 'N', NOW());
+ 
+ -- ==========================================
+-- TB_CAMPAIGN_VISIT 샘플 데이터 (방문형 세부)
+-- ==========================================
+INSERT INTO TB_CAMPAIGN_VISIT (
+    CAMPAIGN_IDX, ADDRESS, ADDRESS_DETAIL, DAY, START_TIME, END_TIME, RESERVATION_NOTICE
+) VALUES
+(1, '서울시 강남구 테헤란로 1', '1층', '월,수,금', '10:30', '21:30', '예약 필수');
+
+INSERT INTO TB_CAMPAIGN_VISIT (
+    CAMPAIGN_IDX, ADDRESS, ADDRESS_DETAIL, DAY, START_TIME, END_TIME, RESERVATION_NOTICE
+) VALUES
+(2, '서울시 서초구 서초대로 5', '2층', '화,목,토', '11:00', '20:00', '전화 예약 필수');

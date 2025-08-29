@@ -215,3 +215,42 @@ LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
 WHERE c.community_idx = 2
 AND c.del_yn = 'N'
 ORDER BY c.group_id ASC, c.sort_order ASC;
+
+######################## 캠페인 관련 ############################
+SELECT 
+    c.CAMPAIGN_IDX,
+    c.MEMBER_IDX,
+    c.TITLE,
+    c.SHOP_NAME,
+    c.THUMBNAIL_URL,
+    c.CONTACT_PHONE,
+    c.CAMPAIGN_TYPE,
+    c.CAM_CATE_CODE,
+    c.CHANNEL_CODE,
+    c.MISSION,
+    c.KEYWORD_1,
+    c.KEYWORD_2,
+    c.KEYWORD_3,
+    c.BENEFIT_DETAIL,
+    c.RECRUIT_COUNT,
+    c.APPLY_START_DATE,
+    c.APPLY_END_DATE,
+    c.ANNOUNCE_DATE,
+    c.EXP_START_DATE,
+    c.EXP_END_DATE,
+    c.DEADLINE_DATE,
+    c.CAMPAIGN_STATUS,
+    c.RECRUIT_STATUS,
+    c.DEL_YN,
+    c.REG_DATE,
+    c.MOD_DATE,
+    v.ADDRESS,
+    v.ADDRESS_DETAIL,
+    v.DAY,
+    v.START_TIME,
+    v.END_TIME,
+    v.RESERVATION_NOTICE
+FROM TB_CAMPAIGN c
+INNER JOIN TB_CAMPAIGN_VISIT v
+    ON c.CAMPAIGN_IDX = v.CAMPAIGN_IDX;
+-- WHERE c.CAMPAIGN_TYPE IN ('CAMP001','CAMP002');  -- 방문형 / 포장형
