@@ -1,0 +1,153 @@
+<!-- src/main/resources/mappers/CampaignDetailMapper.xml -->
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webcore.platform.campaign.dao.CampaignDAO">
+
+  <resultMap id="CampaignDetailMap" type="com.webcore.platform.campaign.dto.CampaignDetailResponseDTO">
+    <id     property="campaignIdx"     column="campaignIdx"/>
+    <result property="memberIdx"       column="memberIdx"/>
+    <result property="title"           column="title"/>
+    <result property="shopName"        column="shopName"/>
+    <result property="thumbnailUrl"    column="thumbnailUrl"/>
+    <result property="contactPhone"    column="contactPhone"/>
+
+    <result property="campaignType"    column="campaignType"/>
+
+    <result property="categoryCode"    column="categoryCode"/>
+    <result property="categoryName"    column="categoryName"/>
+
+    <result property="channelCode"     column="channelCode"/>
+    <result property="channelName"     column="channelName"/>
+
+    <result property="mission"         column="mission"/>
+    <result property="keyword1"        column="keyword1"/>
+    <result property="keyword2"        column="keyword2"/>
+    <result property="keyword3"        column="keyword3"/>
+    <result property="benefitDetail"   column="benefitDetail"/>
+    <result property="recruitCount"    column="recruitCount"/>
+
+    <!-- LocalDate 매핑 -->
+    <result property="applyStart"      column="applyStart"    jdbcType="DATE"/>
+    <result property="applyEnd"        column="applyEnd"      jdbcType="DATE"/>
+    <result property="announce"        column="announce"      jdbcType="DATE"/>
+    <result property="expStart"        column="expStart"      jdbcType="DATE"/>
+    <result property="expEnd"          column="expEnd"        jdbcType="DATE"/>
+    <result property="deadline"        column="deadline"      jdbcType="DATE"/>
+
+    <result property="recruitStatus"   column="recruitStatus"/>
+    <result property="campaignStatus"  column="campaignStatus"/>
+
+    <result property="address"         column="address"/>
+    <result property="addressDetail"   column="addressDetail"/>
+    <result property="day"             column="day"/>
+    <result property="startTime"       column="startTime"/>
+    <result property="endTime"         column="endTime"/>
+    <result property="reservationNotice" column="reservationNotice"/>
+    <result property="mapUrl"          column="mapUrl"/>
+
+    <result property="purchaseUrl"     column="purchaseUrl"/>
+
+    <result property="applicants"      column="applicants"    jdbcType="BIGINT"/>
+  </resultMap>
+
+  <!-- 캠페인 상세: 공통코드(TB_COMMON_CODE)로 유형/카테고리/채널명 조인
+       - TB_CAMPAIGN_VISIT에는 MAP_URL 컬럼이 없으므로, 주소로 네이버 지도 검색 URL 생성(mapUrl)
+       - TB_CAMPAIGN_DELIVERY에는 PURCHASE_URL만 존재 → purchaseUrl로 내려줌
+       - TB_CATEGORY/TB_CHANNEL 테이블은 사용하지 않음 -->
+  <select id="selectDetailCampaign"
+    parameterType="int"
+    resultMap="CampaignDetailMap">
+
+    SELECT
+      /* ── 기본 정보 ───────────────────────────── */
+      c.CAMPAIGN_IDX    AS campaignIdx,
+      c.MEMBER_IDX      AS memberIdx,
+      c.TITLE           AS title,
+      c.SHOP_NAME       AS shopName,
+      c.THUMBNAIL_URL   AS thumbnailUrl,
+      c.CONTACT_PHONE   AS contactPhone,
+
+      /* ── 코드/타입 + 코드명 매핑 ───────────────── */
+      -- 유형 코드 (예: CAMP001)
+      c.CAMPAIGN_TYPE   AS campaignType,
+      -- 공통코드 조인 결과에서 유형 이름 (예: 방문형) - DTO에 필드 있으면 사용
+      prom.code_nm      AS campaignTypeName,
+
+      -- 카테고리 코드 (예: CAMT001)
+      c.CAM_CATE_CODE   AS categoryCode,
+      -- 공통코드 조인 결과에서 카테고리 이름 (예: 맛집, 뷰티 …)
+      cate.code_nm      AS categoryName,
+
+      -- 채널 코드 (예: CAMC001)
+      c.CHANNEL_CODE    AS channelCode,
+      -- 공통코드 조인 결과에서 채널 이름 (예: 블로그, 인스타 …)
+      ch.code_nm        AS channelName,
+
+      /* ── 기타 정보 ───────────────────────────── */
+      c.MISSION         AS mission,
+      c.KEYWORD_1       AS keyword1,
+      c.KEYWORD_2       AS keyword2,
+      c.KEYWORD_3       AS keyword3,
+      c.BENEFIT_DETAIL  AS benefitDetail,
+      c.RECRUIT_COUNT   AS recruitCount,
+
+      /* ── 일정 (DATE → LocalDate 매핑) ─────────── */
+      c.APPLY_START_DATE AS applyStart,
+      c.APPLY_END_DATE   AS applyEnd,
+      c.ANNOUNCE_DATE    AS announce,
+      c.EXP_START_DATE   AS expStart,
+      c.EXP_END_DATE     AS expEnd,
+      c.DEADLINE_DATE    AS deadline,
+
+      /* ── 상태 ─────────────────────────────────── */
+      c.RECRUIT_STATUS   AS recruitStatus,
+      c.CAMPAIGN_STATUS  AS campaignStatus,
+
+      /* ── 방문형 정보 (없으면 NULL) ─────────────── */
+      v.ADDRESS             AS address,
+      v.ADDRESS_DETAIL      AS addressDetail,
+      v.`DAY`               AS day,              -- 예약어 충돌 대비
+      v.START_TIME          AS startTime,
+      v.END_TIME            AS endTime,
+      v.RESERVATION_NOTICE  AS reservationNotice,
+      -- TB_CAMPAIGN_VISIT에는 MAP_URL 컬럼이 없으므로 주소 기반 지도 검색 링크 생성
+      CONCAT('https://map.naver.com/v5/search/',
+             REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20')) AS mapUrl,
+
+      /* ── 배송형 정보 (없으면 NULL) ─────────────── */
+      d.PURCHASE_URL    AS purchaseUrl,
+
+      /* ── 지원자 수 (SubQuery) ────────────────── */
+      (
+        SELECT COUNT(*)
+        FROM TB_CAMPAIGN_APPLY a
+        WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+      ) AS applicants
+
+    FROM TB_CAMPAIGN c
+      LEFT JOIN TB_CAMPAIGN_VISIT v
+    ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+      LEFT JOIN TB_CAMPAIGN_DELIVERY d
+      ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+
+      -- 공통코드에서 유형명 가져오기 (CAMP001 → 방문형)
+      LEFT JOIN TB_COMMON_CODE prom
+      ON prom.group_code = 'CAM_PROM'
+      AND prom.code_id    = c.CAMPAIGN_TYPE
+
+      -- 공통코드에서 카테고리명 가져오기 (CAMT001 → 맛집)
+      LEFT JOIN TB_COMMON_CODE cate
+      ON cate.group_code = 'CAM_CATE'
+      AND cate.code_id    = c.CAM_CATE_CODE
+
+      -- 공통코드에서 채널명 가져오기 (CAMC001 → 블로그)
+      LEFT JOIN TB_COMMON_CODE ch
+      ON ch.group_code = 'CAM_CHANNEL'
+      AND ch.code_id    = c.CHANNEL_CODE
+
+    WHERE c.CAMPAIGN_IDX = #{id}
+      AND c.DEL_YN = 'N'
+      LIMIT 1
+  </select>
+</mapper>
