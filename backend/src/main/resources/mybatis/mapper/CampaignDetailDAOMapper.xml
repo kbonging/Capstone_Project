@@ -1,0 +1,71 @@
+<!-- src/main/resources/mappers/CampaignDetailMapper.xml -->
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webcore.platform.campaign.dao.CampaignDetailDAO">
+
+    <!-- 기본 상세 -->
+    <select id="findDetail" resultType="com.webcore.platform.campaign.dto.CampaignDetailRes">
+        SELECT
+            c.CAMPAIGN_IDX      AS campaignIdx,
+            c.MEMBER_IDX        AS memberIdx,
+            c.TITLE             AS title,
+            c.SHOP_NAME         AS shopName,
+            c.THUMBNAIL_URL     AS thumbnailUrl,
+            c.CONTACT_PHONE     AS contactPhone,
+            c.CAMPAIGN_TYPE     AS campaignType,
+            c.CAM_CATE_CODE     AS categoryCode,
+            c.CHANNEL_CODE      AS channelCode,
+            c.MISSION           AS mission,
+            c.KEYWORD_1         AS keyword1,
+            c.KEYWORD_2         AS keyword2,
+            c.KEYWORD_3         AS keyword3,
+            c.BENEFIT_DETAIL    AS benefitDetail,
+            c.RECRUIT_COUNT     AS recruitCount,
+            c.APPLY_START_DATE  AS applyStart,
+            c.APPLY_END_DATE    AS applyEnd,
+            c.ANNOUNCE_DATE     AS announce,
+            c.EXP_START_DATE    AS expStart,
+            c.EXP_END_DATE      AS expEnd,
+            c.DEADLINE_DATE     AS deadline,
+            c.RECRUIT_STATUS    AS recruitStatus,
+            c.CAMPAIGN_STATUS   AS campaignStatus
+        FROM TB_CAMPAIGN c
+        WHERE c.CAMPAIGN_IDX = #{id}
+          AND c.DEL_YN = 'N'
+            LIMIT 1
+    </select>
+
+    <!-- 방문/포장형 부가 정보 -->
+    <select id="findVisit" resultType="com.webcore.platform.campaign.dto.CampaignDetailRes$VisitInfo">
+        SELECT
+            v.ADDRESS           AS address,
+            v.ADDRESS_DETAIL    AS addressDetail,
+            v.DAY               AS day,
+      v.START_TIME        AS startTime,
+      v.END_TIME          AS endTime,
+      v.RESERVATION_NOTICE AS reservationNotice
+        FROM TB_CAMPAIGN_VISIT v
+        WHERE v.CAMPAIGN_IDX = #{id}
+            LIMIT 1
+    </select>
+
+    <!-- 배송/구매형 부가 정보 -->
+    <select id="findDelivery" resultType="com.webcore.platform.campaign.dto.CampaignDetailRes$DeliveryInfo">
+        SELECT
+            d.PURCHASE_URL AS purchaseUrl
+        FROM TB_CAMPAIGN_DELIVERY d
+        WHERE d.CAMPAIGN_IDX = #{id}
+            LIMIT 1
+    </select>
+
+    <!-- 지원자 수 집계  -->
+    <select id="countApplicants" parameterType="long" resultType="long">
+        SELECT COUNT(*) FROM tb_campaign_apply a
+        WHERE a.campaign_idx = #{id}
+    </select>
+
+
+
+
+</mapper>
