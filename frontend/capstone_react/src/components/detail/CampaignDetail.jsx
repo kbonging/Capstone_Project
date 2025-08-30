@@ -96,19 +96,16 @@ export default function CampaignDetail() {
     );
   }
 
-  // 서버 DTO 계약에 맞춘 필드 사용
+  // 서버 DTO 계약에 맞춘 필드 사용 (flat 응답 기준)
   const isRecruitOpen = data.recruitStatus === "REC001";
   const channelCode = normChannel(data.channelCode ?? data.channelName);
   const missionSpec = CHANNEL_SPECS[channelCode] ?? CHANNEL_SPECS.CAMC001;
 
-  // 상품 URL: deliveryInfo.purchaseUrl 우선, 없으면 (혹시 내려올 수 있는) productUrl
-  const productUrl =
-    (data.deliveryInfo && data.deliveryInfo.purchaseUrl) ||
-    data.productUrl ||
-    null;
+  // 상품 URL: purchaseUrl 우선, 없으면 productUrl
+  const productUrl = data.purchaseUrl || data.productUrl || null;
 
-  // dates는 서버에서 묶음으로 오지만, 혹시 누락 대비 가드
-  const dates = data.dates || {
+  // flat 응답을 dates 객체로 래핑(컴포넌트 내부에서만 사용)
+  const dates = {
     applyStart: data.applyStart,
     applyEnd: data.applyEnd,
     announce: data.announce,
@@ -150,6 +147,16 @@ export default function CampaignDetail() {
     },
   ].filter(Boolean);
 
+  // 방문형 정보 표시 여부 (flat 필드 기준)
+  const hasVisitInfo =
+    data.address ||
+    data.addressDetail ||
+    data.day ||
+    data.startTime ||
+    data.endTime ||
+    data.reservationNotice ||
+    data.mapUrl;
+
   return (
     <div className="mx-auto w-full max-w-6xl p-4 md:p-6">
       {/* 헤더 */}
@@ -190,16 +197,18 @@ export default function CampaignDetail() {
         <div className="rounded-2xl  border-stone-200 bg-white">
           {/* 상단 요약 */}
           <div className="border-b border-stone-200 px-5 pb-3 pt-5">
-            <div className="text-sm text-stone-500">제공상품/물품</div>
-            <div className="mt-1 text-[15px] font-medium text-stone-900 md:text-base">
-              {data.benefitDetail}
+            <div className="flex flex-wrap items-center gap-12">
+              <div className="text-sm font-semibold text-stone-800">제공상품/물품</div>
+              <div className="mt-1 text-[15px] font-medium text-stone-900 md:text-base">
+                {data.benefitDetail}
+              </div>
             </div>
           </div>
 
           {/* 항목 리스트 */}
           <div className="px-5 py-2">
             {/* 방문형 안내 (제공상품/물품 바로 밑) */}
-            {data.campaignType === "CAMP001" && data.visitInfo && (
+            {data.campaignType === "CAMP001" && hasVisitInfo && (
               <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-6">
                 <div className="flex items-center gap-2 text-[15px] font-semibold text-stone-800">
                   <FiMapPin className="translate-y-[-1px]" />
@@ -207,25 +216,22 @@ export default function CampaignDetail() {
                 </div>
                 <div className="text-[15px] text-stone-800">
                   <div>
-                    {data.visitInfo.address} {data.visitInfo.addressDetail}
+                    {data.address} {data.addressDetail}
                   </div>
-                  {(data.visitInfo.day ||
-                    data.visitInfo.startTime ||
-                    data.visitInfo.endTime) && (
+                  {(data.day || data.startTime || data.endTime) && (
                     <div className="mt-1 text-xs text-stone-500">
-                      영업 {data.visitInfo.day ?? "-"} /{" "}
-                      {data.visitInfo.startTime ?? "--"}~
-                      {data.visitInfo.endTime ?? "--"}
+                      영업 {data.day ?? "-"} / {data.startTime ?? "--"}~
+                      {data.endTime ?? "--"}
                     </div>
                   )}
-                  {data.visitInfo.reservationNotice && (
+                  {data.reservationNotice && (
                     <p className="mt-2 text-xs leading-5 text-stone-500">
-                      {data.visitInfo.reservationNotice}
+                      {data.reservationNotice}
                     </p>
                   )}
-                  {data.visitInfo.mapUrl && (
+                  {data.mapUrl && (
                     <a
-                      href={data.visitInfo.mapUrl}
+                      href={data.mapUrl}
                       target="_blank"
                       rel="noreferrer"
                       className="mt-2 inline-block text-xs text-sky-600 underline underline-offset-2 hover:text-sky-700"
@@ -238,16 +244,16 @@ export default function CampaignDetail() {
             )}
 
             {/* 주최자 */}
-            <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-6">
+            <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-10">
               <div className="flex items-center gap-2 text-[15px] font-semibold text-stone-800">
                 <FiLock className="translate-y-[-1px]" />
                 <span>주최자</span>
               </div>
-              <div className="text-[15px] text-stone-900">{data.shopName}</div>
+              <div className="text-[15px] pr-2 text-stone-900">{data.shopName}</div>
             </div>
 
             {/* 배송/구매 안내 */}
-            <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-6">
+            <div className="grid grid-cols-[150px_1fr]  border-b border-stone-200 py-10">
               <div className="flex items-center gap-2 text-[15px] font-semibold text-stone-800">
                 <FiTruck className="translate-y-[-1px]" />
                 <span>배송 및 구매 안내</span>
@@ -261,7 +267,7 @@ export default function CampaignDetail() {
             </div>
 
             {/* 키워드 */}
-            <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-6">
+            <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-10">
               <div className="flex items-center gap-2 text-[15px] font-semibold text-stone-800">
                 <FiTag className="translate-y-[-1px]" />
                 <span>키워드 정보</span>
@@ -301,7 +307,7 @@ export default function CampaignDetail() {
             )}
 
             {/* 체험단 미션 */}
-            <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-8">
+            <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 py-10">
               <div className="flex items-start gap-2 text-[15px] font-semibold text-stone-800">
                 <FiImage className="translate-y-[3px]" />
                 <span>체험단 미션</span>
