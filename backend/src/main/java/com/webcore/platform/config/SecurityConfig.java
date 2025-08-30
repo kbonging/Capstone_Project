@@ -108,6 +108,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/owner").permitAll() // 소상공인 회원가입은 누구나 가능 (POST)
                         .requestMatchers("/api/owner", "/api/owner/**").hasRole("OWNER") // 회원 가입 제외 모든 경로는 권한 필요
 
+                        //켐페인 상세 페이지
+                        .requestMatchers(HttpMethod.GET, "/api/campaigns/**").permitAll()
+
                         // 커뮤니티
                         .requestMatchers("/api/community", "/api/community/**") // 커뮤니티 모든 경로는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")
