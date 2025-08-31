@@ -108,8 +108,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/owner").permitAll() // 소상공인 회원가입은 누구나 가능 (POST)
                         .requestMatchers("/api/owner", "/api/owner/**").hasRole("OWNER") // 회원 가입 제외 모든 경로는 권한 필요
 
-                        //켐페인 상세 페이지
-                        .requestMatchers(HttpMethod.GET, "/api/campaigns/**").permitAll()
+                        // 캠페인 관련
+                        .requestMatchers(HttpMethod.GET, "/api/campaigns").permitAll() // 캠페인 전체 목록 조회는 모두 접근 가능
+                        .requestMatchers("/api/campaigns/**") // 상세 조회, 수정, 삭제는 권한 필요
+                        .hasAnyRole("USER", "OWNER", "ADMIN")// 캠페인 모든 경로는 권한 필요
 
                         // 커뮤니티
                         .requestMatchers("/api/community", "/api/community/**") // 커뮤니티 모든 경로는 권한 필요

@@ -33,6 +33,29 @@ export default function Step2({ formData, setFormData }) {
   const [selectedCategory, setSelectedCategory] = useState(formData.campaignCategory || "");
   const [selectedChannel, setSelectedChannel] = useState(formData.channelCode || "");
 
+  ///////////////// 카카오 주소 API 관련 코드 시작 /////////////////////
+  const handleAddressSearch = () => {
+    new window.daum.Postcode({
+      oncomplete: function(data) {
+        setFormData({
+          ...formData,
+          address: data.address,
+          addressDetail: "", // 상세주소 초기화
+        });
+      },
+    }).open();
+  };
+
+  useEffect(() => {
+    // daum postcode script 로딩
+    const script = document.createElement("script");
+    script.src = "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => document.body.removeChild(script);
+  }, []);
+
+ ///////////////// 카카오 주소 관련 코드 종료 //////////////////
   const handleTypeSelect = (id) => {
     setSelectedType(id);
     setFormData({ ...formData, campaignType: id });
@@ -87,23 +110,26 @@ export default function Step2({ formData, setFormData }) {
       </div>
 
       {(selectedType === "CAMP001" || selectedType === "CAMP002") && (
-        <div className="mt-4 space-y-3">
-          <label className="block text-sm font-medium text-gray-700">체험 주소 *</label>
-          <input
-            type="text"
-            className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-            placeholder="주소를 입력하세요"
-            value={formData.address}
-            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-          />
-          <input
-            type="text"
-            className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-            placeholder="상세주소를 입력하세요"
-            value={formData.addressDetail}
-            onChange={(e) => setFormData({ ...formData, addressDetail: e.target.value })}
-          />
-        </div>
+    <div className="mt-4 space-y-3">
+      <label className="block text-sm font-medium text-gray-700">체험 주소 *</label>
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={formData.address}
+          onClick={()=>{handleAddressSearch()}}
+          placeholder="주소를 선택해주세요"
+          readOnly
+          className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+        />
+      </div>
+      <input
+        type="text"
+        placeholder="상세주소를 입력하세요"
+        value={formData.addressDetail}
+        onChange={(e) => setFormData({ ...formData, addressDetail: e.target.value })}
+        className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+      />
+    </div>
       )}
 
       {(selectedType === "CAMP003" || selectedType === "CAMP004") && (

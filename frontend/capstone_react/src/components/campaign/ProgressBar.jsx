@@ -3,7 +3,7 @@ import React from "react";
 
 export default function ProgressBar({ steps, currentStep, maxStep, onStepClick }) {
   return (
-    <div className="flex justify-between mb-6">
+    <div className="flex justify-between mb-16">
       {steps.slice(0, maxStep).map((label, index) => {
         const stepNumber = index + 1;
         const active = currentStep === stepNumber;
