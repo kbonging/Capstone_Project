@@ -25,13 +25,13 @@ export default function CampaignCalendar({ initialMonth, ranges = [], bottomLabe
       Array.from({ length: 7 }, (_, c) => {
         const d = r * 7 + c - startOffset + 1;
         if (d < 1 || d > last.getDate()) return null;
-        return new Date(monthDate.getFullYear(), monthDate.getMonth(), d);
+        return new Date(monthDate.getFullYear(), monthDate.getMonth(), d, 12, 0, 0);
       })
     );
   }, [monthDate, first, last]);
 
   // 유틸
-  const isInRange = (r, d) => r.start <= d && d <= r.end;
+  const isInRange = (r, d) => r.start <= d && d < r.end;
 //   const inRanges  = (d) => ranges.filter((r) => isInRange(r, d));
 
   // 톤별 바 스타일(색 + 레인 인덱스)
