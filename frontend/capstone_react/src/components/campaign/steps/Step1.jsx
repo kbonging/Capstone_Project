@@ -17,7 +17,7 @@ export default function Step1({ formData, setFormData }) {
     if (!file) return;
     const url = URL.createObjectURL(file);
     setThumbnailPreview(url);
-    setFormData((p) => ({ ...p, thumbnailUrl: url, thumbnailFile: file }));
+    setFormData((p) => ({ ...p, thumbnailUrl: file.name, thumbnailFile: file }));
   };
   const handleRemoveImage = () => {
     setThumbnailPreview(null);
