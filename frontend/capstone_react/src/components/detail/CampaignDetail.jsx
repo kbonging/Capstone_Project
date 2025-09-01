@@ -1,5 +1,5 @@
 // src/features/campaigns/components/CampaignDetail.jsx
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react"; //, useContext
 import { useNavigate, useParams } from "react-router-dom";
 import {
   FiHeart,
@@ -19,6 +19,7 @@ import MissionIconsGrid from "./MissionIconsGrid";
 import { norm as normChannel, CHANNEL_SPECS } from "../../config/channelSpecs";
 import { fmtDate } from "../../utils/date";
 import { getCampaignDetail } from "../../api/campaigns/api";
+import { AppContext } from "../../contexts/AppContext";
 
 /* 날짜 유틸: "YYYY-MM-DD" → 로컬 정오(Date)로 안전 변환 */
 function parseLocalDate(dateStr) {
@@ -35,7 +36,7 @@ const oneDayRange = (dt) => (dt ? { start: dt, end: addDays(dt, 1) } : null);
 const dayRange = (start, end) => {
   if (!start || !end) return null;
   if (end < start) return null;
-  return { start, end };
+  return { start, end: addDays(end, 1) }; //return { start, end }; 이렇게 하면 당일날 제외 색칠안됨
 };
 
 /* 뱃지 */
@@ -61,14 +62,14 @@ export default function CampaignDetail() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  // const { token } = useContext(AppContext);
   // 서버에서 가져오기
   useEffect(() => {
     let ignore = false;
     (async () => {
       try {
         setLoading(true);
-        const detail = await getCampaignDetail(id); // /api/campaigns/:id
+        const detail = await getCampaignDetail(id); // /api/campaigns/:id  , token
         if (!ignore) setData(detail);
       } catch (e) {
         if (!ignore) setError(e?.message || "상세 조회 실패");
@@ -182,7 +183,33 @@ export default function CampaignDetail() {
         </div>
 
         <div className="flex items-center gap-2 self-end md:self-start">
-          <button className="rounded-xl border px-3 py-2 text-sm hover:bg-stone-50">
+          {/* 이부분은 그냥 링크복사 하는것 */}
+          {/* <button
+            className="rounded-xl border px-3 py-2 text-sm hover:bg-stone-50"
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+              alert("링크가 복사되었습니다!",);
+            }}
+          >
+            <FiShare2 className="mr-1 inline-block" /> 공유
+          </button> */}
+          {/* 이부분은 공유하기 지원안하면 링크복사 처리  */}
+          <button
+            className="rounded-xl border px-3 py-2 text-sm hover:bg-stone-50"
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: data.title,
+                  text: data.shopName,
+                  url: window.location.href,
+                });
+              } else {
+                // 지원 안 하는 환경 → fallback
+                navigator.clipboard.writeText(window.location.href);
+                alert("링크가 복사되었습니다!");
+              }
+            }}
+          >
             <FiShare2 className="mr-1 inline-block" /> 공유
           </button>
           <button className="rounded-xl border px-3 py-2 text-sm hover:bg-stone-50">
@@ -198,7 +225,9 @@ export default function CampaignDetail() {
           {/* 상단 요약 */}
           <div className="border-b border-stone-200 px-5 pb-3 pt-5">
             <div className="flex flex-wrap items-center gap-12">
-              <div className="text-sm font-semibold text-stone-800">제공상품/물품</div>
+              <div className="text-sm font-semibold text-stone-800">
+                제공상품/물품
+              </div>
               <div className="mt-1 text-[15px] font-medium text-stone-900 md:text-base">
                 {data.benefitDetail}
               </div>
@@ -229,7 +258,7 @@ export default function CampaignDetail() {
                       {data.reservationNotice}
                     </p>
                   )}
-                  {data.mapUrl && (
+                  {data.mapUrl && ( //카카오 api연동 하기
                     <a
                       href={data.mapUrl}
                       target="_blank"
@@ -249,7 +278,9 @@ export default function CampaignDetail() {
                 <FiLock className="translate-y-[-1px]" />
                 <span>주최자</span>
               </div>
-              <div className="text-[15px] pr-2 text-stone-900">{data.shopName}</div>
+              <div className="text-[15px] pr-2 text-stone-900">
+                {data.shopName}
+              </div>
             </div>
 
             {/* 배송/구매 안내 */}
@@ -323,7 +354,7 @@ export default function CampaignDetail() {
               </div>
               <div className="space-y-1 text-[15px] text-stone-800">
                 <div>
-                  신청기간: {fmtDate(dates.applyStart)} ~{" "}
+                  신청기간: {fmtDate(dates.applyStart)} ~
                   {fmtDate(dates.applyEnd)}
                 </div>
                 <div>발표: {fmtDate(dates.announce)}</div>

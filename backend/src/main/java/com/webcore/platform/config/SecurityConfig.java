@@ -109,9 +109,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/owner", "/api/owner/**").hasRole("OWNER") // 회원 가입 제외 모든 경로는 권한 필요
 
                         // 캠페인 관련
-                        .requestMatchers(HttpMethod.GET, "/api/campaigns").permitAll() // 캠페인 전체 목록 조회는 모두 접근 가능
-                        .requestMatchers("/api/campaigns/**") // 상세 조회, 수정, 삭제는 권한 필요
-                        .hasAnyRole("USER", "OWNER", "ADMIN")// 캠페인 모든 경로는 권한 필요
+                        .requestMatchers(HttpMethod.GET, "/api/campaigns/**").permitAll() // 캠페인 전체 목록 조회는 모두 접근 가능
+                        .requestMatchers(HttpMethod.POST,"api/campaigns/**").hasAnyRole("USER", "OWNER", "ADMIN")
+//                        .requestMatchers("/api/campaigns/**") // 상세 조회, 수정, 삭제는 권한 필요
+//                        .hasAnyRole("USER", "OWNER", "ADMIN")// 캠페인 모든 경로는 권한 필요
 
                         // 커뮤니티
                         .requestMatchers("/api/community", "/api/community/**") // 커뮤니티 모든 경로는 권한 필요

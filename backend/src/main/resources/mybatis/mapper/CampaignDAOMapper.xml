@@ -116,14 +116,8 @@
              REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20')) AS mapUrl,
 
       /* ── 배송형 정보 (없으면 NULL) ─────────────── */
-      d.PURCHASE_URL    AS purchaseUrl,
+      d.PURCHASE_URL    AS purchaseUrl
 
-      /* ── 지원자 수 (SubQuery) ────────────────── */
-      (
-        SELECT COUNT(*)
-        FROM TB_CAMPAIGN_APPLY a
-        WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
-      ) AS applicants
 
     FROM TB_CAMPAIGN c
       LEFT JOIN TB_CAMPAIGN_VISIT v
