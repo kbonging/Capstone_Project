@@ -15,7 +15,7 @@ public class CampaignVisitDTO extends CampaignDTO{
     /** 상세 주소 */
     private String addressDetail;
     /** 체험 가능 요일 (예: 월,화,수) */
-    private List<String> day;
+    private String EXP_DAY;
     /** 체험 시작 시간 (HH:mm) */
     private String startTime;
     /** 체험 종료 시간 (HH:mm) */
