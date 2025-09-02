@@ -154,7 +154,7 @@ export default function CampaignDetail() {
   const hasVisitInfo =
     data.address ||
     data.addressDetail ||
-    data.EXP_DAY ||
+    data.expDay ||
     data.startTime ||
     data.endTime ||
     data.reservationNotice ||
@@ -245,9 +245,9 @@ export default function CampaignDetail() {
                   <div>
                     {data.address} {data.addressDetail}
                   </div>
-                  {(data.EXP_DAY || data.startTime || data.endTime) && (
+                  {(data.expDay || data.startTime || data.endTime) && (
                     <div className="mt-1 text-xs text-stone-500 dark:text-zinc-400">
-                      영업 {data.EXP_DAY ?? "-"} / {data.startTime ?? "--"}~
+                      영업 {data.expDay ?? "-"} / {data.startTime ?? "--"}~
                       {data.endTime ?? "--"}
                     </div>
                   )}
