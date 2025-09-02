@@ -4,6 +4,7 @@ import MyPageLayout from "../components/mypage/MyPageLayout";
 import ProfileTabs from "../components/mypage/ProfileTabs";
 import Profile from "../components/mypage/Profile";
 import { AppContext } from '../contexts/AppContext';
+import AdminAllow from '../components/mypage/AdminAllow';
 
 export default function MyPage() {
   const { user } = useContext(AppContext);
@@ -21,6 +22,15 @@ export default function MyPage() {
   // userRole이 결정될 때까지 로딩 상태 표시
   if (!userRole) {
     return <div>Loading...</div>;
+  }
+
+  // userRole이 'ROLE_ADMIN'인 경우 AdminAllow 컴포넌트를 렌더링
+  if (userRole === 'ROLE_ADMIN') {
+    return (
+      <MyPageLayout userRole={userRole}>
+        <AdminAllow />
+      </MyPageLayout>
+    );
   }
 
   return (
