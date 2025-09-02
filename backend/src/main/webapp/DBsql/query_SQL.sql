@@ -246,7 +246,7 @@ SELECT
     c.MOD_DATE,
     v.ADDRESS,
     v.ADDRESS_DETAIL,
-    v.DAY,
+    v.EXP_DAY,
     v.START_TIME,
     v.END_TIME,
     v.RESERVATION_NOTICE

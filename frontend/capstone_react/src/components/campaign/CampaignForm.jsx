@@ -23,7 +23,7 @@ export default function CampaignForm() {
     address: "",
     addressDetail: "",
     purchaseUrl: "",
-    day: "",
+    expDay: "",
     startTime: "",
     endTime: "",
     reservationNotice: "",
@@ -74,11 +74,11 @@ export default function CampaignForm() {
 
   // Step3 유효성 체크
   const isStep3Valid = useMemo(() => {
-    if (!formData.day || formData.day.length === 0) return false;
+    if (!formData.expDay || formData.expDay.length === 0) return false; 
     if (!formData.startTime || !formData.endTime) return false;
     if (formData.startTime >= formData.endTime) return false;
     return true;
-  }, [formData.day, formData.startTime, formData.endTime]);
+  }, [formData.expDay, formData.startTime, formData.endTime]);
 
   // Step4 유효성 체크
   const isStep4Valid = useMemo(() => {

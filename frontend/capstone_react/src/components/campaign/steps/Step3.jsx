@@ -4,11 +4,11 @@ const days = ["월", "화", "수", "목", "금", "토", "일"];
 
 export default function Step3({ formData, setFormData }) {
   const toggleDay = (day) => {
-    const selected = formData.day || [];
+    const selected = formData.expDay || [];
     if (selected.includes(day)) {
-      setFormData({ ...formData, day: selected.filter((d) => d !== day) });
+      setFormData({ ...formData, expDay: selected.filter((d) => d !== day) });
     } else {
-      setFormData({ ...formData, day: [...selected, day] });
+      setFormData({ ...formData, expDay: [...selected, day] });
     }
   };
 
@@ -26,7 +26,7 @@ export default function Step3({ formData, setFormData }) {
               type="button"
               onClick={() => toggleDay(day)}
               className={`px-3 py-1 rounded-full border ${
-                formData.day?.includes(day)
+                formData.expDay?.includes(day)
                   ? "bg-blue-500 text-white border-blue-500"
                   : "bg-white text-gray-700 border-gray-300"
               }`}

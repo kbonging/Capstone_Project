@@ -144,4 +144,41 @@
       AND c.DEL_YN = 'N'
       LIMIT 1
   </select>
+
+  <!-- 캠페인 기본 등록 -->
+  <insert id="insertCampaign" parameterType="com.webcore.platform.campaign.dto.CampaignDTO"
+          useGeneratedKeys="true" keyProperty="campaignIdx">
+    INSERT INTO TB_CAMPAIGN
+    (
+      MEMBER_IDX, TITLE, SHOP_NAME, THUMBNAIL_URL,
+      CONTACT_PHONE, CAMPAIGN_TYPE, CAM_CATE_CODE,
+      CHANNEL_CODE, MISSION, KEYWORD_1, KEYWORD_2, KEYWORD_3,
+      BENEFIT_DETAIL, RECRUIT_COUNT,
+      APPLY_START_DATE, APPLY_END_DATE, ANNOUNCE_DATE,
+      EXP_START_DATE, EXP_END_DATE, DEADLINE_DATE,
+      CAMPAIGN_STATUS, RECRUIT_STATUS, DEL_YN, REG_DATE
+    )
+    VALUES
+    (
+      #{memberIdx}, #{title}, #{shopName}, #{thumbnailUrl},
+      #{contactPhone}, #{campaignType}, #{camCateCode},
+      #{channelCode}, #{mission}, #{keyword1}, #{keyword2}, #{keyword3},
+      #{benefitDetail}, #{recruitCount},
+      #{applyStartDate}, #{applyEndDate}, #{announceDate},
+      #{expStartDate}, #{expEndDate}, #{deadlineDate},
+      #{campaignStatus}, #{recruitStatus}, 'N', NOW()
+    )
+  </insert>
+
+  <!-- 방문형/포장형 캠페인 등록 -->
+  <insert id="insertCampaignVisit" parameterType="com.webcore.platform.campaign.dto.CampaignVisitDTO">
+    INSERT INTO TB_CAMPAIGN_VISIT
+    (
+    CAMPAIGN_IDX, ADDRESS, ADDRESS_DETAIL, EXP_DAY, START_TIME, END_TIME, RESERVATION_NOTICE
+    )
+    VALUES
+    (
+    #{campaignIdx}, #{address}, #{addressDetail}, #{expDay}, #{startTime}, #{endTime}, #{reservationNotice}
+    )
+  </insert>
 </mapper>
