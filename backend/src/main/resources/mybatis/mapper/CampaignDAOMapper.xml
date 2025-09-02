@@ -40,7 +40,7 @@
 
     <result property="address"         column="address"/>
     <result property="addressDetail"   column="addressDetail"/>
-    <result property="EXP_DAY"             column="EXP_DAY"/>
+    <result property="expDay"             column="expDay"/>
     <result property="startTime"       column="startTime"/>
     <result property="endTime"         column="endTime"/>
     <result property="reservationNotice" column="reservationNotice"/>
@@ -107,7 +107,7 @@
       /* ── 방문형 정보 (없으면 NULL) ─────────────── */
       v.ADDRESS             AS address,
       v.ADDRESS_DETAIL      AS addressDetail,
-      v.EXP_DAY             AS EXP_DAY,              -- 예약어 충돌 대비
+      v.`EXP_DAY`               AS expDay,              -- 예약어 충돌 대비
       v.START_TIME          AS startTime,
       v.END_TIME            AS endTime,
       v.RESERVATION_NOTICE  AS reservationNotice,
