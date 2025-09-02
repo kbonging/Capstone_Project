@@ -36,21 +36,21 @@ export default function CampaignCalendar({ initialMonth, ranges = [], bottomLabe
 
   // 톤별 바 스타일(색 + 레인 인덱스)
   const toneBar = {
-    muted:  { cls: "bg-stone-300",    lane: 1, text: "text-stone-700"  }, // 모집
-    green:  { cls: "bg-emerald-300",  lane: 1, text: "text-emerald-800"}, // 체험기간
-    amber:  { cls: "bg-rose-300",     lane: 1, text: "text-rose-800"   }, // 발표
-    cyan:   { cls: "bg-sky-300",      lane: 1, text: "text-sky-800"    }, // 체험종료
-    violet: { cls: "bg-violet-300",   lane: 1, text: "text-violet-800" }, // 리뷰마감
-    blue:   { cls: "bg-sky-200",      lane: 1, text: "text-sky-900"    },
-    rose:   { cls: "bg-rose-200",     lane: 1, text: "text-rose-900"   },
+    muted:  { cls: "bg-stone-300",    lane: 0.5, text: "text-[12px] text-stone-700"  }, // 모집
+    green:  { cls: "bg-emerald-300",  lane: 0.5, text: "text-[12px] text-emerald-800"}, // 체험기간
+    amber:  { cls: "bg-rose-300",     lane: 0.5, text: "text-[12px] text-rose-800"   }, // 발표
+    cyan:   { cls: "bg-sky-300",      lane: 0.5, text: "text-[12px] text-sky-800"    }, // 체험종료
+    violet: { cls: "bg-violet-300",   lane: 0.5, text: "text-[12px] text-violet-800" }, // 리뷰마감
+    blue:   { cls: "bg-sky-200",      lane: 0.5, text: "text-[12px] text-sky-900"    },
+    rose:   { cls: "bg-rose-200",     lane: 0.5, text: "text-rose-900"   },
   };
 
   // ── “숫자 밑” 위치 조정값 ──────────────────────────────────
   // 셀 높이: h-10 = 2.5rem(40px)로 약간 키워 숫자/바 간격 확보
-  const CELL_CLASS   = "h-10";         // 날짜 셀 높이
-  const NUM_TOP_PAD  = 2;              // 숫자 상단 여백(px)
-  const TOP_BASE     = 16;             //  숫자 바로 아래 시작 y 좌표(px) — 필요시 14~18로 미세조정
-  const LANE_HEIGHT  = 12;             // 바 두께(px)
+  const CELL_CLASS   = "h-20";         // 날짜 셀 높이
+  const NUM_TOP_PAD  = 1;              // 숫자 상단 여백(px)
+  const TOP_BASE     = 18;             //  숫자 바로 아래 시작 y 좌표(px) — 필요시 14~18로 미세조정
+  const LANE_HEIGHT  = 18.5;             // 바 두께(px)
   const LANE_GAP     = 2;              // 바 사이 간격(px)
   const laneTop      = (lane) => TOP_BASE + lane * (LANE_HEIGHT + LANE_GAP);
 
@@ -180,7 +180,7 @@ export default function CampaignCalendar({ initialMonth, ranges = [], bottomLabe
       </div>
 
       {/* 하단 상태바(옵션) */}
-      <div className="border-t bg-sky-50 px-3 py-1.5 text-center text-[11px] text-sky-700">
+      <div className="border-t bg-sky-50 rounded-2xl px-3 py-1.5 text-center text-[11px] text-sky-700">
         {bottomLabel}
       </div>
     </div>
