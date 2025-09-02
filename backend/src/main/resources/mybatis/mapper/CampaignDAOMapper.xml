@@ -181,4 +181,10 @@
     #{campaignIdx}, #{address}, #{addressDetail}, #{expDay}, #{startTime}, #{endTime}, #{reservationNotice}
     )
   </insert>
+
+  <!-- 배송형/구매형 캠페인 등록 -->
+  <insert id="insertCampaignDelivery" parameterType="com.webcore.platform.campaign.dto.CampaignDeliveryDTO">
+    INSERT INTO TB_CAMPAIGN_DELIVERY(CAMPAIGN_IDX, PURCHASE_URL)
+    VALUES(#{campaignIdx}, #{purchaseUrl})
+  </insert>
 </mapper>

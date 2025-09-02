@@ -4,9 +4,12 @@ import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
 import java.util.Map;
 
 public interface CampaignService {
-  /** 체험단 모집 글 등록 처리 */
+  /** 체험단 모집 글 등록 처리
+   *
+   *  @param requestDto 캠페인 등록 요청 데이터 (제목, 상호명, 유형, 일정, 혜택 등)
+   *  @return 등록된 캠페인의 고유 식별자 (CAMPAIGN_IDX)
+   * */
   int createCampaign(Map<String, Object> requestDto);
-
 
   //상세조회
   CampaignDetailResponseDTO getDetail(int id, Integer memberId);

@@ -19,3 +19,5 @@ END$$
 DELIMITER ;
 
 SELECT FN_GET_CODE_NM('CAMP001'); -- 방문형
+
+

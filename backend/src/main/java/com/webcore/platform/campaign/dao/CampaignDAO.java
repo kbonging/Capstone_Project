@@ -14,7 +14,7 @@ public interface CampaignDAO {
   /** 방문형/포장형 캠페인 등록 */
   int insertCampaignVisit(CampaignVisitDTO visitDTO);
   /** 배송형/구매형 캠페인 등록 */
-//  int insertCampaignDelivery(CampaignDeliveryDTO deliveryDTO);
+  int insertCampaignDelivery(CampaignDeliveryDTO deliveryDTO);
 
   CampaignDetailResponseDTO selectDetailCampaign(@Param("id") int id);
 }

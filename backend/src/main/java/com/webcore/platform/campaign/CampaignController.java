@@ -1,9 +1,7 @@
 package com.webcore.platform.campaign;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.webcore.platform.campaign.dto.CampaignDeliveryDTO;
 import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
-import com.webcore.platform.campaign.dto.CampaignVisitDTO;
 import com.webcore.platform.security.custom.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,31 +28,37 @@ public class CampaignController {
           @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail,
           @AuthenticationPrincipal CustomUser customUser){
 
+    // 1. 로그인 사용자 정보 추가
     requestDto.put("memberIdx", customUser.getMemberDTO().getMemberIdx());
 
+    /// //// TEST ###########
+    // 2. 썸네일 업로드 처리 (예: 로컬 저장)
+//    if (thumbnail != null && !thumbnail.isEmpty()) {
+//      String uploadDir = "/uploads/thumbnails/"; // 실제 서버 경로 또는 S3 업로드 로직으로 교체
+//      String fileName = System.currentTimeMillis() + "_" + thumbnail.getOriginalFilename();
+//      Path filePath = Paths.get(uploadDir, fileName);
+//      Files.createDirectories(filePath.getParent());
+//      Files.write(filePath, thumbnail.getBytes());
+//
+//      // 업로드된 파일 경로를 requestDto에 세팅
+//      requestDto.put("thumbnailUrl", "/static/thumbnails/" + fileName);
+//    }
     // //// Test
     log.info("📩 캠페인 등록 요청 데이터 => {}", requestDto);
     log.info("📎 업로드된 파일 => {}", thumbnail != null ? thumbnail.getOriginalFilename() : "없음");
     log.info("👤 로그인 사용자 => {}", customUser);
     // //////
 
-    String type = (String) requestDto.get("campaignType");
+    // 3. 서비스 호출
+    int campaignIdx = campaignService.createCampaign(requestDto);
 
-//    if ("CAMP001".equals(type) || "CAMP002".equals(type)) {
-//      // 방문형/포장형 DTO 변환
-//      CampaignVisitDTO visitDTO = objectMapper.convertValue(requestDto, CampaignVisitDTO.class);
-//      log.info("방문형/포장형 visitDTO -> {}", visitDTO);
-////      campaignService.createCampaignVisit(visitDTO, user.getUsername());
-//
-//    } else {
-//      // 배송형/구매형 DTO 변환
-//      CampaignDeliveryDTO deliveryDTO = objectMapper.convertValue(requestDto, CampaignDeliveryDTO.class);
-//      log.info("배송형/구매형 deliveryDTO -> {}", deliveryDTO);
-////      campaignService.createCampaignDelivery(deliveryDTO, user.getUsername());
-//    }
-
-
-    return new ResponseEntity<>("체험단 모집글 등록 완료되었습니다.", HttpStatus.OK);
+    if(campaignIdx > 0){
+      log.info("Campaign created successfully");
+      return new ResponseEntity<>("체험단 모집 글 등록 완료되었습니다.", HttpStatus.OK);
+    }else {
+      log.info("Campaign creation failed");
+      return new ResponseEntity<>("체험단 모집 글 등록 실패했습니다.", HttpStatus.BAD_REQUEST);
+    }
   }
 
   /** 캠페인 상세페이지 조회 */

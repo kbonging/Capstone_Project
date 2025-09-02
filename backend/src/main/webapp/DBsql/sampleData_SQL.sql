@@ -109,24 +109,24 @@ VALUES
 INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
 VALUES
 ('CAM_STA', '', '게시상태', 8, 0, '캠페인 게시 상태 그룹', NOW()),
-('CAMS001', 'CAM_STA', '대기', 8, 1, '캠페인 게시 상태', NOW()),
-('CAMS002', 'CAM_STA', '승인', 8, 2, '캠페인 게시 상태', NOW()),
-('CAMS003', 'CAM_STA', '반려', 8, 3, '캠페인 게시 상태', NOW());
+('PENDING', 'CAM_STA', '대기', 8, 1, '캠페인 게시 상태', NOW()),
+('APPROVED', 'CAM_STA', '승인', 8, 2, '캠페인 게시 상태', NOW()),
+('REJECTED', 'CAM_STA', '반려', 8, 3, '캠페인 게시 상태', NOW());
 
 ## 캠페인_모집_상태(REC_STA)
 INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
 VALUES
 ('REC_STA', '', '모집상태', 9, 0, '캠페인 모집 상태 그룹', NOW()),
-('REC001', 'REC_STA', '모집중', 9, 1, '캠페인 모집 상태', NOW()),
-('REC002', 'REC_STA', '마감', 9, 2, '캠페인 모집 상태', NOW());
+('OPEN', 'REC_STA', '모집중', 9, 1, '캠페인 모집 상태', NOW()),
+('CLOSED', 'REC_STA', '마감', 9, 2, '캠페인 모집 상태', NOW());
 
 ## 체험단_신청_상태_코드(CAM_APP_STA)
 INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
 VALUES
 ('CAM_APP_STA', '', '신청상태', 10, 0, '체험단 신청 상태 그룹', NOW()),
-('CAMAPP001', 'CAM_APP_STA', '대기', 10, 1, '체험단 신청 상태', NOW()),
-('CAMAPP002', 'CAM_APP_STA', '탈락', 10, 2, '체험단 신청 상태', NOW()),
-('CAMAPP003', 'CAM_APP_STA', '당첨', 10, 3, '체험단 신청 상태', NOW());
+('CAMAPP_PENDING', 'CAM_APP_STA', '대기', 10, 1, '체험단 신청 상태', NOW()),
+('CAMAPP_REJECTED', 'CAM_APP_STA', '탈락', 10, 2, '체험단 신청 상태', NOW()),
+('CAMAPP_APPROVED', 'CAM_APP_STA', '당첨', 10, 3, '체험단 신청 상태', NOW());
 
 ## 댓글_타입_코드(COMMENT_TYPE)
 INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)

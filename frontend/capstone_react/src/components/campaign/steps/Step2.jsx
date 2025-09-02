@@ -30,7 +30,7 @@ const channels = [
 
 export default function Step2({ formData, setFormData }) {
   const [selectedType, setSelectedType] = useState(formData.campaignType || "");
-  const [selectedCategory, setSelectedCategory] = useState(formData.campaignCategory || "");
+  const [selectedCategory, setSelectedCategory] = useState(formData.camCateCode || "");
   const [selectedChannel, setSelectedChannel] = useState(formData.channelCode || "");
 
   ///////////////// 카카오 주소 API 관련 코드 시작 /////////////////////
@@ -62,7 +62,7 @@ export default function Step2({ formData, setFormData }) {
   };
   const handleCategorySelect = (id) => {
     setSelectedCategory(id);
-    setFormData({ ...formData, campaignCategory: id });
+    setFormData({ ...formData, camCateCode: id });
   };
   const handleChannelSelect = (id) => {
     setSelectedChannel(id);
