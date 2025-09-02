@@ -98,7 +98,7 @@ public class CampaignDetailResponseDTO extends DefaultDTO {
   private String addressDetail;
 
   /** 방문 가능 요일/날짜 (예: 월~금, 주말 등) */
-  private String day;
+  private String expDay;
 
   /** 영업 시작 시간 */
   private String startTime;
