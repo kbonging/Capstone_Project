@@ -14,7 +14,7 @@ import MyPage     from '../pages/MyPage';
 import ProfileManagePage from '../pages/ProfileManagePage';
 import ImageUploadTest from "../components/mypage/ImageUploadTest";
 import CampaignCreate from "../pages/CampaignCreate";
-import CampaignMabge from "../pages/CampaignManage";
+import CampaignManage from "../pages/CampaignManage";
 import CampaignDetail from "../components/detail/CampaignDetail";
 import CampaignApply from "../pages/CampaignApply";
 
@@ -83,7 +83,7 @@ export default function AppRouter() {
       <Route path="/mypage"     element={<MyPage />} />
       <Route path="/mypage/manage" element={<ProfileManagePage />} />
       <Route path="/campaign/create" element={<CampaignCreate />}/>
-      <Route path="/campaign/manage" element={<CampaignMabge />}/>
+      <Route path="/campaign/manage" element={<CampaignManage />}/>
 
 
       <Route path="/test/image-upload" element={<ImageUploadTest />} />
