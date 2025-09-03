@@ -2,7 +2,7 @@ package com.webcore.platform.campaign;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
-import com.webcore.platform.campaign.dto.CampaignStatusUpdateDTO;
+import com.webcore.platform.file.FileStorageService;
 import com.webcore.platform.security.custom.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 @Slf4j
@@ -20,8 +23,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/campaigns")
 public class CampaignController {
-  private final ObjectMapper objectMapper;
   private final CampaignService campaignService;
+  private final FileStorageService fileStorageService;
   
   /** 체험단 모집글 등록 */
   @PostMapping("")
@@ -33,23 +36,22 @@ public class CampaignController {
     // 1. 로그인 사용자 정보 추가
     requestDto.put("memberIdx", customUser.getMemberDTO().getMemberIdx());
 
-    /// //// TEST ###########
-    // 2. 썸네일 업로드 처리 (예: 로컬 저장)
-//    if (thumbnail != null && !thumbnail.isEmpty()) {
-//      String uploadDir = "/uploads/thumbnails/"; // 실제 서버 경로 또는 S3 업로드 로직으로 교체
-//      String fileName = System.currentTimeMillis() + "_" + thumbnail.getOriginalFilename();
-//      Path filePath = Paths.get(uploadDir, fileName);
-//      Files.createDirectories(filePath.getParent());
-//      Files.write(filePath, thumbnail.getBytes());
-//
-//      // 업로드된 파일 경로를 requestDto에 세팅
-//      requestDto.put("thumbnailUrl", "/static/thumbnails/" + fileName);
-//    }
-    // //// Test
+    // 2. 썸네일 업로드 처리
+    if (thumbnail != null && !thumbnail.isEmpty()) {
+      try {
+        String thumbnailUrl = fileStorageService.storeFile(thumbnail, "thumbnails");
+
+        // 업로드 성공 시 경로 추가
+        requestDto.put("thumbnailUrl", thumbnailUrl);
+
+      } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("에러 발생: " + e.getMessage());
+      }
+    }
     log.info("📩 캠페인 등록 요청 데이터 => {}", requestDto);
     log.info("📎 업로드된 파일 => {}", thumbnail != null ? thumbnail.getOriginalFilename() : "없음");
     log.info("👤 로그인 사용자 => {}", customUser);
-    // //////
 
     // 3. 서비스 호출
     int campaignIdx = campaignService.createCampaign(requestDto);
@@ -81,28 +83,4 @@ public class CampaignController {
 
     return new ResponseEntity<>(campaignDetail, HttpStatus.OK);
   }
-
-  /** 캠페인 목록 조회 */
-  @GetMapping("")
-    public ResponseEntity<List<CampaignDetailResponseDTO>> getCampaignList() {
-      log.info("[GET] /api/cmapaigns");
-
-      List<CampaignDetailResponseDTO> campaignList = campaignService.getCampaignList();
-      log.info("캠페인 목록 조회 완료, 총{}건", campaignList.size());
-
-      return new ResponseEntity<> (campaignList, HttpStatus.OK);
-  }
-
-    /** CAMPAIGN_STATUS 캠페인 게시 상태 변경 */
-    @PatchMapping("/status")
-    public ResponseEntity<String> updateCampaignStatus(@RequestBody CampaignStatusUpdateDTO updateDTO) {
-        log.info("[PATCH] /api/campaigns/status 요청");
-        try {
-            campaignService.updateCampaignStatus(updateDTO);
-            return new ResponseEntity<>("캠페인 상태가 성공적으로 변경되었습니다.", HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("캠페인 상태 변경 실패: {}", e.getMessage());
-            return new ResponseEntity<>("캠페인 상태 변경에 실패했습니다.", HttpStatus.BAD_REQUEST);
-        }
-    }
 }
