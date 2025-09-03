@@ -265,14 +265,14 @@ CREATE TABLE `tb_campaign_delivery` (
 
 ############# 캠페인 신청 테이블 ##############
 CREATE TABLE `tb_campaign_application` (
-	`APPLICATION_IDX`	INT	AUTO_INCREMENT PRIMARY KEY NOT NULL,
-	`CAMPAIGN_IDX`	INT	NOT NULL	COMMENT '켐페인 고유번호',
-	`MEMBER_IDX`	INT	NOT NULL,
-	`APPLY_REASON`	TEXT	NOT NULL,
-	`APPLY_STATUS_CODE`	VARCHAR(20)	NOT NULL,
-	`DEL_YN`	CHAR(1)	NOT NULL	DEFAULT 'N',
-	`REG_DATE`	DATETIME	NOT NULL,
-	`MOD_DATE`	DATETIME	NULL,
+	`APPLICATION_IDX`	INT	AUTO_INCREMENT PRIMARY KEY NOT NULL COMMENT '캠페인 신청 고유번호',
+	`CAMPAIGN_IDX`	INT				NOT NULL					COMMENT '켐페인 고유번호',
+	`MEMBER_IDX`	INT				NOT NULL					COMMENT '회원 고유번호',
+	`APPLY_REASON`	TEXT			NOT NULL 					COMMENT '신청 사유',
+	`APPLY_STATUS_CODE`	VARCHAR(20)	NOT NULL 					COMMENT '신청 상태 코드',
+	`DEL_YN`	CHAR(1)				NOT NULL	DEFAULT 'N' 	COMMENT '삭제 여부',
+	`REG_DATE`	DATETIME			NOT NULL 					COMMENT '등록일',
+	`MOD_DATE`	DATETIME			NULL 						COMMENT '수정일',
     FOREIGN KEY (`CAMPAIGN_IDX`) REFERENCES `TB_CAMPAIGN`(`CAMPAIGN_IDX`)
 		on delete cascade
         on update cascade,
@@ -282,4 +282,13 @@ CREATE TABLE `tb_campaign_application` (
 	FOREIGN KEY (`APPLY_STATUS_CODE`) REFERENCES `TB_COMMON_CODE`(`CODE_ID`)
         on delete cascade
         on update cascade
+);
+
+########## 찜 테이블 (리뷰어가 캠페인을) ##########
+CREATE TABLE `tb_bookmark` (
+		`BOOKMARK_IDX` INT AUTO_INCREMENT PRIMARY KEY NOT NULL COMMENT '찜 고유번호',
+        `MEMBER_IDX` INT NOT NULL COMMENT '찜한 회원 고유번호',
+        FOREIGN KEY (`MEMBER_IDX`) REFERENCES `TB_MEMBER`(`MEMBER_IDX`)
+			on delete cascade
+            on update cascade
 );

@@ -78,19 +78,19 @@ export default function AdminAllow() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-100">
+            <div className="flex items-center justify-center min-h-screen bg-gray-100">
                 <div className="text-xl font-semibold text-gray-700">로딩 중...</div>
             </div>
         );
     }
 
     return (
-        <div className="p-6 font-sans bg-gray-100 min-h-screen">
-            <div className="w-full bg-white rounded-xl shadow-lg p-8">
-                <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">체험단 모집글 관리</h1>
+        <div className="min-h-screen p-6 font-sans bg-gray-100">
+            <div className="w-full p-8 bg-white shadow-lg rounded-xl">
+                <h1 className="mb-6 text-3xl font-bold text-center text-gray-800">체험단 모집글 관리</h1>
 
                 {/* 필터링 섹션 */}
-                <div className="flex flex-col sm:flex-row justify-center sm:justify-end gap-2 mb-6">
+                <div className="flex flex-col justify-center gap-2 mb-6 sm:flex-row sm:justify-end">
                     <button
                         onClick={() => setCurrentFilter('전체')}
                         className={`filter-btn px-4 py-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${currentFilter === '전체' ? 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500'}`}
@@ -121,17 +121,17 @@ export default function AdminAllow() {
                 <div className="overflow-x-auto rounded-lg shadow-inner">
                     <table className="min-w-full bg-white">
                         <thead>
-                            <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                                <th className="py-3 px-6 text-left">제목</th>
-                                <th className="py-3 px-6 text-left">업체명</th>
-                                <th className="py-3 px-6 text-center">상태</th>
-                                <th className="py-3 px-6 text-center">액션</th>
+                            <tr className="text-sm leading-normal text-gray-600 uppercase bg-gray-100">
+                                <th className="px-6 py-3 text-left">제목</th>
+                                <th className="px-6 py-3 text-left">업체명</th>
+                                <th className="px-6 py-3 text-center">상태</th>
+                                <th className="px-6 py-3 text-center">액션</th>
                             </tr>
                         </thead>
-                        <tbody id="post-list" className="text-gray-600 text-sm font-light">
+                        <tbody id="post-list" className="text-sm font-light text-gray-600">
                             {filteredPosts.length === 0 ? (
-                                <tr className="hover:bg-gray-50 transition-colors">
-                                    <td colSpan="4" className="py-4 px-6 text-center text-gray-500">
+                                <tr className="transition-colors hover:bg-gray-50">
+                                    <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
                                         해당 상태의 글이 없습니다.
                                     </td>
                                 </tr>
@@ -145,29 +145,29 @@ export default function AdminAllow() {
                                     const currentStatus = statusData[post.campaignStatus] || { text: '알 수 없음', color: 'bg-gray-200 text-gray-800' };
 
                                     return (
-                                        <tr key={post.campaignIdx} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                            <td className="py-4 px-6 whitespace-nowrap">
+                                        <tr key={post.campaignIdx} className="transition-colors border-b border-gray-200 hover:bg-gray-50">
+                                            <td className="px-6 py-4 whitespace-nowrap">
                                                 <button
-                                                    className="text-left text-blue-600 hover:underline font-medium"
+                                                    className="font-medium text-left text-blue-600 hover:underline"
                                                     onClick={() => showModal(post)}
                                                 >
                                                     {post.title}
                                                 </button>
                                             </td>
-                                            <td className="py-4 px-6 whitespace-nowrap">{post.shopName}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap">{post.shopName}</td>
                                             <td className="py-4 px-6 text-center whitespace-nowrap min-w-[5rem]">
                                                 <span className={`py-1 px-3 rounded-full text-xs font-semibold ${currentStatus.color}`}>{currentStatus.text}</span>
                                             </td>
                                             <td className="py-4 px-6 text-center whitespace-nowrap min-w-[8rem]">
                                                 <div className="flex items-center justify-center gap-2">
                                                     <button
-                                                        className="bg-green-500 text-white px-3 py-1 text-sm rounded-md font-medium transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-600"
+                                                        className="px-3 py-1 text-sm font-medium text-white transition-transform bg-green-500 rounded-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-600"
                                                         onClick={() => changeStatus(post.campaignIdx, 'APPROVED')}
                                                     >
                                                         승인
                                                     </button>
                                                     <button
-                                                        className="bg-red-500 text-white px-3 py-1 text-sm rounded-md font-medium transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-600"
+                                                        className="px-3 py-1 text-sm font-medium text-white transition-transform bg-red-500 rounded-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-600"
                                                         onClick={() => changeStatus(post.campaignIdx, 'REJECTED')}
                                                     >
                                                         반려
