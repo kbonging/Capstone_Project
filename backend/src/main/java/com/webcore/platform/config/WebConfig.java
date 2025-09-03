@@ -1,5 +1,4 @@
-package com.webcore.platform.test;
-
+package com.webcore.platform.config;
 
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +12,7 @@ import java.nio.file.Paths;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-  // application.properties 의 app.upload-dir 값
+  // application.properties에 적어둔 경로 값을 읽어옴
   @Value("${app.upload-dir}")
   private String uploadDir; // 예: C:/Capstone_Project/backend/src/main/resources/static/img
 
@@ -24,7 +23,11 @@ public class WebConfig implements WebMvcConfigurer {
         ? uploadDir
         : uploadDir + "/");
 
-    registry.addResourceHandler("/img/**")
-        .addResourceLocations(location);
+
+    //브라우저가 /uploads/thumbnails/xxx.png 로 요청하면
+    //addResourceLocations("file:/C:/.../uploads/thumbnails/")
+    //→ 여기 폴더에서 해당 파일을 찾아 바로 정적 파일로 응답
+    registry.addResourceHandler("/uploads/thumbnails/**")
+        .addResourceLocations(Paths.get(uploadDir).toUri().toString());
   }
 }
