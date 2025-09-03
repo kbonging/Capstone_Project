@@ -19,6 +19,7 @@ import MissionIconsGrid from "./MissionIconsGrid";
 import { norm as normChannel, CHANNEL_SPECS } from "../../config/channelSpecs";
 import { fmtDate } from "../../utils/date";
 import { getCampaignDetail } from "../../api/campaigns/api";
+import KakaoMap from "../../components/KakaoMap";
 
 /* 날짜 유틸: "YYYY-MM-DD" → 로컬 정오(Date)로 안전 변환 */
 function parseLocalDate(dateStr) {
@@ -37,6 +38,15 @@ const dayRange = (start, end) => {
   if (end < start) return null;
   return { start, end: addDays(end, 1) };
 };
+
+/* 주소 정제 유틸: 지오코딩 성공률 향상을 위해 층/호/괄호/특별시/광역시 접미 제거 */
+const cleanseAddress = (s = "") =>
+  s
+    .replace(/\s*\d+\s*층.*$/g, "")  // "1층" 등 제거
+    .replace(/\s*\d+\s*호.*$/g, "")  // "101호" 등 제거
+    .replace(/\s*\([^)]+\)/g, "")    // "(지번)" 등 괄호 제거
+    .replace(/^\s*대한민국\s*/, "")   // "대한민국" 접두 제거
+    .trim();
 
 /* 배지(이 파일 전용 간단 버전 — 공용 Badge를 쓴다면 교체 가능) */
 const Badge = ({ children, tone = "green" }) => {
@@ -101,7 +111,7 @@ export default function CampaignDetail() {
   }
 
   // 서버 DTO 계약
-  const isRecruitOpen = data.recruitStatus === "REC001";
+  const isRecruitOpen = data.recruitStatus === "OPEN";
   const channelCode = normChannel(data.channelCode ?? data.channelName);
   const missionSpec = CHANNEL_SPECS[channelCode] ?? CHANNEL_SPECS.CAMC001;
 
@@ -159,6 +169,10 @@ export default function CampaignDetail() {
     data.endTime ||
     data.reservationNotice ||
     data.mapUrl;
+
+  // 지도용 가공 데이터 (⚠️ 지도에는 주소만!)
+  const addressForMap = cleanseAddress(data.address || ""); // 예: "서울시 강남구 테헤란로 1" → "서울 강남구 테헤란로 1"
+  const titleForMap = data.shopName || data.title || "";
 
   return (
     <div className="mx-auto w-full max-w-6xl p-4 md:p-6">
@@ -239,15 +253,20 @@ export default function CampaignDetail() {
               <div className="grid grid-cols-[120px_1fr] gap-4 border-b border-stone-200 dark:border-zinc-800 py-6">
                 <div className="flex items-center gap-2 text-[15px] font-semibold text-stone-800 dark:text-zinc-200">
                   <FiMapPin className="translate-y-[-1px]" />
-                  <span>방문 정보</span>
+                  <span>방문 및 예약 안내</span>
                 </div>
                 <div className="text-[15px] text-stone-800 dark:text-zinc-200">
+                  {/* 표시용은 상세 포함 */}
                   <div>
-                    {data.address} {data.addressDetail}
+                    {data.address}
+                    {data.addressDetail ? ` ${data.addressDetail}` : ""}
                   </div>
+
                   {(data.expDay || data.startTime || data.endTime) && (
                     <div className="mt-1 text-xs text-stone-500 dark:text-zinc-400">
-                      영업 {data.expDay ?? "-"} / {data.startTime ?? "--"}~
+                      체험 가능 요일: {data.expDay ?? "-"}
+                      <br />
+                      체험 가능 시간 : {data.startTime ?? "--"}~
                       {data.endTime ?? "--"}
                     </div>
                   )}
@@ -256,6 +275,33 @@ export default function CampaignDetail() {
                       {data.reservationNotice}
                     </p>
                   )}
+
+                  {/* 카카오 지도 표시 (⚠️ 지도에는 주소만 전달) */}
+                  {data.address && (
+                    <div className="mt-3">
+                      <KakaoMap
+                        address={addressForMap}              // ✅ 정제된 순수 주소만
+                        title={titleForMap}                   // ✅ 상호/제목
+                        height="220px"
+                        level={3}
+                      />
+                      {/* 길찾기/큰지도 열기 링크 */}
+                      <div className="mt-2 text-xs">
+                        <a
+                          href={`https://map.kakao.com/?q=${encodeURIComponent(
+                            addressForMap
+                          )}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sky-600 underline underline-offset-2 hover:text-sky-700
+                   dark:text-sky-300 dark:hover:text-sky-200"
+                        >
+                          카카오맵에서 크게 보기 / 길찾기
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
                   {data.mapUrl && (
                     <a
                       href={data.mapUrl}
@@ -355,7 +401,8 @@ export default function CampaignDetail() {
               </div>
               <div className="space-y-1 text-[15px] text-stone-800 dark:text-zinc-200">
                 <div>
-                  신청기간: {fmtDate(dates.applyStart)} ~ {fmtDate(dates.applyEnd)}
+                  신청기간: {fmtDate(dates.applyStart)} ~{" "}
+                  {fmtDate(dates.applyEnd)}
                 </div>
                 <div>발표: {fmtDate(dates.announce)}</div>
                 <div>
@@ -369,8 +416,10 @@ export default function CampaignDetail() {
 
         {/* 우측 사이드 */}
         <aside className="space-y-4">
-          <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white
-                          dark:border-zinc-800 dark:bg-zinc-900">
+          <div
+            className="overflow-hidden rounded-2xl border border-stone-200 bg-white
+                          dark:border-zinc-800 dark:bg-zinc-900"
+          >
             <img
               src={data.thumbnailUrl}
               alt="thumbnail"
@@ -431,7 +480,7 @@ export default function CampaignDetail() {
                     실시간 지원 현황{" "}
                     <span className="font-semibold text-sky-600 dark:text-sky-300">
                       지원 {Number(data.applicants ?? 0).toLocaleString()}
-                    </span>{" "}
+                    </span>
                     / 모집 {data.recruitCount ?? "-"}
                   </div>
                 </div>
