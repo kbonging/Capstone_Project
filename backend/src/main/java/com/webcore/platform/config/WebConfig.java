@@ -18,16 +18,11 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    // 윈도우는 file: 접두어 + 절대경로, 끝에 슬래시 꼭!
-    String location = "file:" + (uploadDir.endsWith("/") || uploadDir.endsWith("\\")
-        ? uploadDir
-        : uploadDir + "/");
+    String normalized = uploadDir.replace("\\", "/");
+    if (!normalized.endsWith("/")) normalized += "/";
 
-
-    //브라우저가 /uploads/thumbnails/xxx.png 로 요청하면
-    //addResourceLocations("file:/C:/.../uploads/thumbnails/")
-    //→ 여기 폴더에서 해당 파일을 찾아 바로 정적 파일로 응답
+    String location = "file:///" + normalized; // file:///C:/.../uploads/thumbnails/
     registry.addResourceHandler("/uploads/thumbnails/**")
-        .addResourceLocations(Paths.get(uploadDir).toUri().toString());
+        .addResourceLocations(location);
   }
 }
