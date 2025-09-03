@@ -2,6 +2,7 @@ package com.webcore.platform.campaign;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
+import com.webcore.platform.campaign.dto.CampaignStatusUpdateDTO;
 import com.webcore.platform.security.custom.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -79,4 +81,28 @@ public class CampaignController {
 
     return new ResponseEntity<>(campaignDetail, HttpStatus.OK);
   }
+
+  /** 캠페인 목록 조회 */
+  @GetMapping("")
+    public ResponseEntity<List<CampaignDetailResponseDTO>> getCampaignList() {
+      log.info("[GET] /api/cmapaigns");
+
+      List<CampaignDetailResponseDTO> campaignList = campaignService.getCampaignList();
+      log.info("캠페인 목록 조회 완료, 총{}건", campaignList.size());
+
+      return new ResponseEntity<> (campaignList, HttpStatus.OK);
+  }
+
+    /** CAMPAIGN_STATUS 캠페인 게시 상태 변경 */
+    @PatchMapping("/status")
+    public ResponseEntity<String> updateCampaignStatus(@RequestBody CampaignStatusUpdateDTO updateDTO) {
+        log.info("[PATCH] /api/campaigns/status 요청");
+        try {
+            campaignService.updateCampaignStatus(updateDTO);
+            return new ResponseEntity<>("캠페인 상태가 성공적으로 변경되었습니다.", HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("캠페인 상태 변경 실패: {}", e.getMessage());
+            return new ResponseEntity<>("캠페인 상태 변경에 실패했습니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
 }

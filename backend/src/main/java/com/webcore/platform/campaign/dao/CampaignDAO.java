@@ -7,6 +7,8 @@ import com.webcore.platform.campaign.dto.CampaignVisitDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface CampaignDAO {
   /** 캠페인 기본정보 등록 */
@@ -17,4 +19,9 @@ public interface CampaignDAO {
   int insertCampaignDelivery(CampaignDeliveryDTO deliveryDTO);
 
   CampaignDetailResponseDTO selectDetailCampaign(@Param("id") int id);
+
+  //전체조회
+  List<CampaignDetailResponseDTO> selectCampaignList();
+
+  int updateCampaignStatus(@Param("campaignIdx") int campaignIdx, @Param("status") String status);
 }

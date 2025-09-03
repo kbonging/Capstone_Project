@@ -210,7 +210,7 @@ CREATE TABLE tb_like (
 ######################################################################
 
 ############# 체험단 캠페인 #############
-CREATE TABLE `TB_CAMPAIGN` (
+CREATE TABLE `tb_campaign` (
 	`CAMPAIGN_IDX`		INT AUTO_INCREMENT PRIMARY KEY 	COMMENT '캠페인 고유번호',
 	`MEMBER_IDX`		INT NOT NULL 					COMMENT '소상공인 고유번호',
 	`TITLE`				VARCHAR(255) NOT NULL			COMMENT '체험단 제목',
@@ -240,7 +240,7 @@ CREATE TABLE `TB_CAMPAIGN` (
 );
 -- drop table TB_CAMPAIGN; 
 ############ 방문형/포장형 테이블 ###############
-CREATE TABLE `TB_CAMPAIGN_VISIT` (
+CREATE TABLE `tb_campaign_visit` (
 	`CAMPAIGN_IDX`		INT				PRIMARY KEY 		COMMENT '켐페인 고유번호',
 	`ADDRESS`			VARCHAR(255)	NOT NULL			COMMENT '체험주소',
 	`ADDRESS_DETAIL`	VARCHAR(255)	NOT NULL			COMMENT '상세주소',
@@ -254,7 +254,7 @@ CREATE TABLE `TB_CAMPAIGN_VISIT` (
 );
 -- drop table TB_CAMPAIGN_VISIT;
 ########## 배송형/구매형 #############
-CREATE TABLE `TB_CAMPAIGN_DELIVERY` (
+CREATE TABLE `tb_campaign_delivery` (
 	`CAMPAIGN_IDX`	INT	PRIMARY KEY	COMMENT '켐페인 고유번호',
 	`PURCHASE_URL`	VARCHAR(255)	NOT NULL COMMENT '구매링크',
 	FOREIGN KEY (`CAMPAIGN_IDX`) REFERENCES `TB_CAMPAIGN`(`CAMPAIGN_IDX`)
@@ -263,3 +263,23 @@ CREATE TABLE `TB_CAMPAIGN_DELIVERY` (
 );
 -- drop table TB_CAMPAIGN_DELIVERY;
 
+############# 캠페인 신청 테이블 ##############
+CREATE TABLE `tb_campaign_application` (
+	`APPLICATION_IDX`	INT	AUTO_INCREMENT PRIMARY KEY NOT NULL,
+	`CAMPAIGN_IDX`	INT	NOT NULL	COMMENT '켐페인 고유번호',
+	`MEMBER_IDX`	INT	NOT NULL,
+	`APPLY_REASON`	TEXT	NOT NULL,
+	`APPLY_STATUS_CODE`	VARCHAR(20)	NOT NULL,
+	`DEL_YN`	CHAR(1)	NOT NULL	DEFAULT 'N',
+	`REG_DATE`	DATETIME	NOT NULL,
+	`MOD_DATE`	DATETIME	NULL,
+    FOREIGN KEY (`CAMPAIGN_IDX`) REFERENCES `TB_CAMPAIGN`(`CAMPAIGN_IDX`)
+		on delete cascade
+        on update cascade,
+	FOREIGN KEY (`MEMBER_IDX`) REFERENCES `TB_MEMBER`(`MEMBER_IDX`)
+		on delete cascade
+        on update cascade,
+	FOREIGN KEY (`APPLY_STATUS_CODE`) REFERENCES `TB_COMMON_CODE`(`CODE_ID`)
+        on delete cascade
+        on update cascade
+);

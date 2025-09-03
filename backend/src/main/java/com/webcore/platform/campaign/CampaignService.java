@@ -1,6 +1,8 @@
 package com.webcore.platform.campaign;
 import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
+import com.webcore.platform.campaign.dto.CampaignStatusUpdateDTO;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CampaignService {
@@ -13,4 +15,9 @@ public interface CampaignService {
 
   //상세조회
   CampaignDetailResponseDTO getDetail(int id, Integer memberId);
+
+  //전체조회
+  List<CampaignDetailResponseDTO> getCampaignList();
+
+  public void updateCampaignStatus(CampaignStatusUpdateDTO updateDTO);
 }

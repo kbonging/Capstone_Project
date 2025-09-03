@@ -145,6 +145,61 @@
       LIMIT 1
   </select>
 
+    <!-- 캠페인 목록 조회 쿼리 (전체 조회용) -->
+
+    <select id="selectCampaignList"
+            resultMap="CampaignDetailMap">
+        SELECT
+        c.CAMPAIGN_IDX    AS campaignIdx,
+        c.MEMBER_IDX      AS memberIdx,
+        c.TITLE           AS title,
+        c.SHOP_NAME       AS shopName,
+        c.THUMBNAIL_URL   AS thumbnailUrl,
+        c.CONTACT_PHONE   AS contactPhone,
+        c.CAMPAIGN_TYPE   AS campaignType,
+        prom.code_nm      AS campaignTypeName,
+        c.CAM_CATE_CODE   AS categoryCode,
+        cate.code_nm      AS categoryName,
+        c.CHANNEL_CODE    AS channelCode,
+        ch.code_nm        AS channelName,
+        c.MISSION         AS mission,
+        c.KEYWORD_1       AS keyword1,
+        c.KEYWORD_2       AS keyword2,
+        c.KEYWORD_3       AS keyword3,
+        c.BENEFIT_DETAIL  AS benefitDetail,
+        c.RECRUIT_COUNT   AS recruitCount,
+        c.APPLY_START_DATE AS applyStart,
+        c.APPLY_END_DATE   AS applyEnd,
+        c.ANNOUNCE_DATE    AS announce,
+        c.EXP_START_DATE   AS expStart,
+        c.EXP_END_DATE     AS expEnd,
+        c.DEADLINE_DATE    AS deadline,
+        c.RECRUIT_STATUS   AS recruitStatus,
+        c.CAMPAIGN_STATUS  AS campaignStatus,
+        v.ADDRESS             AS address,
+        v.ADDRESS_DETAIL      AS addressDetail,
+        v.EXP_DAY             AS expDay,
+        v.START_TIME          AS startTime,
+        v.END_TIME            AS endTime,
+        v.RESERVATION_NOTICE  AS reservationNotice,
+        CONCAT('https://map.naver.com/v5/search/',
+        REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20')) AS mapUrl,
+        d.PURCHASE_URL    AS purchaseUrl,
+        (
+        SELECT COUNT(*)
+        FROM TB_CAMPAIGN_APPLICATION a
+        WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        ) AS applicants
+        FROM TB_CAMPAIGN c
+        LEFT JOIN TB_CAMPAIGN_VISIT v ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        LEFT JOIN TB_COMMON_CODE prom ON prom.group_code = 'CAM_PROM' AND prom.code_id = c.CAMPAIGN_TYPE
+        LEFT JOIN TB_COMMON_CODE cate ON cate.group_code = 'CAM_CATE' AND cate.code_id = c.CAM_CATE_CODE
+        LEFT JOIN TB_COMMON_CODE ch ON ch.group_code = 'CAM_CHANNEL' AND ch.code_id = c.CHANNEL_CODE
+        WHERE c.DEL_YN = 'N'
+        ORDER BY c.REG_DATE DESC
+    </select>
+
   <!-- 캠페인 기본 등록 -->
   <insert id="insertCampaign" parameterType="com.webcore.platform.campaign.dto.CampaignDTO"
           useGeneratedKeys="true" keyProperty="campaignIdx">
@@ -187,4 +242,11 @@
     INSERT INTO TB_CAMPAIGN_DELIVERY(CAMPAIGN_IDX, PURCHASE_URL)
     VALUES(#{campaignIdx}, #{purchaseUrl})
   </insert>
+
+    <!-- 캠페인 게시 상태 변경 -->
+    <update id="updateCampaignStatus">
+        UPDATE tb_campaign
+        SET campaign_status = #{status}
+        WHERE campaign_idx = #{campaignIdx}
+    </update>
 </mapper>

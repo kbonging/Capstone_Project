@@ -3,10 +3,7 @@ package com.webcore.platform.campaign;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webcore.platform.campaign.dao.CampaignDAO;
-import com.webcore.platform.campaign.dto.CampaignDTO;
-import com.webcore.platform.campaign.dto.CampaignDeliveryDTO;
-import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
-import com.webcore.platform.campaign.dto.CampaignVisitDTO;
+import com.webcore.platform.campaign.dto.*;
 import com.webcore.platform.common.CommonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,4 +79,24 @@ public class CampaignServiceImpl implements CampaignService {
     }
     return dto;
   }
+
+  // 캠페인 전체 조회 (데이터도 가져옴)
+  @Override
+    public List<CampaignDetailResponseDTO> getCampaignList() {
+      return campaignDAO.selectCampaignList();
+  }
+
+  // 캠페인 게시 상태 변경
+    @Override
+    @Transactional
+    public void updateCampaignStatus(CampaignStatusUpdateDTO updateDTO) {
+        log.info("Updating campaign status for ID{} to {}", updateDTO.getCampaignIdx(), updateDTO.getStatus());
+        int rowsAffected = campaignDAO.updateCampaignStatus(updateDTO.getCampaignIdx(), updateDTO.getStatus());
+
+        if(rowsAffected == 0) {
+            log.warn("Failed to update status for campaign ID {}. Campaign not found or no changes mode.", updateDTO.getCampaignIdx());
+        } else {
+            log.info("Successfully updated status for campaign ID {}.", updateDTO.getCampaignIdx());
+        }
+    }
 }
