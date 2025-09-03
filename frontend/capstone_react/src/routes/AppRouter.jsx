@@ -71,6 +71,20 @@ export default function AppRouter() {
         </PrivateRoute>} 
       />
 
+      {/* 체험단 모집 등록 페이지 */}
+      <Route path="/campaign/create" element={
+        <PrivateRoute>
+          <CampaignCreate />
+        </PrivateRoute>
+      }
+      />
+      {/* 체함단 관리 페이지 */}
+      <Route path="/campaign/manage" element={
+        <PrivateRoute>
+          <CampaignManage />
+        </PrivateRoute>
+      }
+      />
       
       {/* <Route path="/search"     element={<SearchPage />} /> */}
       {/* <Route path="/support"    element={<Support    />} /> */}
@@ -82,8 +96,6 @@ export default function AppRouter() {
       <Route path="/FindId" element={<FindId />} />
       <Route path="/mypage"     element={<MyPage />} />
       <Route path="/mypage/manage" element={<ProfileManagePage />} />
-      <Route path="/campaign/create" element={<CampaignCreate />}/>
-      <Route path="/campaign/manage" element={<CampaignManage />}/>
 
 
       <Route path="/test/image-upload" element={<ImageUploadTest />} />

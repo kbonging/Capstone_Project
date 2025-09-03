@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../contexts/AppContext";
 import ProgressBar from "./ProgressBar";
 import Step1 from "./steps/Step1";
@@ -6,11 +7,13 @@ import Step2 from "./steps/Step2";
 import Step3 from "./steps/Step3";
 import Step4 from "./steps/Step4";
 
+
 import { createCampaign } from "../../api/campaigns/api";
 
 export default function CampaignForm() {
   const [step, setStep] = useState(1);
   const { token } = useContext(AppContext);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     shopName: "",
@@ -189,8 +192,13 @@ export default function CampaignForm() {
             try {
               const response = await createCampaign(formData, token);
               console.log("캠페인 등록 성공", response.data);
+              navigate("/campaigns/manage");
             } catch (error) {
               console.error("캠페인 등록 실패", error.response?.data || error.message);
+                alert(
+                  error.response?.data ||
+                  "캠페인 등록 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+              );
             }
           }}
           disabled={!isStep4Valid}
