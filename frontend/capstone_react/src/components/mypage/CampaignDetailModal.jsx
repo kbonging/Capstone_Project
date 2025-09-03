@@ -29,19 +29,19 @@ export default function CampaignDetailModal({ isOpen, onClose, post, onChangeSta
         });
     };
 
-    // 상태 코드 변환 함수
-    const getStatusText = (statusCode) => {
-        switch (statusCode) {
-            case 'REC001':
-                return '대기';
-            case 'REC002':
-                return '승인';
-            case 'REC003':
-                return '반려';
-            default:
-                return '알 수 없음';
-        }
-    };
+// 상태 코드 변환 함수
+const getStatusText = (statusCode) => {
+    switch (statusCode) {
+        case 'PENDING':
+            return '대기';
+        case 'APPROVED':
+            return '승인';
+        case 'REJECTED':
+            return '반려';
+        default:
+            return '알 수 없음';
+    }
+};
 
     return (
         <div className={modalBackdropClasses} onClick={onClose}>
@@ -71,14 +71,14 @@ export default function CampaignDetailModal({ isOpen, onClose, post, onChangeSta
                     </div>
                     <div>
                         <p className="text-sm font-semibold text-gray-500 mb-1">모집 상태</p>
-                        <span className={`
-                            py-1 px-3 rounded-full text-xs font-semibold
-                            ${post.recruitStatus === 'REC001' ? 'bg-yellow-200 text-yellow-800' :
-                              post.recruitStatus === 'REC002' ? 'bg-green-200 text-green-800' :
-                              'bg-red-200 text-red-800'}
-                        `}>
-                            {getStatusText(post.recruitStatus)}
-                        </span>
+                            <span className={`
+                                py-1 px-3 rounded-full text-xs font-semibold
+                                ${post.campaignStatus === 'PENDING' ? 'bg-yellow-200 text-yellow-800' :
+                                post.campaignStatus === 'APPROVED' ? 'bg-green-200 text-green-800' :
+                                'bg-red-200 text-red-800'}
+                            `}>
+                                {getStatusText(post.campaignStatus)}
+                            </span>
                     </div>
                     <div>
                         <p className="text-sm font-semibold text-gray-500 mb-1">캠페인 기간</p>
@@ -104,13 +104,13 @@ export default function CampaignDetailModal({ isOpen, onClose, post, onChangeSta
                 <div className="flex justify-end gap-2 p-6 bg-gray-50 border-t border-gray-200">
                     <button
                         className="bg-green-500 text-white px-4 py-2 rounded-md font-medium transition-colors hover:bg-green-600"
-                        onClick={() => { onChangeStatus(post.campaignIdx, 'REC002'); onClose(); }}
+                        onClick={() => { onChangeStatus(post.campaignIdx, 'APPROVED'); onClose(); }}
                     >
                         승인
                     </button>
                     <button
                         className="bg-red-500 text-white px-4 py-2 rounded-md font-medium transition-colors hover:bg-red-600"
-                        onClick={() => { onChangeStatus(post.campaignIdx, 'REC003'); onClose(); }}
+                        onClick={() => { onChangeStatus(post.campaignIdx, 'REJECTED'); onClose(); }}
                     >
                         반려
                     </button>
