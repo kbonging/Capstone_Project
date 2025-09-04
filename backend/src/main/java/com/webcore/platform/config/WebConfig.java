@@ -22,7 +22,12 @@ public class WebConfig implements WebMvcConfigurer {
     if (!normalized.endsWith("/")) normalized += "/";
 
     String location = "file:///" + normalized; // file:///C:/.../uploads/thumbnails/
-    registry.addResourceHandler("/uploads/thumbnails/**")
+    registry.addResourceHandler("/uploads/**")
         .addResourceLocations(location);
+  }
+  @jakarta.annotation.PostConstruct
+  public void logUploadDir() {
+    Path path = Paths.get(uploadDir).toAbsolutePath().normalize();
+    System.out.println("[UPLOAD_DIR] " + path);
   }
 }
