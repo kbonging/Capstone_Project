@@ -1,127 +1,139 @@
 import React from 'react';
 
 export default function CampaignDetailModal({ isOpen, onClose, post, onChangeStatus }) {
-    if (!isOpen || !post) {
-        return null;
-    }
+  if (!isOpen || !post) return null;
 
-    const modalBackdropClasses = `
-        fixed inset-0 bg-gray-600 bg-opacity-50
-        flex justify-center items-center p-4
-        z-50
-    `;
+  const modalBackdropClasses = `
+    fixed inset-0 bg-gray-600 bg-opacity-50
+    flex justify-center items-center p-2 z-50
+  `;
 
-    const modalContentClasses = `
-        bg-white rounded-lg shadow-xl overflow-hidden
-        w-full max-w-lg max-h-[90vh]
-        transform transition-all duration-300
-        scale-95 sm:scale-100
-    `;
+  // 모달 고정 크기 설정 (예: width 1000px, height 600px)
+const modalContentClasses = `
+  bg-white rounded-2xl shadow-2xl overflow-hidden
+  w-full max-w-[1600px] h-[80vh] max-h-[800px]
+  transform transition-all duration-300
+  flex flex-col
+`;
 
-    // 날짜 포맷팅 함수
-    const formatDate = (dateString) => {
-        if (!dateString) return '날짜 정보 없음';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
-    };
 
-// 상태 코드 변환 함수
-const getStatusText = (statusCode) => {
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ko-KR');
+  };
+
+  const getStatusText = (statusCode) => {
     switch (statusCode) {
-        case 'PENDING':
-            return '대기';
-        case 'APPROVED':
-            return '승인';
-        case 'REJECTED':
-            return '반려';
-        default:
-            return '알 수 없음';
+      case 'PENDING': return '대기';
+      case 'APPROVED': return '승인';
+      case 'REJECTED': return '반려';
+      default: return '알 수 없음';
     }
-};
+  };
 
-    return (
-        <div className={modalBackdropClasses} onClick={onClose}>
-            <div
-                className={modalContentClasses}
-                onClick={e => e.stopPropagation()}
-            >
-                <div className="flex justify-between items-center p-6 bg-gray-100 border-b border-gray-200">
-                    <h2 className="text-2xl font-bold text-gray-800">캠페인 상세 정보</h2>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-500 hover:text-gray-800 transition-colors"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div className="p-6 space-y-4 overflow-y-auto">
-                    <div>
-                        <p className="text-sm font-semibold text-gray-500 mb-1">제목</p>
-                        <p className="text-gray-900 font-medium">{post.title}</p>
-                    </div>
-                    <div>
-                        <p className="text-sm font-semibold text-gray-500 mb-1">업체명</p>
-                        <p className="text-gray-900">{post.shopName}</p>
-                    </div>
-                    <div>
-                        <p className="text-sm font-semibold text-gray-500 mb-1">모집 상태</p>
-                            <span className={`
-                                py-1 px-3 rounded-full text-xs font-semibold
-                                ${post.campaignStatus === 'PENDING' ? 'bg-yellow-200 text-yellow-800' :
-                                post.campaignStatus === 'APPROVED' ? 'bg-green-200 text-green-800' :
-                                'bg-red-200 text-red-800'}
-                            `}>
-                                {getStatusText(post.campaignStatus)}
-                            </span>
-                    </div>
-                    <div>
-                        <p className="text-sm font-semibold text-gray-500 mb-1">캠페인 기간</p>
-                        <p className="text-gray-900">{formatDate(post.startDate)} ~ {formatDate(post.endDate)}</p>
-                    </div>
-                    <div>
-                        <p className="text-sm font-semibold text-gray-500 mb-1">제공 혜택</p>
-                        <p className="text-gray-900">{post.benefit}</p>
-                    </div>
-                    <div>
-                        <p className="text-sm font-semibold text-gray-500 mb-1">리뷰 등록 기간</p>
-                        <p className="text-gray-900">{formatDate(post.reviewStartDate)} ~ {formatDate(post.reviewEndDate)}</p>
-                    </div>
-                    <div>
-                        <p className="text-sm font-semibold text-gray-500 mb-1">모집 인원</p>
-                        <p className="text-gray-900">{post.recruitCount}명</p>
-                    </div>
-                    <div>
-                        <p className="text-sm font-semibold text-gray-500 mb-1">주소</p>
-                        <p className="text-gray-900">{post.address}</p>
-                    </div>
-                </div>
-                <div className="flex justify-end gap-2 p-6 bg-gray-50 border-t border-gray-200">
-                    <button
-                        className="bg-green-500 text-white px-4 py-2 rounded-md font-medium transition-colors hover:bg-green-600"
-                        onClick={() => { onChangeStatus(post.campaignIdx, 'APPROVED'); onClose(); }}
-                    >
-                        승인
-                    </button>
-                    <button
-                        className="bg-red-500 text-white px-4 py-2 rounded-md font-medium transition-colors hover:bg-red-600"
-                        onClick={() => { onChangeStatus(post.campaignIdx, 'REJECTED'); onClose(); }}
-                    >
-                        반려
-                    </button>
-                    <button
-                        className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md font-medium transition-colors hover:bg-gray-400"
-                        onClick={onClose}
-                    >
-                        닫기
-                    </button>
-                </div>
-            </div>
+  return (
+    <div className={modalBackdropClasses} onClick={onClose}>
+      <div className={modalContentClasses} onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex justify-between items-center border-b border-gray-200 p-4">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800">캠페인 상세</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-800 transition-colors">
+            ✕
+          </button>
         </div>
-    );
+
+        {/* Main Grid */}
+        <div className="flex flex-1 overflow-hidden p-4 gap-6">
+          {/* 왼쪽 칸 (썸네일) */}
+          <div className="flex-1 flex justify-center items-start overflow-auto">
+            {post.thumbnailUrl && (
+              <img
+                src={post.thumbnailUrl}
+                alt="썸네일"
+                className="max-h-full rounded-lg shadow-md object-contain"
+              />
+            )}
+          </div>
+
+            {/* 가운데 칸 (정보들) */}
+            <div className="flex-1 flex flex-col gap-3 text-sm sm:text-base text-gray-900 overflow-auto pr-2">
+            <div><strong>제목:</strong> {post.title}</div>
+            <div><strong>업체명:</strong> {post.shopName}</div>
+            <div><strong>유형:</strong> {post.campaignTypeName}</div>
+            <div><strong>카테고리:</strong> {post.categoryName}</div>
+            <div><strong>제공 혜택:</strong> {post.benefitDetail}</div>
+            <div><strong>키워드:</strong> {post.keyword1}, {post.keyword2}, {post.keyword3}</div>
+            <div><strong>모집 인원:</strong> {post.recruitCount}명</div>
+
+            {/* 유형별 정보 */}
+            {(post.campaignTypeName === "배송형" || post.campaignTypeName === "구매형") && post.purchaseUrl && (
+                <div>
+                <strong>상품 URL:</strong>{" "}
+                <a
+                    href={post.purchaseUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-600 underline hover:text-blue-700"
+                >
+                    {post.purchaseUrl}
+                </a>
+                </div>
+            )}
+
+            {(post.campaignTypeName === "방문형" || post.campaignTypeName === "포장형") && (
+                <div>
+                <strong>주소:</strong> {post.address} {post.addressDetail ? ` ${post.addressDetail}` : ""}
+                </div>
+            )}
+
+            <div><strong>신청 기간:</strong> {formatDate(post.applyStart)} ~ {formatDate(post.applyEnd)}</div>
+            <div><strong>체험 기간:</strong> {formatDate(post.expStart)} ~ {formatDate(post.expEnd)}</div>
+            <div><strong>리뷰 마감일:</strong> {formatDate(post.deadline)}</div>
+
+
+            <div>
+                <strong>캠페인 상태:</strong>
+                <span className={`ml-1 py-0.5 px-2 rounded-full text-xs font-semibold
+                ${post.campaignStatus === 'PENDING' ? 'bg-yellow-200 text-yellow-800' :
+                    post.campaignStatus === 'APPROVED' ? 'bg-green-200 text-green-800' :
+                    'bg-red-200 text-red-800'}`}>
+                {getStatusText(post.campaignStatus)}
+                </span>
+            </div>
+            <div><strong>모집 상태:</strong> {post.recruitStatus}</div>
+            </div>
+
+
+          {/* 오른쪽 칸 (미션) */}
+          <div className="flex-1 flex flex-col gap-2 overflow-auto">
+            <strong>미션:</strong>
+            <p className="whitespace-pre-line">{post.mission}</p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end gap-2 p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+          <button
+            className="bg-green-500 text-white px-4 py-2 rounded-md font-medium hover:bg-green-600 transition-colors"
+            onClick={() => { onChangeStatus(post.campaignIdx, 'APPROVED'); onClose(); }}
+          >
+            승인
+          </button>
+          <button
+            className="bg-red-500 text-white px-4 py-2 rounded-md font-medium hover:bg-red-600 transition-colors"
+            onClick={() => { onChangeStatus(post.campaignIdx, 'REJECTED'); onClose(); }}
+          >
+            반려
+          </button>
+          <button
+            className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md font-medium hover:bg-gray-400 transition-colors"
+            onClick={onClose}
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
