@@ -115,6 +115,15 @@ public class CampaignServiceImpl implements CampaignService {
   }
 
 
+  @Override
+  @Transactional(readOnly = true)
+  public CampaignApplyDTO getApply(int campaignIdx, Integer memberIdx) {
+    CampaignApplyDTO dto = campaignDAO.selectApply(campaignIdx, memberIdx);
+    if (dto == null) throw new IllegalArgumentException("캠페인을 찾을 수 없습니다: " + campaignIdx);
+    return dto;
+  }
+
+  // 캠페인 게시 상태 변경
     @Override
     @Transactional
     public void updateCampaignStatus(CampaignStatusUpdateDTO updateDTO) {
@@ -127,4 +136,5 @@ public class CampaignServiceImpl implements CampaignService {
             log.info("Successfully updated status for campaign ID {}.", updateDTO.getCampaignIdx());
         }
     }
+
 }

@@ -138,10 +138,27 @@ public class CampaignController {
         return new ResponseEntity<>(campaignDetail, HttpStatus.OK);
     }
 
+  @GetMapping("/{campaignIdx}/apply-page")
+  public ResponseEntity<?> getApply(@PathVariable int campaignIdx,
+      @AuthenticationPrincipal CustomUser customUser) {
+    Integer memberIdx = (customUser != null && customUser.getMemberDTO() != null)
+        ? customUser.getMemberDTO().getMemberIdx() : null;
+    log.info("[apply-page] campaignIdx={}, memberIdx={}", campaignIdx, memberIdx);
+    return ResponseEntity.ok(campaignService.getApply(campaignIdx, memberIdx));
+  }
 
-    /**
-     * CAMPAIGN_STATUS 캠페인 게시 상태 변경
-     */
+    /** 캠페인 목록 조회 */
+    @GetMapping("")
+    public ResponseEntity<List<CampaignDetailResponseDTO>> getCampaignList() {
+        log.info("[GET] /api/campaigns");
+
+        List<CampaignDetailResponseDTO> campaignList = campaignService.getCampaignList();
+        log.info("캠페인 목록 조회 완료, 총{}건", campaignList.size());
+
+        return new ResponseEntity<> (campaignList, HttpStatus.OK);
+    }
+
+    /** CAMPAIGN_STATUS 캠페인 게시 상태 변경 */
     @PatchMapping("/status")
     public ResponseEntity<String> updateCampaignStatus(@RequestBody CampaignStatusUpdateDTO updateDTO) {
         log.info("[PATCH] /api/campaigns/status 요청");

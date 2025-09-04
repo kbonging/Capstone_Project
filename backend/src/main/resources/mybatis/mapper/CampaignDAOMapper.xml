@@ -126,109 +126,177 @@
     </select>
 
 
-    <!-- 캠페인 상세: 공통코드(TB_COMMON_CODE)로 유형/카테고리/채널명 조인 -->
+  <!-- 캠페인 상세: 공통코드(TB_COMMON_CODE)로 유형/카테고리/채널명 조인 -->
   <select id="selectDetailCampaign" parameterType="int" resultMap="CampaignDetailMap">
-    SELECT
-      c.CAMPAIGN_IDX    AS campaignIdx,
-      c.MEMBER_IDX      AS memberIdx,
-      c.TITLE           AS title,
-      c.SHOP_NAME       AS shopName,
-      c.THUMBNAIL_URL   AS thumbnailUrl,
-      c.CONTACT_PHONE   AS contactPhone,
-      c.CAMPAIGN_TYPE   AS campaignType,
-      prom.code_nm      AS campaignTypeName,
-      c.CAM_CATE_CODE   AS categoryCode,
-      cate.code_nm      AS categoryName,
-      c.CHANNEL_CODE    AS channelCode,
-      ch.code_nm        AS channelName,
-      c.MISSION         AS mission,
-      c.KEYWORD_1       AS keyword1,
-      c.KEYWORD_2       AS keyword2,
-      c.KEYWORD_3       AS keyword3,
-      c.BENEFIT_DETAIL  AS benefitDetail,
-      c.RECRUIT_COUNT   AS recruitCount,
-      c.APPLY_START_DATE AS applyStart,
-      c.APPLY_END_DATE   AS applyEnd,
-      c.ANNOUNCE_DATE    AS announce,
-      c.EXP_START_DATE   AS expStart,
-      c.EXP_END_DATE     AS expEnd,
-      c.DEADLINE_DATE    AS deadline,
-      c.RECRUIT_STATUS   AS recruitStatus,
-      c.CAMPAIGN_STATUS  AS campaignStatus,
-      v.ADDRESS             AS address,
-      v.ADDRESS_DETAIL      AS addressDetail,
-      v.`EXP_DAY`           AS expDay,              -- 예약어 충돌 대비
-      v.START_TIME          AS startTime,
-      v.END_TIME            AS endTime,
-      v.RESERVATION_NOTICE  AS reservationNotice,
-      CONCAT('https://map.naver.com/v5/search/', REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20')) AS mapUrl,
-      d.PURCHASE_URL    AS purchaseUrl
+    SELECT c.CAMPAIGN_IDX                                                                         AS campaignIdx,
+           c.MEMBER_IDX                                                                           AS memberIdx,
+           c.TITLE                                                                                AS title,
+           c.SHOP_NAME                                                                            AS shopName,
+           c.THUMBNAIL_URL                                                                        AS thumbnailUrl,
+           c.CONTACT_PHONE                                                                        AS contactPhone,
+           c.CAMPAIGN_TYPE                                                                        AS campaignType,
+           prom.code_nm                                                                           AS campaignTypeName,
+           c.CAM_CATE_CODE                                                                        AS categoryCode,
+           cate.code_nm                                                                           AS categoryName,
+           c.CHANNEL_CODE                                                                         AS channelCode,
+           ch.code_nm                                                                             AS channelName,
+           c.MISSION                                                                              AS mission,
+           c.KEYWORD_1                                                                            AS keyword1,
+           c.KEYWORD_2                                                                            AS keyword2,
+           c.KEYWORD_3                                                                            AS keyword3,
+           c.BENEFIT_DETAIL                                                                       AS benefitDetail,
+           c.RECRUIT_COUNT                                                                        AS recruitCount,
+           c.APPLY_START_DATE                                                                     AS applyStart,
+           c.APPLY_END_DATE                                                                       AS applyEnd,
+           c.ANNOUNCE_DATE                                                                        AS announce,
+           c.EXP_START_DATE                                                                       AS expStart,
+           c.EXP_END_DATE                                                                         AS expEnd,
+           c.DEADLINE_DATE                                                                        AS deadline,
+           c.RECRUIT_STATUS                                                                       AS recruitStatus,
+           c.CAMPAIGN_STATUS                                                                      AS campaignStatus,
+           v.ADDRESS                                                                              AS address,
+           v.ADDRESS_DETAIL                                                                       AS addressDetail,
+           v.`EXP_DAY`                                                                            AS expDay, -- 예약어 충돌 대비
+           v.START_TIME                                                                           AS startTime,
+           v.END_TIME                                                                             AS endTime,
+           v.RESERVATION_NOTICE                                                                   AS reservationNotice,
+           CONCAT('https://map.naver.com/v5/search/',
+                  REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20'))                                     AS mapUrl,
+           d.PURCHASE_URL                                                                         AS purchaseUrl
     FROM TB_CAMPAIGN c
-    LEFT JOIN TB_CAMPAIGN_VISIT v
-    ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
-    LEFT JOIN TB_CAMPAIGN_DELIVERY d
-    ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX LEFT JOIN TB_COMMON_CODE prom
-    ON prom.group_code = 'CAM_PROM'
-    AND prom.code_id    = c.CAMPAIGN_TYPE
-    LEFT JOIN TB_COMMON_CODE cate
-    ON cate.group_code = 'CAM_CATE'
-    AND cate.code_id    = c.CAM_CATE_CODE
-    LEFT JOIN TB_COMMON_CODE ch
-    ON ch.group_code = 'CAM_CHANNEL'
-    AND ch.code_id    = c.CHANNEL_CODE
+           LEFT JOIN TB_CAMPAIGN_VISIT v
+                     ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+           LEFT JOIN TB_CAMPAIGN_DELIVERY d
+                     ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+           LEFT JOIN TB_COMMON_CODE prom
+                     ON prom.group_code = 'CAM_PROM'
+                       AND prom.code_id = c.CAMPAIGN_TYPE
+           LEFT JOIN TB_COMMON_CODE cate
+                     ON cate.group_code = 'CAM_CATE'
+                       AND cate.code_id = c.CAM_CATE_CODE
+           LEFT JOIN TB_COMMON_CODE ch
+                     ON ch.group_code = 'CAM_CHANNEL'
+                       AND ch.code_id = c.CHANNEL_CODE
     WHERE c.CAMPAIGN_IDX = #{id}
-      AND c.DEL_YN = 'N'
-      LIMIT 1
+      AND c.DEL_YN = 'N' LIMIT 1
   </select>
 
 
   <!-- 캠페인 기본 등록 -->
   <insert id="insertCampaign" parameterType="com.webcore.platform.campaign.dto.CampaignDTO"
-          useGeneratedKeys="true" keyProperty="campaignIdx">
+    useGeneratedKeys="true" keyProperty="campaignIdx">
     INSERT INTO TB_CAMPAIGN
-    (
-      MEMBER_IDX, TITLE, SHOP_NAME, THUMBNAIL_URL,
-      CONTACT_PHONE, CAMPAIGN_TYPE, CAM_CATE_CODE,
-      CHANNEL_CODE, MISSION, KEYWORD_1, KEYWORD_2, KEYWORD_3,
-      BENEFIT_DETAIL, RECRUIT_COUNT,
-      APPLY_START_DATE, APPLY_END_DATE, ANNOUNCE_DATE,
-      EXP_START_DATE, EXP_END_DATE, DEADLINE_DATE,
-      CAMPAIGN_STATUS, RECRUIT_STATUS, DEL_YN, REG_DATE
-    )
-    VALUES
-    (
-      #{memberIdx}, #{title}, #{shopName}, #{thumbnailUrl},
-      #{contactPhone}, #{campaignType}, #{camCateCode},
-      #{channelCode}, #{mission}, #{keyword1}, #{keyword2}, #{keyword3},
-      #{benefitDetail}, #{recruitCount},
-      #{applyStartDate}, #{applyEndDate}, #{announceDate},
-      #{expStartDate}, #{expEndDate}, #{deadlineDate},
-      #{campaignStatus}, #{recruitStatus}, 'N', NOW()
-    )
+    (MEMBER_IDX, TITLE, SHOP_NAME, THUMBNAIL_URL,
+     CONTACT_PHONE, CAMPAIGN_TYPE, CAM_CATE_CODE,
+     CHANNEL_CODE, MISSION, KEYWORD_1, KEYWORD_2, KEYWORD_3,
+     BENEFIT_DETAIL, RECRUIT_COUNT,
+     APPLY_START_DATE, APPLY_END_DATE, ANNOUNCE_DATE,
+     EXP_START_DATE, EXP_END_DATE, DEADLINE_DATE,
+     CAMPAIGN_STATUS, RECRUIT_STATUS, DEL_YN, REG_DATE)
+    VALUES (#{memberIdx}, #{title}, #{shopName}, #{thumbnailUrl},
+            #{contactPhone}, #{campaignType}, #{camCateCode},
+            #{channelCode}, #{mission}, #{keyword1}, #{keyword2}, #{keyword3},
+            #{benefitDetail}, #{recruitCount},
+            #{applyStartDate}, #{applyEndDate}, #{announceDate},
+            #{expStartDate}, #{expEndDate}, #{deadlineDate},
+            #{campaignStatus}, #{recruitStatus}, 'N', NOW())
   </insert>
 
   <!-- 방문형/포장형 캠페인 등록 -->
-  <insert id="insertCampaignVisit" parameterType="com.webcore.platform.campaign.dto.CampaignVisitDTO">
+  <insert id="insertCampaignVisit"
+    parameterType="com.webcore.platform.campaign.dto.CampaignVisitDTO">
     INSERT INTO TB_CAMPAIGN_VISIT
-    (
-    CAMPAIGN_IDX, ADDRESS, ADDRESS_DETAIL, EXP_DAY, START_TIME, END_TIME, RESERVATION_NOTICE
-    )
-    VALUES
-    (
-    #{campaignIdx}, #{address}, #{addressDetail}, #{expDay}, #{startTime}, #{endTime}, #{reservationNotice}
-    )
+    (CAMPAIGN_IDX, ADDRESS, ADDRESS_DETAIL, EXP_DAY, START_TIME, END_TIME, RESERVATION_NOTICE)
+    VALUES (#{campaignIdx}, #{address}, #{addressDetail}, #{expDay}, #{startTime}, #{endTime},
+            #{reservationNotice})
   </insert>
 
   <!-- 배송형/구매형 캠페인 등록 -->
-  <insert id="insertCampaignDelivery" parameterType="com.webcore.platform.campaign.dto.CampaignDeliveryDTO">
+  <insert id="insertCampaignDelivery"
+    parameterType="com.webcore.platform.campaign.dto.CampaignDeliveryDTO">
     INSERT INTO TB_CAMPAIGN_DELIVERY(CAMPAIGN_IDX, PURCHASE_URL)
-    VALUES(#{campaignIdx}, #{purchaseUrl})
+    VALUES (#{campaignIdx}, #{purchaseUrl})
   </insert>
 
-    <!-- 캠페인 게시 상태 변경 -->
-    <update id="updateCampaignStatus">
-        UPDATE tb_campaign
-        SET campaign_status = #{status}
-        WHERE campaign_idx = #{campaignIdx}
-    </update>
+  <!-- 캠페인 게시 상태 변경 -->
+  <update id="updateCampaignStatus">
+    UPDATE tb_campaign
+    SET campaign_status = #{status}
+    WHERE campaign_idx = #{campaignIdx}
+  </update>
+
+  <!-- 켐페인 신청 조회 -->
+  <select id="selectApply" resultType="com.webcore.platform.campaign.dto.CampaignApplyDTO">
+    SELECT
+    c.CAMPAIGN_IDX        AS campaignIdx,
+    c.TITLE               AS title,
+    c.SHOP_NAME           AS shopName,
+    c.THUMBNAIL_URL       AS thumbnailUrl,
+
+    c.CAMPAIGN_TYPE       AS campaignType,
+    prom.CODE_NM          AS campaignTypeName,
+    c.CAM_CATE_CODE       AS categoryCode,
+    cate.CODE_NM          AS categoryName,
+    c.CHANNEL_CODE        AS channelCode,
+    ch.CODE_NM            AS channelName,
+
+    c.BENEFIT_DETAIL      AS benefitDetail,
+    c.RECRUIT_COUNT       AS recruitCount,
+    d.PURCHASE_URL        AS productUrl,
+
+    /* 지원자 수(소프트삭제 제외) */
+    (SELECT COUNT(*) FROM TB_CAMPAIGN_APPLICATION a
+    WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX AND a.DEL_YN='N') AS applicants,
+
+    /* 신청 가능 여부: 모집중  신청기간 내 */
+    CASE
+    WHEN c.RECRUIT_STATUS = 'OPEN'
+    AND CURRENT_DATE() BETWEEN c.APPLY_START_DATE AND c.APPLY_END_DATE
+    THEN 1 ELSE 0
+    END AS allowApply,
+
+    /* 중복신청 여부 (memberIdx 없으면 0) */
+    CASE
+    WHEN #{memberIdx} IS NULL THEN 0
+    ELSE EXISTS (
+    SELECT 1 FROM TB_CAMPAIGN_APPLICATION a
+    WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+    AND a.MEMBER_IDX   = #{memberIdx}
+    AND a.DEL_YN='N'
+    )
+    END AS alreadyApplied,
+
+    /* 배송지 필요 여부(정책에 맞게 조정) */
+    CASE WHEN c.CAMPAIGN_TYPE IN ('CAMP003','CAMP004') THEN 1 ELSE 0 END AS requireAddress,
+
+    /* 주소 등록 유무: 로그인+배송형일 때만 의미 */
+    CASE
+    WHEN #{memberIdx} IS NULL THEN NULL
+    WHEN c.CAMPAIGN_TYPE IN ('CAMP003','CAMP004') THEN
+    CASE WHEN EXISTS (
+    SELECT 1 FROM TB_REVIEWER_PROFILE rp
+    WHERE rp.MEMBER_IDX = #{memberIdx}
+      AND COALESCE(rp.ADDRESS,'') &lt;&gt; ''
+      AND COALESCE(rp.ZIP_CODE,'') &lt;&gt; ''
+    ) THEN 1 ELSE 0 END
+    ELSE NULL
+    END AS hasAddress,
+
+    rp.ZIP_CODE       AS zipCode,
+    rp.ADDRESS        AS address,
+    rp.DETAIL_ADDRESS AS detailAddress
+
+    FROM TB_CAMPAIGN c
+    LEFT JOIN TB_COMMON_CODE prom ON prom.GROUP_CODE='CAM_PROM'   AND prom.CODE_ID=c.CAMPAIGN_TYPE
+    LEFT JOIN TB_COMMON_CODE cate ON cate.GROUP_CODE='CAM_CATE'   AND cate.CODE_ID=c.CAM_CATE_CODE
+    LEFT JOIN TB_COMMON_CODE ch   ON ch.GROUP_CODE='CAM_CHANNEL'  AND ch.CODE_ID=c.CHANNEL_CODE
+    LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX=c.CAMPAIGN_IDX
+    LEFT JOIN TB_REVIEWER_PROFILE rp ON rp.MEMBER_IDX=#{memberIdx}
+    WHERE c.CAMPAIGN_IDX=#{campaignIdx}
+    LIMIT 1
+  </select>
+
 </mapper>
+
+
+
