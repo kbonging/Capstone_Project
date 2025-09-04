@@ -88,3 +88,34 @@ export async function updateCampaignStatus(campaignIdx, status, token) {
         throw new Error(error.response?.data?.message || '상태 변경에 실패했습니다.');
     }
 }
+
+
+// 캠페인 신청 페이지 정보 조회 (fetch + 토큰)
+export async function getApplyPage(campaignId, token) {
+  const _token = token ?? localStorage.getItem("accessToken"); // ★ 자동 보완
+  const res = await fetch(`/api/campaigns/${campaignId}/apply-page`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(_token ? { Authorization: `Bearer ${_token}` } : {}),
+    },
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+// 캠페인 신청 (지원하는)
+export async function createApplication(campaignId, body, token) {
+  const res = await fetch(`/api/campaigns/${campaignId}/applications`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}

@@ -1,4 +1,5 @@
 package com.webcore.platform.campaign;
+import com.webcore.platform.campaign.dto.CampaignApplyDTO;
 import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
 import com.webcore.platform.campaign.dto.CampaignStatusUpdateDTO;
 
@@ -20,4 +21,9 @@ public interface CampaignService {
   List<CampaignDetailResponseDTO> getCampaignList();
 
   public void updateCampaignStatus(CampaignStatusUpdateDTO updateDTO);
+
+  /** 신청 페이지용 요약 조회 */
+  CampaignApplyDTO getApply(int campaignIdx, Integer memberIdx);
+
 }
+
