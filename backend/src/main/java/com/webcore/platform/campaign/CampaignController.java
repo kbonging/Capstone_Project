@@ -86,6 +86,15 @@ public class CampaignController {
     return new ResponseEntity<>(campaignDetail, HttpStatus.OK);
   }
 
+  @GetMapping("/{campaignIdx}/apply-page")
+  public ResponseEntity<?> getApply(@PathVariable int campaignIdx,
+      @AuthenticationPrincipal CustomUser customUser) {
+    Integer memberIdx = (customUser != null && customUser.getMemberDTO() != null)
+        ? customUser.getMemberDTO().getMemberIdx() : null;
+    log.info("[apply-page] campaignIdx={}, memberIdx={}", campaignIdx, memberIdx);
+    return ResponseEntity.ok(campaignService.getApply(campaignIdx, memberIdx));
+  }
+
     /** 캠페인 목록 조회 */
     @GetMapping("")
     public ResponseEntity<List<CampaignDetailResponseDTO>> getCampaignList() {

@@ -18,6 +18,10 @@ export default function Badge({ children, tone = "green" }) {
       bg-rose-50 text-rose-700 border-rose-200
       dark:bg-rose-900/30 dark:text-rose-500 dark:border-rose-700
     `,
+    biggreen: `
+      bg-emerald-100 text-[14px] text-emerald-800 border-emerald-200
+      dark:bg-emerald-900/30 dark:text-emerald-500 dark:border-emerald-700
+    `,
   };
 
   return (
