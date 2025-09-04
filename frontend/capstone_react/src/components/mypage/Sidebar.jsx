@@ -1,26 +1,51 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom"; 
+import { AppContext } from "../../contexts/AppContext"; // AppContext 가져오기
 
 export default function Sidebar({ userRole }) { 
   const navigate = useNavigate();
   const location = useLocation(); 
+  const { logout } = useContext(AppContext); // logout 함수 사용
 
   const getMenusByRole = (role) => {
     if (role === "ROLE_OWNER") {
       return {
-        체험단: [{ name: "📋 체험단 관리", path: "/campaign/manage" }, { name: "📄 체험단 모집", path: "/campaign/create" }],
+        체험단: [
+          { name: "📋 체험단 관리", path: "/campaign/manage" },
+          { name: "📄 체험단 모집", path: "/campaign/create" }
+          ],
         커뮤니티: [{ name: "커뮤니티", path: "/community" }],
-        "내 정보 관리": [{ name: "프로필", path: "/mypage" }, { name: "포인트", path: "/mypage/points" }, { name: "쿠폰 사용", path: "/mypage/coupons" }],
-        고객센터: [{ name: "자주 묻는 질문", path: "/mypage/faq" }, { name: "공지/이벤트", path: "/mypage/notice" }, { name: "문의내역", path: "/mypage/inquiry" }, { name: "이용 가이드", path: "/mypage/guide" }],
+        "내 정보 관리": [
+          { name: "프로필", path: "/mypage" },
+          { name: "포인트", path: "/mypage/points" },
+          { name: "쿠폰 사용", path: "/mypage/coupons" }
+        ],
+        고객센터: [
+          { name: "자주 묻는 질문", path: "/mypage/faq" },
+          { name: "공지/이벤트", path: "/mypage/notice" },
+          { name: "문의내역", path: "/mypage/inquiry" },
+          { name: "이용 가이드", path: "/mypage/guide" }
+        ],
       };
     }
     
     if (role === "ROLE_USER") {
       return {
-        체험단: [{ name: "📝 내 체험단", path: "/mypage/my-campaigns" }, { name: "📝 체험단 취소", path: "/mypage/cancel-campaigns" }],
+        체험단: [
+          { name: "📝 내 체험단", path: "/mypage/my-campaigns" }, 
+          { name: "📝 체험단 취소", path: "/mypage/cancel-campaigns" }
+        ],
         커뮤니티: [{ name: "커뮤니티", path: "/community" }],
-        "내 정보 관리": [{ name: "프로필", path: "/mypage" }, { name: "찜목록", path: "/mypage/wishlist" }, { name: "포인트", path: "/mypage/points" }],
-        고객센터: [{ name: "자주 묻는 질문", path: "/mypage/faq" }, { name: "공지/이벤트", path: "/mypage/notice" }, { name: "문의내역", path: "/mypage/inquiry" }, { name: "이용 가이드", path: "/mypage/guide" }],
+        "내 정보 관리": [
+          { name: "프로필", path: "/mypage" }, 
+          { name: "찜목록", path: "/mypage/wishlist" }, 
+          { name: "포인트", path: "/mypage/points" }
+        ],
+        고객센터: [
+          { name: "자주 묻는 질문", path: "/mypage/faq" }, 
+          { name: "공지/이벤트", path: "/mypage/notice" }, 
+          { name: "문의내역", path: "/mypage/inquiry" }, 
+          { name: "이용 가이드", path: "/mypage/guide" }],
       };
     }
 
@@ -37,6 +62,11 @@ export default function Sidebar({ userRole }) {
 
   const handleClick = (path) => {
     navigate(path);
+  };
+
+  const handleLogout = () => {
+    logout();        // AppContext logout 실행
+    navigate("/");   // 홈으로 이동
   };
 
   return (
@@ -68,7 +98,10 @@ export default function Sidebar({ userRole }) {
         ))}
       </div>
       <div className="mt-auto pt-6"> 
-        <button className="w-full py-2 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 hover:text-blue-600 transition">
+        <button
+          onClick={handleLogout}
+          className="w-full py-2 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 hover:text-blue-600 transition"
+        >
           로그아웃
         </button>
       </div>
