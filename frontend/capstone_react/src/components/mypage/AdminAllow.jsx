@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { getCampaignsList, updateCampaignStatus } from '../../api/campaigns/api'
+import { getAdminCampaignsList, updateCampaignStatus } from '../../api/campaigns/api'
 import { AppContext } from '../../contexts/AppContext';
 import CampaignDetailModal from './CampaignDetailModal';
 
@@ -16,9 +16,9 @@ export default function AdminAllow() {
         const fetchCampaigns = async () => {
             try {
                 setLoading(true);
-                const data = await getCampaignsList(token);
-                if (Array.isArray(data)) {
-                    setPosts(data);
+                const data = await getAdminCampaignsList(token);
+                if (data && Array.isArray(data.campaignList)) {
+                    setPosts(data.campaignList);
                 } else {
                     console.error("API에서 예상치 못한 데이터 형식이 반환되었습니다.", data);
                     setPosts([]);

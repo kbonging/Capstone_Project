@@ -9,31 +9,97 @@ export async function getCampaignDetail(id) {
   return res.json();
 }
 
+/**
+ * 캠페인 목록을 가져옵니다. (일반 사용자용)
+ * - 검색, 필터, 페이지네이션 지원
+ *
+ * @param {string} token - 인증 토큰
+ * @param {string} [queryString] - 검색/필터/페이지네이션 쿼리스트링
+ * @returns {Promise<Array<Object>>} 캠페인 목록
+ */
+export async function getCampaignsList(token, queryString = "") {
+  try {
+    const response = await axios.get(
+      `/api/campaigns${queryString ? `?${queryString}` : ""}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("API 호출 오류:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.message ||
+        "캠페인 목록을 가져오는 데 실패했습니다."
+    );
+  }
+}
 
 /**
- * 모든 캠페인 목록을 가져옵니다.
- * @param {string} token - 인증 토큰
- * @returns {Promise<Array<Object>>} 캠페인 목록
+ * 소상공인 캠페인 목록을 가져옵니다. (OWNER 전용)
+ * - 본인이 등록한 캠페인만 조회 가능
+ * - 검색, 필터, 페이지네이션 지원
+ *
+ * @param {string} token - 인증 토큰 (OWNER 권한 필요)
+ * @param {string} [queryString] - 검색/필터/페이지네이션 쿼리스트링
+ * @returns {Promise<Array<Object>>} 소상공인 캠페인 목록
  */
-/**
- * 모든 캠페인 목록을 가져옵니다.
- * @param {string} token - 인증 토큰
- * @returns {Promise<Array<Object>>} 캠페인 목록
- */
-export async function getCampaignsList(token) {
-    try {
-        const response = await axios.get(`/api/campaigns`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        return response.data;
-    } catch (error) {
-        console.error("API 호출 오류:", error.response?.data || error.message);
-        throw new Error(error.response?.data?.message || '캠페인 목록을 가져오는 데 실패했습니다.');
-    }
+export async function getOwnerCampaignsList(token, queryString = "") {
+  try {
+    const response = await axios.get(
+      `/api/campaigns/owner${queryString ? `?${queryString}` : ""}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("API 호출 오류:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.message ||
+        "[소상공인] 캠페인 목록을 가져오는 데 실패했습니다."
+    );
+  }
 }
+
+/**
+ * 관리자 캠페인 목록을 가져옵니다. (ADMIN 전용)
+ * - 승인 대기/승인/반려 상태를 포함한 캠페인 전체 조회 가능
+ * - 검색, 필터, 페이지네이션 지원
+ *
+ * @param {string} token - 인증 토큰 (ADMIN 권한 필요)
+ * @param {string} [queryString] - 검색/필터/페이지네이션 쿼리스트링
+ * @returns {Promise<Array<Object>>} 관리자용 캠페인 목록
+ */
+export async function getAdminCampaignsList(token, queryString = "") {
+  try {
+    const response = await axios.get(
+      `/api/campaigns/admin${queryString ? `?${queryString}` : ""}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("API 호출 오류:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.message ||
+        "[관리자] 캠페인 목록을 가져오는 데 실패했습니다."
+    );
+  }
+}
+
+
+
 
 /**
  * 캠페인 등록 API (파일 업로드 포함)

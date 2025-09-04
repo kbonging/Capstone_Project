@@ -61,4 +61,7 @@ public class CampaignDTO extends DefaultDTO {
     private String campaignStatus;
     /** 모집 상태 */
     private String recruitStatus;
+
+    /** 내 글만 보기 여부 (true or "")*/
+    private String showMyParam;
 }

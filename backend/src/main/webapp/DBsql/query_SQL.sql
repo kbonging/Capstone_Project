@@ -217,47 +217,57 @@ AND c.del_yn = 'N'
 ORDER BY c.group_id ASC, c.sort_order ASC;
 
 ######################## 캠페인 관련 ############################
-SELECT 
-    c.CAMPAIGN_IDX,
-    c.MEMBER_IDX,
-    c.TITLE,
-    c.SHOP_NAME,
-    c.THUMBNAIL_URL,
-    c.CONTACT_PHONE,
-    c.CAMPAIGN_TYPE,
-    c.CAM_CATE_CODE,
-    c.CHANNEL_CODE,
-    c.MISSION,
-    c.KEYWORD_1,
-    c.KEYWORD_2,
-    c.KEYWORD_3,
-    c.BENEFIT_DETAIL,
-    c.RECRUIT_COUNT,
-    c.APPLY_START_DATE,
-    c.APPLY_END_DATE,
-    c.ANNOUNCE_DATE,
-    c.EXP_START_DATE,
-    c.EXP_END_DATE,
-    c.DEADLINE_DATE,
-    c.CAMPAIGN_STATUS,
-    c.RECRUIT_STATUS,
-    c.DEL_YN,
-    c.REG_DATE,
-    c.MOD_DATE,
-    v.ADDRESS,
-    v.ADDRESS_DETAIL,
-    v.EXP_DAY,
-    v.START_TIME,
-    v.END_TIME,
-    v.RESERVATION_NOTICE,
-    d.PURCHASE_URL
+-- 캠페인 전체 목록 조회
+SELECT
+	c.CAMPAIGN_IDX        AS campaignIdx,
+	c.MEMBER_IDX          AS memberIdx,
+	c.TITLE               AS title,
+	c.SHOP_NAME           AS shopName,
+	c.THUMBNAIL_URL       AS thumbnailUrl,
+	c.CONTACT_PHONE       AS contactPhone,
+	c.CAMPAIGN_TYPE       AS campaignType,
+	FN_GET_CODE_NM(c.CAMPAIGN_TYPE)  AS campaignTypeName,
+	c.CAM_CATE_CODE       AS categoryCode,
+	FN_GET_CODE_NM(c.CAM_CATE_CODE)  AS categoryName,
+	c.CHANNEL_CODE        AS channelCode,
+	FN_GET_CODE_NM(c.CHANNEL_CODE)   AS channelName,
+	c.MISSION             AS mission,
+	c.KEYWORD_1           AS keyword1,
+	c.KEYWORD_2           AS keyword2,
+	c.KEYWORD_3           AS keyword3,
+	c.BENEFIT_DETAIL      AS benefitDetail,
+	c.RECRUIT_COUNT       AS recruitCount,
+	c.APPLY_START_DATE    AS applyStart,
+	c.APPLY_END_DATE      AS applyEnd,
+	c.ANNOUNCE_DATE       AS announce,
+	c.EXP_START_DATE      AS expStart,
+	c.EXP_END_DATE        AS expEnd,
+	c.DEADLINE_DATE       AS deadline,
+	c.RECRUIT_STATUS      AS recruitStatus,
+	c.CAMPAIGN_STATUS     AS campaignStatus,
+	v.ADDRESS             AS address,
+	v.ADDRESS_DETAIL      AS addressDetail,
+	v.EXP_DAY             AS expDay,
+	v.START_TIME          AS startTime,
+	v.END_TIME            AS endTime,
+	v.RESERVATION_NOTICE  AS reservationNotice,
+	CONCAT('https://map.naver.com/v5/search/',
+	REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20')) AS mapUrl,
+	d.PURCHASE_URL        AS purchaseUrl,
+	(
+		SELECT COUNT(*)
+		FROM TB_CAMPAIGN_APPLICATION a
+		WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX AND del_yn='N'
+	) AS applicantsCount
 FROM TB_CAMPAIGN c
-LEFT JOIN TB_CAMPAIGN_VISIT v
-    ON c.CAMPAIGN_IDX = v.CAMPAIGN_IDX
-LEFT JOIN TB_CAMPAIGN_DELIVERY d
-    ON c.CAMPAIGN_IDX = d.CAMPAIGN_IDX
+LEFT JOIN TB_CAMPAIGN_VISIT v ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
 WHERE c.DEL_YN = 'N'
-LIMIT 0, 1000;
+ORDER BY c.REG_DATE DESC;
 
-
--- WHERE c.CAMPAIGN_TYPE IN ('CAMP001','CAMP002');  -- 방문형 / 포장형
+## 캠페인 전체 목록 카운트 수 ##
+SELECT COUNT(*)
+FROM TB_CAMPAIGN c
+LEFT JOIN TB_CAMPAIGN_VISIT v ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+WHERE c.DEL_YN = 'N';
