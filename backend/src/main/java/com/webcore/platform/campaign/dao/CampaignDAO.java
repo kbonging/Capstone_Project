@@ -27,8 +27,10 @@ public interface CampaignDAO {
    * 배송형/구매형 캠페인 등록
    */
   int insertCampaignDelivery(CampaignDeliveryDTO deliveryDTO);
+
   /** 캠페인 전체 목록 조회 */
   List<CampaignDetailResponseDTO> selectCampaignList(CampaignDTO campaignDTO);
+
   /** 캠페인 목록 수 조회 */
   int selectCampaignCount(CampaignDTO campaignDTO);
 

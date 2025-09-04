@@ -5,7 +5,6 @@ import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
 import com.webcore.platform.campaign.dto.CampaignStatusUpdateDTO;
 import com.webcore.platform.file.FileStorageService;
 import com.webcore.platform.security.custom.CustomUser;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -147,16 +145,6 @@ public class CampaignController {
     return ResponseEntity.ok(campaignService.getApply(campaignIdx, memberIdx));
   }
 
-    /** 캠페인 목록 조회 */
-    @GetMapping("")
-    public ResponseEntity<List<CampaignDetailResponseDTO>> getCampaignList() {
-        log.info("[GET] /api/campaigns");
-
-        List<CampaignDetailResponseDTO> campaignList = campaignService.getCampaignList();
-        log.info("캠페인 목록 조회 완료, 총{}건", campaignList.size());
-
-        return new ResponseEntity<> (campaignList, HttpStatus.OK);
-    }
 
     /** CAMPAIGN_STATUS 캠페인 게시 상태 변경 */
     @PatchMapping("/status")
