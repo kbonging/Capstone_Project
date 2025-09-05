@@ -110,6 +110,7 @@ public class SecurityConfig {
 
                         // 캠페인 관련
                         .requestMatchers(HttpMethod.GET, "/api/campaigns", "/api/campaigns/**").permitAll() // 캠페인 전체 목록 조회는 모두 접근 가능
+                        .requestMatchers(HttpMethod.GET, "/api/campaigns/*/apply-page").hasRole("USER") // 신청페이지는 리뷰어만 들어갈수있음
                         .requestMatchers("/api/campaigns/**") // 상세 조회, 수정, 삭제는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")// 캠페인 모든 경로는 권한 필요
 

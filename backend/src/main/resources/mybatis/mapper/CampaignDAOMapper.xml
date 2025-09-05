@@ -296,7 +296,32 @@
     LIMIT 1
   </select>
 
+
+  <!-- 신청 Insert -->
+  <insert id="insertApplication">
+    INSERT INTO TB_CAMPAIGN_APPLICATION
+    (CAMPAIGN_IDX, MEMBER_IDX, APPLY_REASON, APPLY_STATUS_CODE, DEL_YN, REG_DATE)
+    VALUES
+      (#{campaignIdx}, #{memberIdx}, #{applyReason}, #{applyStatusCode}, 'N', NOW())
+  </insert>
+
+  <select id="lastInsertId" resultType="int">
+    SELECT LAST_INSERT_ID()
+  </select>
+
+  <!-- 리뷰어 프로필 주소 업데이트 -->
+  <update id="updateReviewerAddress">
+    UPDATE TB_REVIEWER_PROFILE
+    SET
+      ZIP_CODE       = #{zipCode},
+      ADDRESS        = #{address},
+      DETAIL_ADDRESS = #{detailAddress}
+    WHERE MEMBER_IDX = #{memberIdx}
+  </update>
+
+
 </mapper>
+
 
 
 

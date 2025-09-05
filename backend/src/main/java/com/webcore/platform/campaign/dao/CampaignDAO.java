@@ -39,6 +39,17 @@ public interface CampaignDAO {
   int updateCampaignStatus(@Param("campaignIdx") int campaignIdx, @Param("status") String status);
 
 
-  CampaignApplyDTO selectApply(@Param("campaignIdx") int campaignIdx,
-      @Param("memberIdx") Integer memberIdx);
+  CampaignApplyDTO selectApply(@Param("campaignIdx") int campaignIdx, @Param("memberIdx") Integer memberIdx);
+
+  int insertApplication(@Param("campaignIdx") int campaignIdx,
+      @Param("memberIdx")  int memberIdx,
+      @Param("applyReason") String applyReason,
+      @Param("applyStatusCode") String applyStatusCode);
+
+  Integer lastInsertId();
+
+  int updateReviewerAddress(@Param("memberIdx") int memberIdx,
+      @Param("zipCode") String zipCode,
+      @Param("address") String address,
+      @Param("detailAddress") String detailAddress);
 }

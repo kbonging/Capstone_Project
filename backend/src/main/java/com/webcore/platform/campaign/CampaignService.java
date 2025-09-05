@@ -1,4 +1,6 @@
 package com.webcore.platform.campaign;
+import com.webcore.platform.campaign.dto.CampaignApplicationRequestDTO;
+import com.webcore.platform.campaign.dto.CampaignApplicationResponseDTO;
 import com.webcore.platform.campaign.dto.CampaignDTO;
 import com.webcore.platform.campaign.dto.CampaignApplyDTO;
 import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
@@ -29,5 +31,7 @@ public interface CampaignService {
   /** 신청 페이지용 요약 조회 */
   CampaignApplyDTO getApply(int campaignIdx, Integer memberIdx);
 
+  /** 신청 하는 로직 */
+  CampaignApplicationResponseDTO createApplication(int campaignIdx, int memberIdx, CampaignApplicationRequestDTO campaignApplicationRequestDTO);
 }
 
