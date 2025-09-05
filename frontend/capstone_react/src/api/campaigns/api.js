@@ -1,19 +1,9 @@
 // src/features/campaigns/api.js
 import axios from "axios";
 
-// export async function getCampaignDetail(id) {
-//   const res = await fetch(`/api/campaigns/${id}`, {
-//     credentials: "include",
-//   });
-//   if (!res.ok) throw new Error(await res.text());
-//   return res.json();
-// }
 export async function getCampaignDetail(id) {
-  const token = localStorage.getItem("token"); // JWT 토큰 저장소
   const res = await fetch(`/api/campaigns/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`, // 여기서 JWT 전달
-    },
+    credentials: "include",
   });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
@@ -166,34 +156,59 @@ export async function updateCampaignStatus(campaignIdx, status, token) {
 }
 
 
-// 캠페인 신청 페이지 정보 조회 (fetch + 토큰)
-export async function getApplyPage(campaignId, token) {
-  const _token = token ?? localStorage.getItem("accessToken"); // ★ 자동 보완
-  const res = await fetch(`/api/campaigns/${campaignId}/apply-page`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(_token ? { Authorization: `Bearer ${_token}` } : {}),
-    },
-  });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+export class HttpError extends Error {
+  constructor(status, message, body) {
+    super(message);
+    this.name = "HttpError";
+    this.status = status;
+    this.body = body;
+  }
 }
 
-// 캠페인 신청 (지원하는)
-export async function createApplication(campaignId, body, token) {
-  const res = await fetch(`/api/campaigns/${campaignId}/applications`, {
+// 공용 처리(이 모듈 내부 전용)
+async function call(url, options = {}) {
+  const res = await fetch(url, options);
+  const ct = res.headers.get("content-type") || "";
+
+  if (!res.ok) {
+    let message = `HTTP ${res.status}`;
+    let body = null;
+    try {
+      if (ct.includes("application/json")) {
+        body = await res.json();
+        message = body?.message || body?.error || message;
+      } else {
+        const t = await res.text();
+        if (t) message = t.slice(0, 200);
+      }
+    } catch {
+      /* ignore */
+    }
+    throw new HttpError(res.status, message, body);
+  }
+
+  return ct.includes("application/json") ? res.json() : res.text();
+}
+
+const BASE = "/api/campaigns";
+
+export function getApplyPage(id, token) {
+  return call(`${BASE}/${id}/apply-page`, {
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+}
+
+export function createApplication(id, payload, token) {
+  return call(`${BASE}/${id}/applications`, {
     method: "POST",
-    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
 }
 
 // ------------------------- 찜(북마크) ---------------------------
@@ -228,7 +243,7 @@ export async function getBookmarkStatus(campaignIdx, token) {
 
 export async function addBookmark(campaignIdx, token) {
   if (!token) throw new Error("로그인이 필요합니다.");
-  
+
   try {
     const response = await axios.post(
       `/api/campaigns/bookmarks/${campaignIdx}`,

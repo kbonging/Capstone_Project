@@ -105,25 +105,99 @@ public class CampaignServiceImpl implements CampaignService {
     return campaignDTO.getCampaignIdx();
   }
 
+  // 켐페인 상세조회 페이지 로직
   @Override
-  public CampaignDetailResponseDTO getDetail(int id, Integer memberIdx) {
-    CampaignDetailResponseDTO dto = campaignDAO.selectDetailCampaign(id, memberIdx);
+  public CampaignDetailResponseDTO getDetail(int id, Integer memberId) {
+    CampaignDetailResponseDTO dto = campaignDAO.selectDetailCampaign(id);
     if (dto == null) {
       throw new IllegalArgumentException("캠페인을 찾을 수 없습니다. id=" + id);
     }
     return dto;
   }
 
-
+  //켐페인 지원신청 페이지
   @Override
   @Transactional(readOnly = true)
   public CampaignApplyDTO getApply(int campaignIdx, Integer memberIdx) {
+    if (memberIdx == null) {
+      // 인증 안됨
+      throw new org.springframework.security.access.AccessDeniedException("로그인이 필요합니다.");
+    }
+
+    // SecurityContext에서 권한 확인
+    var auth = org.springframework.security.core.context.SecurityContextHolder
+        .getContext().getAuthentication();
+    boolean isReviewer = auth != null && auth.getAuthorities().stream()
+        .anyMatch(a -> "ROLE_USER".equals(a.getAuthority()));
+
+    if (!isReviewer) {
+      throw new org.springframework.security.access.AccessDeniedException("리뷰어만 접근 가능합니다.");
+    }
+
     CampaignApplyDTO dto = campaignDAO.selectApply(campaignIdx, memberIdx);
     if (dto == null) throw new IllegalArgumentException("캠페인을 찾을 수 없습니다: " + campaignIdx);
     return dto;
   }
 
   /** 관리자 캠페인 상태 변경 (승인, 반려) */
+  @Override
+  @Transactional
+  public CampaignApplicationResponseDTO createApplication(int campaignIdx, int memberIdx, CampaignApplicationRequestDTO campaignApplicationRequestDTO) {
+
+    // 1) 신청 페이지 정보 재사용하여 정책 검증 (모집상태/기간, 배송형, 중복신청, 주소유무)
+    CampaignApplyDTO page = campaignDAO.selectApply(campaignIdx, memberIdx);
+    if (page == null) {
+      throw new IllegalArgumentException("캠페인을 찾을 수 없습니다: " + campaignIdx);
+    }
+    if (Boolean.FALSE.equals(page.getAllowApply())) {
+      throw new IllegalStateException("현재 신청이 불가한 상태/기간입니다.");
+    }
+    if (Boolean.TRUE.equals(page.getAlreadyApplied())) {
+      throw new IllegalStateException("이미 신청한 캠페인입니다.");
+    }
+
+    // 2) 배송형이고, 프로필에 주소가 없다면 요청의 주소 필수
+    if (Boolean.TRUE.equals(page.getRequireAddress()) && Boolean.FALSE.equals(page.getHasAddress())) {
+      if (campaignApplicationRequestDTO.getZipCode() == null || campaignApplicationRequestDTO.getZipCode().trim().isEmpty()
+          || campaignApplicationRequestDTO.getAddress() == null || campaignApplicationRequestDTO.getAddress().trim().isEmpty()) {
+        throw new IllegalArgumentException("배송형 캠페인은 주소(우편번호/기본주소) 입력이 필요합니다.");
+      }
+
+      //  saveAddressToProfile=true면 리뷰어 프로필에 주소 저장/갱신
+      if (Boolean.TRUE.equals(campaignApplicationRequestDTO.getSaveAddressToProfile())) {
+        int updated = campaignDAO.updateReviewerAddress(
+            memberIdx,
+            campaignApplicationRequestDTO.getZipCode().trim(),
+            campaignApplicationRequestDTO.getAddress().trim(),
+            campaignApplicationRequestDTO.getDetailAddress() == null ? null : campaignApplicationRequestDTO.getDetailAddress().trim()
+        );
+        if (updated == 0) {
+          // 프로필이 미리 없을 수 있으면 insert 대비 upsert 메서드를 따로 만들어도 됨
+          // 여기서는 update 0이면 예외로 처리(테이블 정책에 맞게 조정)
+          throw new IllegalStateException("리뷰어 프로필 주소 저장에 실패했습니다.");
+        }
+      }
+    }
+
+    // 3) 신청 INSERT
+    // 상태 코드는 공통코드 테이블(TB_COMMON_CODE.CODE_ID) 기준으로 프로젝트에서 쓰는 기본값을 사용
+    // 예시: 'APP_PENDING' 또는 'APP001' 등. 네가 쓰는 코드로 교체
+    final String APPLY_STATUS_CODE = "CAMAPP_PENDING";
+
+    int rows = campaignDAO.insertApplication(
+        campaignIdx,
+        memberIdx,
+        campaignApplicationRequestDTO.getApplyReason() == null ? "" : campaignApplicationRequestDTO.getApplyReason().trim(),
+        APPLY_STATUS_CODE
+    );
+    if (rows == 0) throw new IllegalStateException("신청 저장에 실패했습니다.");
+
+    Integer applicationIdx = campaignDAO.lastInsertId(); // - 예시 방금 INSERT한 행의 PK 값 37을 가져옴 프론트로 뿌려줄때 사용하려고
+    return new CampaignApplicationResponseDTO(applicationIdx);
+  }
+
+
+  // 캠페인 게시 상태 변경
     @Override
     @Transactional
     public void updateCampaignStatus(CampaignStatusUpdateDTO updateDTO) {

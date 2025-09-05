@@ -1,4 +1,6 @@
 package com.webcore.platform.campaign;
+import com.webcore.platform.campaign.dto.CampaignApplicationRequestDTO;
+import com.webcore.platform.campaign.dto.CampaignApplicationResponseDTO;
 import com.webcore.platform.campaign.dto.CampaignDTO;
 import com.webcore.platform.campaign.dto.CampaignApplyDTO;
 import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
@@ -21,7 +23,7 @@ public interface CampaignService {
   int createCampaign(Map<String, Object> requestDto);
 
   //상세조회
-  CampaignDetailResponseDTO getDetail(int id, Integer memberIdx);
+  CampaignDetailResponseDTO getDetail(int id, Integer memberId);
 
   /** 관리자 캠페인 상태 변경 (승인, 반려) */
   void updateCampaignStatus(CampaignStatusUpdateDTO updateDTO);
@@ -29,6 +31,8 @@ public interface CampaignService {
   /** 신청 페이지용 요약 조회 */
   CampaignApplyDTO getApply(int campaignIdx, Integer memberIdx);
 
+  /** 신청 하는 로직 */
+  CampaignApplicationResponseDTO createApplication(int campaignIdx, int memberIdx, CampaignApplicationRequestDTO campaignApplicationRequestDTO);
   /** 캠페인 북마크 추가 */
   boolean addBookmark(int memberIdx, int campaignIdx);
 

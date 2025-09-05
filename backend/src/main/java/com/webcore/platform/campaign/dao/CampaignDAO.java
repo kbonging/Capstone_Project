@@ -34,14 +34,20 @@ public interface CampaignDAO {
   /** 캠페인 목록 수 조회 */
   int selectCampaignCount(CampaignDTO campaignDTO);
 
-  CampaignDetailResponseDTO selectDetailCampaign(@Param("id") int id, @Param("memberIdx") Integer memberIdx);
+  /** 캠페인 상세페이지 조회 */
+  CampaignDetailResponseDTO selectDetailCampaign(@Param("id") int id);
 
   /** 관리자 캠페인 상태(승인, 반려) 변경 */
   int updateCampaignStatus(@Param("campaignIdx") int campaignIdx, @Param("status") String status);
 
+  /** 캠페인 신청 페이지 조회 */
+  CampaignApplyDTO selectApply(@Param("campaignIdx") int campaignIdx, @Param("memberIdx") Integer memberIdx);
 
-  CampaignApplyDTO selectApply(@Param("campaignIdx") int campaignIdx,
-      @Param("memberIdx") Integer memberIdx);
+  /** 캠페인 지원등록  */
+  int insertApplication(@Param("campaignIdx") int campaignIdx,
+      @Param("memberIdx")  int memberIdx,
+      @Param("applyReason") String applyReason,
+      @Param("applyStatusCode") String applyStatusCode);
 
   /** 북마크 추가 */
   int insertBookmark(@Param("memberIdx") int memberIdx,
@@ -50,4 +56,12 @@ public interface CampaignDAO {
   /** 북마크 제거 */
   int deleteBookmark(@Param("memberIdx") int memberIdx,
                      @Param("campaignIdx") int campaignIdx);
+  /** 캠페인 지원등록한 아이디 찾기  */
+  Integer lastInsertId();
+
+  /** 배송형일때 프로필정보에 주소 없으면 등록  */
+  int updateReviewerAddress(@Param("memberIdx") int memberIdx,
+      @Param("zipCode") String zipCode,
+      @Param("address") String address,
+      @Param("detailAddress") String detailAddress);
 }
