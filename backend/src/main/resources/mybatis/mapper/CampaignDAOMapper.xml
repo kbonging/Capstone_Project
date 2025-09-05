@@ -40,6 +40,7 @@
     <result property="mapUrl"          column="mapUrl"/>
     <result property="purchaseUrl"     column="purchaseUrl"/>
     <result property="applicants"      column="applicants"    jdbcType="BIGINT"/>
+    <result property="bookmarkedByMe"  column="bookmarked_by_me"/>
   </resultMap>
 
     <!-- 검색키워드가 있을경우 -->
@@ -127,7 +128,7 @@
 
 
   <!-- 캠페인 상세: 공통코드(TB_COMMON_CODE)로 유형/카테고리/채널명 조인 -->
-  <select id="selectDetailCampaign" parameterType="int" resultMap="CampaignDetailMap">
+  <select id="selectDetailCampaign" parameterType="map" resultMap="CampaignDetailMap">
     SELECT c.CAMPAIGN_IDX                                                                         AS campaignIdx,
            c.MEMBER_IDX                                                                           AS memberIdx,
            c.TITLE                                                                                AS title,
@@ -163,6 +164,15 @@
            CONCAT('https://map.naver.com/v5/search/',
                   REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20'))                                     AS mapUrl,
            d.PURCHASE_URL                                                                         AS purchaseUrl
+           CASE
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM tb_bookmark b
+                    WHERE b.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+                    AND b.MEMBER_IDX = #{memberIdx}
+                ) THEN 1
+                ELSE 0
+            END AS bookmarked_by_me
     FROM TB_CAMPAIGN c
            LEFT JOIN TB_CAMPAIGN_VISIT v
                      ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
@@ -295,6 +305,18 @@
     WHERE c.CAMPAIGN_IDX=#{campaignIdx}
     LIMIT 1
   </select>
+
+    <!-- 북마크 추가 -->
+    <insert id="insertBookmark" parameterType="map">
+        INSERT INTO tb_bookmark (MEMBER_IDX, CAMPAIGN_IDX)
+        VALUES (#{memberIdx}, #{campaignIdx})
+    </insert>
+
+    <!-- 북마크 제거 -->
+    <delete id="deleteBookmark" parameterType="map">
+        DELETE FROM tb_bookmark
+        WHERE MEMBER_IDX = #{memberIdx} AND CAMPAIGN_IDX = #{campaignIdx}
+    </delete>
 
 </mapper>
 

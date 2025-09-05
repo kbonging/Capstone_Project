@@ -284,10 +284,12 @@ CREATE TABLE `tb_campaign_application` (
         on update cascade
 );
 
+######### 캠페인 찜(북마크) 테이블 ###########
 CREATE TABLE `tb_bookmark` (
     `BOOKMARK_IDX` INT AUTO_INCREMENT PRIMARY KEY NOT NULL COMMENT '찜 고유번호',
     `MEMBER_IDX` INT NOT NULL COMMENT '찜한 회원 고유번호',
     `CAMPAIGN_IDX` INT NOT NULL COMMENT '찜한 캠페인 고유번호',
+    UNIQUE KEY uq_member_campaign (`MEMBER_IDX`, `CAMPAIGN_IDX`),
     FOREIGN KEY (`MEMBER_IDX`) REFERENCES `TB_MEMBER`(`MEMBER_IDX`)
         ON DELETE CASCADE
         ON UPDATE CASCADE,

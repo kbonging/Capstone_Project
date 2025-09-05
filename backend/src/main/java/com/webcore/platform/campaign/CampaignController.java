@@ -7,6 +7,7 @@ import com.webcore.platform.file.FileStorageService;
 import com.webcore.platform.security.custom.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -146,9 +147,12 @@ public class CampaignController {
   }
 
 
-    /** CAMPAIGN_STATUS 캠페인 게시 상태 변경 */
+    /** 관리자 캠페인 게시 상태 변경 */
     @PatchMapping("/status")
-    public ResponseEntity<String> updateCampaignStatus(@RequestBody CampaignStatusUpdateDTO updateDTO) {
+    @PreAuthorize("hasRole('ADMIN')") // ADMIN 권한만 접근 가능
+    public ResponseEntity<String> updateCampaignStatus(
+            @RequestBody CampaignStatusUpdateDTO updateDTO
+    ) {
         log.info("[PATCH] /api/campaigns/status 요청");
         try {
             campaignService.updateCampaignStatus(updateDTO);
@@ -158,4 +162,46 @@ public class CampaignController {
             return new ResponseEntity<>("캠페인 상태 변경에 실패했습니다.", HttpStatus.BAD_REQUEST);
         }
     }
+
+    /** 북마크 생성 */
+    @PostMapping("/bookmarks/{campaignIdx}")
+    public ResponseEntity<?> addBookmark(
+            @PathVariable int campaignIdx,
+            @AuthenticationPrincipal CustomUser customUser
+    ) {
+        try {
+            int memberIdx = customUser.getMemberDTO().getMemberIdx();
+            boolean success = campaignService.addBookmark(memberIdx, campaignIdx);
+
+            if (success) {
+                return ResponseEntity.ok("북마크가 추가되었습니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 찜한 캠페인입니다.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("북마크 추가 중 오류가 발생했습니다.");
+        }
+    }
+
+//    /** 북마크 삭제 */
+//    @DeleteMapping("/bookmarks/{campaignIdx}")
+//    public ResponseEntity<?> removeBookmark(
+//            @PathVariable int campaignIdx,
+//            @AuthenticationPrincipal CustomUser customUser
+//    ) {
+//        try {
+//            int memberIdx = customUser.getMemberDTO().getMemberIdx();
+//            boolean success = campaignService.removeBookmark(customUser.getMemberDTO().getMemberIdx(), campaignIdx);
+//
+//            if(success) {
+//                return ResponseEntity.ok("북마크 해제 완료");
+//            } else {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("찜한 캠페인이 아닙니다.");
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("북마크 해제 중 오류가 발생했습니다.");
+//        }
+//    }
+
 }

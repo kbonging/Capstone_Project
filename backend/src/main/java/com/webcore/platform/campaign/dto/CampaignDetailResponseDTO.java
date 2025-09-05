@@ -82,6 +82,8 @@ public class CampaignDetailResponseDTO extends DefaultDTO {
   private String reservationNotice;
   /** 지도 URL (네이버 지도, 카카오 지도 등) */
   private String mapUrl;
+  /** 로그인한 사용자가 찜했는지 여부(0 = 안함, 1 = 함) */
+  private Integer bookmarkedByMe;
   // ── 배송형 캠페인 정보 ────────────────────────
   /** 제품 구매/신청 URL */
   private String purchaseUrl;
@@ -90,7 +92,5 @@ public class CampaignDetailResponseDTO extends DefaultDTO {
   // ── 선택 정보 ────────────────────────────────
   /** 지원자 수 (TB_CAMPAIGN_APPLY에서 COUNT 집계) */
   private long applicants;
-
-
 
 }

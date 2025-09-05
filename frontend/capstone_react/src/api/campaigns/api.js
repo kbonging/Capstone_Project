@@ -1,9 +1,19 @@
 // src/features/campaigns/api.js
 import axios from "axios";
 
+// export async function getCampaignDetail(id) {
+//   const res = await fetch(`/api/campaigns/${id}`, {
+//     credentials: "include",
+//   });
+//   if (!res.ok) throw new Error(await res.text());
+//   return res.json();
+// }
 export async function getCampaignDetail(id) {
+  const token = localStorage.getItem("token"); // JWT 토큰 저장소
   const res = await fetch(`/api/campaigns/${id}`, {
-    credentials: "include",
+    headers: {
+      Authorization: `Bearer ${token}`, // 여기서 JWT 전달
+    },
   });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
@@ -131,7 +141,7 @@ export function createCampaign(formData, token) {
 }
 
 /**
- * 특정 캠페인의 상태를 변경합니다.
+ * 관리자가 캠페인의 상태(대기, 승인, 반려)를 변경합니다.
  * @param {number} campaignIdx - 캠페인 ID
  * @param {string} status - 변경할 상태 ('APPROVED' 또는 'REJECTED')
  * @param {string} token - 인증 토큰
@@ -184,4 +194,76 @@ export async function createApplication(campaignId, body, token) {
   });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
+}
+
+// ------------------------- 찜(북마크) ---------------------------
+
+/**
+ * 찜했는지 상태 확인
+ * @param {number} campaignIdx
+ * @param {string} token
+ * @returns {Promise<{bookmarked: boolean}>}
+ */
+export async function getBookmarkStatus(campaignIdx, token) {
+  try {
+    const response = await axios.get(`/api/campaigns/bookmarks/${campaignIdx}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("찜 상태 확인 실패:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+/**
+ * 찜 추가
+ * @param {number} campaignIdx
+ * @param {string} token
+ */
+
+export async function addBookmark(campaignIdx, token) {
+  if (!token) throw new Error("로그인이 필요합니다.");
+  
+  try {
+    const response = await axios.post(
+      `/api/campaigns/bookmarks/${campaignIdx}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("찜 추가 실패:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+/**
+ * 찜 취소
+ * @param {number} campaignIdx
+ * @param {string} token
+ */
+export async function removeBookmark(campaignIdx, token) {
+  try {
+    const response = await axios.delete(`/api/campaigns/bookmarks/${campaignIdx}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("찜 취소 실패:", error.response?.data || error.message);
+    throw error;
+  }
 }

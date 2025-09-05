@@ -34,11 +34,20 @@ public interface CampaignDAO {
   /** 캠페인 목록 수 조회 */
   int selectCampaignCount(CampaignDTO campaignDTO);
 
-  CampaignDetailResponseDTO selectDetailCampaign(@Param("id") int id);
+  CampaignDetailResponseDTO selectDetailCampaign(@Param("id") int id, @Param("memberIdx") Integer memberIdx);
 
+  /** 관리자 캠페인 상태(승인, 반려) 변경 */
   int updateCampaignStatus(@Param("campaignIdx") int campaignIdx, @Param("status") String status);
 
 
   CampaignApplyDTO selectApply(@Param("campaignIdx") int campaignIdx,
       @Param("memberIdx") Integer memberIdx);
+
+  /** 북마크 추가 */
+  int insertBookmark(@Param("memberIdx") int memberIdx,
+                     @Param("campaignIdx") int campaignIdx);
+
+  /** 북마크 제거 */
+  int deleteBookmark(@Param("memberIdx") int memberIdx,
+                     @Param("campaignIdx") int campaignIdx);
 }

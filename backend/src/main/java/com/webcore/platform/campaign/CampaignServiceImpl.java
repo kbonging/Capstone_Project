@@ -106,8 +106,8 @@ public class CampaignServiceImpl implements CampaignService {
   }
 
   @Override
-  public CampaignDetailResponseDTO getDetail(int id, Integer memberId) {
-    CampaignDetailResponseDTO dto = campaignDAO.selectDetailCampaign(id);
+  public CampaignDetailResponseDTO getDetail(int id, Integer memberIdx) {
+    CampaignDetailResponseDTO dto = campaignDAO.selectDetailCampaign(id, memberIdx);
     if (dto == null) {
       throw new IllegalArgumentException("캠페인을 찾을 수 없습니다. id=" + id);
     }
@@ -123,7 +123,7 @@ public class CampaignServiceImpl implements CampaignService {
     return dto;
   }
 
-  // 캠페인 게시 상태 변경
+  /** 관리자 캠페인 상태 변경 (승인, 반려) */
     @Override
     @Transactional
     public void updateCampaignStatus(CampaignStatusUpdateDTO updateDTO) {
@@ -137,4 +137,23 @@ public class CampaignServiceImpl implements CampaignService {
         }
     }
 
+    /** 북마크 생성 */
+    @Override
+    @Transactional
+    public boolean addBookmark(int memberIdx, int campaignIdx) {
+        try {
+            int result = campaignDAO.insertBookmark(memberIdx, campaignIdx);
+            return result > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /** 북마크 제거 */
+    @Override
+    @Transactional
+    public boolean removeBookmark(int memberIdx, int campaignIdx) {
+        int result = campaignDAO.deleteBookmark(memberIdx, campaignIdx);
+        return result > 0;
+    }
 }

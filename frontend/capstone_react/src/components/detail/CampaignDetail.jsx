@@ -19,7 +19,7 @@ import CampaignCalendar from "./CampaignCalendar";
 import MissionIconsGrid from "./MissionIconsGrid";
 import { norm as normChannel, CHANNEL_SPECS } from "../../config/channelSpecs";
 import { fmtDate } from "../../utils/date";
-import { getCampaignDetail } from "../../api/campaigns/api";
+import { getCampaignDetail, addBookmark } from "../../api/campaigns/api";
 import KakaoMap from "../../components/KakaoMap";
 import { toAbsoluteUrl } from "../../utils/url";
 
@@ -226,6 +226,22 @@ export default function CampaignDetail() {
     }
   };
 
+  const handleAddBookmark = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // 로그인 없으면 그냥 종료
+      return;
+    }
+
+    try {
+      await addBookmark(data.campaignIdx, token);
+      // 성공 시 별도 UI 처리 없음
+    } catch (error) {
+      console.error("찜 추가 실패:", error.response?.data || error.message);
+      // 실패 시도 콘솔 출력만
+    }
+  };
+
   return (
     <>
       <Toast open={toastOpen} onClose={() => setToastOpen(false)}>
@@ -274,6 +290,7 @@ export default function CampaignDetail() {
               className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-700 transition hover:bg-stone-50
                          dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
               aria-label="찜하기"
+              onClick={handleAddBookmark}
             >
               <FiHeart className="mr-1 inline-block" /> 찜
             </button>
