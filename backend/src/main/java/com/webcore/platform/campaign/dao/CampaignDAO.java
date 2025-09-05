@@ -34,20 +34,24 @@ public interface CampaignDAO {
   /** 캠페인 목록 수 조회 */
   int selectCampaignCount(CampaignDTO campaignDTO);
 
+  /** 캠페인 상세페이지 조회 */
   CampaignDetailResponseDTO selectDetailCampaign(@Param("id") int id);
 
   int updateCampaignStatus(@Param("campaignIdx") int campaignIdx, @Param("status") String status);
 
-
+  /** 캠페인 신청 페이지 조회 */
   CampaignApplyDTO selectApply(@Param("campaignIdx") int campaignIdx, @Param("memberIdx") Integer memberIdx);
 
+  /** 캠페인 지원등록  */
   int insertApplication(@Param("campaignIdx") int campaignIdx,
       @Param("memberIdx")  int memberIdx,
       @Param("applyReason") String applyReason,
       @Param("applyStatusCode") String applyStatusCode);
 
+  /** 캠페인 지원등록한 아이디 찾기  */
   Integer lastInsertId();
 
+  /** 배송형일때 프로필정보에 주소 없으면 등록  */
   int updateReviewerAddress(@Param("memberIdx") int memberIdx,
       @Param("zipCode") String zipCode,
       @Param("address") String address,

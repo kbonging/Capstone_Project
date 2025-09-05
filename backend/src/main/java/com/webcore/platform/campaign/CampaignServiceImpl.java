@@ -105,6 +105,7 @@ public class CampaignServiceImpl implements CampaignService {
     return campaignDTO.getCampaignIdx();
   }
 
+  // 켐페인 상세조회 페이지 로직
   @Override
   public CampaignDetailResponseDTO getDetail(int id, Integer memberId) {
     CampaignDetailResponseDTO dto = campaignDAO.selectDetailCampaign(id);
@@ -114,7 +115,7 @@ public class CampaignServiceImpl implements CampaignService {
     return dto;
   }
 
-  //리뷰어 신청페이지
+  //켐페인 지원신청 페이지
   @Override
   @Transactional(readOnly = true)
   public CampaignApplyDTO getApply(int campaignIdx, Integer memberIdx) {
