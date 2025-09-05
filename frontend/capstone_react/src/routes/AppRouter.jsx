@@ -18,6 +18,7 @@ import CampaignManage from "../pages/CampaignManage";
 import CampaignDetail from "../components/detail/CampaignDetail";
 import CampaignApply from "../pages/CampaignApply";
 import CampaignBookmark from "../pages/CampaignBookmark";
+import RequireReviewer from "./RequireReviewer";
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
@@ -67,9 +68,9 @@ export default function AppRouter() {
        
       {/* 켐페인 신청  페이지 */}
       <Route path="/campaigns/:id/apply" element={
-        <PrivateRoute>
+        <RequireReviewer>
           <CampaignApply />
-        </PrivateRoute>} 
+        </RequireReviewer>} 
       />
 
       {/* 체험단 모집 등록 페이지 */}

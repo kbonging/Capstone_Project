@@ -1,5 +1,6 @@
 package com.webcore.platform.campaign;
 
+import com.webcore.platform.campaign.dto.CampaignApplicationRequestDTO;
 import com.webcore.platform.campaign.dto.CampaignDTO;
 import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
 import com.webcore.platform.campaign.dto.CampaignStatusUpdateDTO;
@@ -135,15 +136,27 @@ public class CampaignController {
 
         return new ResponseEntity<>(campaignDetail, HttpStatus.OK);
     }
-
+    @PreAuthorize("hasRole('USER')")
   @GetMapping("/{campaignIdx}/apply-page")
   public ResponseEntity<?> getApply(@PathVariable int campaignIdx,
       @AuthenticationPrincipal CustomUser customUser) {
-    Integer memberIdx = (customUser != null && customUser.getMemberDTO() != null)
-        ? customUser.getMemberDTO().getMemberIdx() : null;
+        Integer memberIdx = customUser.getMemberDTO().getMemberIdx();
     log.info("[apply-page] campaignIdx={}, memberIdx={}", campaignIdx, memberIdx);
     return ResponseEntity.ok(campaignService.getApply(campaignIdx, memberIdx));
   }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/{campaignIdx}/applications")
+    public ResponseEntity<?> createApplication(
+        @PathVariable int campaignIdx,
+        @AuthenticationPrincipal CustomUser customUser,
+        @RequestBody CampaignApplicationRequestDTO campaignApplicationRequestDTO
+    ) {
+        Integer memberIdx = customUser.getMemberDTO().getMemberIdx();
+        var res = campaignService.createApplication(campaignIdx, memberIdx, campaignApplicationRequestDTO);
+        return ResponseEntity.ok(res);
+    }
+
 
 
     /** CAMPAIGN_STATUS 캠페인 게시 상태 변경 */
