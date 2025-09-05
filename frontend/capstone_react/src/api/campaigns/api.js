@@ -2,9 +2,17 @@
 import axios from "axios";
 
 export async function getCampaignDetail(id) {
+  const token = localStorage.getItem("token"); // 토큰 가져오기
+
+  // fetch 옵션에 Authorization 헤더 추가
   const res = await fetch(`/api/campaigns/${id}`, {
-    credentials: "include",
+    headers: {
+      Authorization: `Bearer ${token}`, // JWT 토큰을 헤더에 포함
+      "Content-Type": "application/json",
+    },
+    // credentials: "include" 옵션은 제거
   });
+
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }

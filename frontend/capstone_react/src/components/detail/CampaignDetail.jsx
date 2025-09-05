@@ -15,11 +15,12 @@ import {
   FiChevronUp,
   FiX,
 } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa"; // 채워진 하트 아이콘
 import CampaignCalendar from "./CampaignCalendar";
 import MissionIconsGrid from "./MissionIconsGrid";
 import { norm as normChannel, CHANNEL_SPECS } from "../../config/channelSpecs";
 import { fmtDate } from "../../utils/date";
-import { getCampaignDetail, addBookmark } from "../../api/campaigns/api";
+import { getCampaignDetail, addBookmark, removeBookmark } from "../../api/campaigns/api";
 import KakaoMap from "../../components/KakaoMap";
 import { toAbsoluteUrl } from "../../utils/url";
 
@@ -105,6 +106,9 @@ export default function CampaignDetail() {
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
 
+  // 찜 상태
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
   // 서버에서 가져오기
   useEffect(() => {
     let ignore = false;
@@ -112,7 +116,10 @@ export default function CampaignDetail() {
       try {
         setLoading(true);
         const detail = await getCampaignDetail(id);
-        if (!ignore) setData(detail);
+        if (!ignore) {
+          setData(detail);
+          setIsBookmarked(detail.bookmarkedByMe === 1);
+        }
       } catch (e) {
         if (!ignore) setError(e?.message || "상세 조회 실패");
       } finally {
@@ -226,19 +233,38 @@ export default function CampaignDetail() {
     }
   };
 
+  // ⭐️ 찜하기/취소 로직 통합
   const handleAddBookmark = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      // 로그인 없으면 그냥 종료
+      // 로그인 없으면 토스트 메시지로 안내
+      setToastMsg("로그인이 필요합니다.");
+      setToastOpen(true);
+      setTimeout(() => setToastOpen(false), 2500);
       return;
     }
 
+    // ⭐️ API 호출 전에 상태를 즉시 토글하여 사용자 경험 개선
+    const nextIsBookmarked = !isBookmarked;
+    setIsBookmarked(nextIsBookmarked);
+
     try {
-      await addBookmark(data.campaignIdx, token);
-      // 성공 시 별도 UI 처리 없음
+      if (nextIsBookmarked) {
+        await addBookmark(data.campaignIdx, token);
+        setToastMsg("찜 목록에 추가되었습니다.");
+      } else {
+        await removeBookmark(data.campaignIdx, token);
+        setToastMsg("찜이 취소되었습니다.");
+      }
+      setToastOpen(true);
+      setTimeout(() => setToastOpen(false), 2500);
     } catch (error) {
-      console.error("찜 추가 실패:", error.response?.data || error.message);
-      // 실패 시도 콘솔 출력만
+      // 실패 시 상태를 원래대로 되돌리고 에러 메시지 표시
+      setIsBookmarked(isBookmarked); // 원상복귀
+      console.error("찜 처리 실패:", error.response?.data || error.message);
+      setToastMsg("찜 처리에 실패했습니다. 다시 시도해 주세요.");
+      setToastOpen(true);
+      setTimeout(() => setToastOpen(false), 2500);
     }
   };
 
@@ -285,14 +311,20 @@ export default function CampaignDetail() {
             >
               <FiShare2 className="mr-1 inline-block" /> 공유
             </button>
-            {/* 찜 */}
+            {/* 북마크 */}
             <button
-              className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-700 transition hover:bg-stone-50
-                         dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              className={`rounded-xl border px-3 py-2 text-sm transition
+                ${isBookmarked
+                  ? "border-red-500 bg-red-50 text-red-600 hover:bg-red-100"
+                  : "border-stone-200 bg-white text-stone-700 hover:bg-stone-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                }`}
               aria-label="찜하기"
               onClick={handleAddBookmark}
             >
-              <FiHeart className="mr-1 inline-block" /> 찜
+              {isBookmarked
+                ? <FaHeart className="mr-1 inline-block" />
+                : <FiHeart className="mr-1 inline-block" />}
+              찜
             </button>
           </div>
         </div>

@@ -138,6 +138,7 @@ public class CampaignController {
 
     return new ResponseEntity<>(campaignDetail, HttpStatus.OK);
   }
+
   /**
    * 캠페인 지원 페이지 조회
    */
@@ -203,24 +204,24 @@ public class CampaignController {
         }
     }
 
-//    /** 북마크 삭제 */
-//    @DeleteMapping("/bookmarks/{campaignIdx}")
-//    public ResponseEntity<?> removeBookmark(
-//            @PathVariable int campaignIdx,
-//            @AuthenticationPrincipal CustomUser customUser
-//    ) {
-//        try {
-//            int memberIdx = customUser.getMemberDTO().getMemberIdx();
-//            boolean success = campaignService.removeBookmark(customUser.getMemberDTO().getMemberIdx(), campaignIdx);
-//
-//            if(success) {
-//                return ResponseEntity.ok("북마크 해제 완료");
-//            } else {
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("찜한 캠페인이 아닙니다.");
-//            }
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("북마크 해제 중 오류가 발생했습니다.");
-//        }
-//    }
+    /** 북마크 삭제 */
+    @DeleteMapping("/bookmarks/{campaignIdx}")
+    public ResponseEntity<?> removeBookmark(
+            @PathVariable int campaignIdx,
+            @AuthenticationPrincipal CustomUser customUser
+    ) {
+        try {
+            int memberIdx = customUser.getMemberDTO().getMemberIdx();
+            boolean success = campaignService.removeBookmark(customUser.getMemberDTO().getMemberIdx(), campaignIdx);
+
+            if(success) {
+                return ResponseEntity.ok("북마크 해제 완료");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("찜한 캠페인이 아닙니다.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("북마크 해제 중 오류가 발생했습니다.");
+        }
+    }
 
 }

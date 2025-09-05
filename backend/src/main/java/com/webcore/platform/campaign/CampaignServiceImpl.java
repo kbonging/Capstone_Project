@@ -107,10 +107,10 @@ public class CampaignServiceImpl implements CampaignService {
 
   // 켐페인 상세조회 페이지 로직
   @Override
-  public CampaignDetailResponseDTO getDetail(int id, Integer memberId) {
-    CampaignDetailResponseDTO dto = campaignDAO.selectDetailCampaign(id);
+  public CampaignDetailResponseDTO getDetail(int campaignIdx, Integer memberIdx) {
+    CampaignDetailResponseDTO dto = campaignDAO.selectDetailCampaign(campaignIdx, memberIdx);
     if (dto == null) {
-      throw new IllegalArgumentException("캠페인을 찾을 수 없습니다. id=" + id);
+      throw new IllegalArgumentException("캠페인을 찾을 수 없습니다. campaignIdx=" + campaignIdx);
     }
     return dto;
   }

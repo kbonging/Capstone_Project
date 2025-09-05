@@ -35,7 +35,7 @@ public interface CampaignDAO {
   int selectCampaignCount(CampaignDTO campaignDTO);
 
   /** 캠페인 상세페이지 조회 */
-  CampaignDetailResponseDTO selectDetailCampaign(@Param("id") int id);
+  CampaignDetailResponseDTO selectDetailCampaign(@Param("campaignIdx") int campaignIdx, @Param("memberIdx") Integer memberIdx);
 
   /** 관리자 캠페인 상태(승인, 반려) 변경 */
   int updateCampaignStatus(@Param("campaignIdx") int campaignIdx, @Param("status") String status);
@@ -56,6 +56,7 @@ public interface CampaignDAO {
   /** 북마크 제거 */
   int deleteBookmark(@Param("memberIdx") int memberIdx,
                      @Param("campaignIdx") int campaignIdx);
+
   /** 캠페인 지원등록한 아이디 찾기  */
   Integer lastInsertId();
 

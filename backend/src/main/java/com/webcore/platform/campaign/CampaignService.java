@@ -23,7 +23,7 @@ public interface CampaignService {
   int createCampaign(Map<String, Object> requestDto);
 
   //상세조회
-  CampaignDetailResponseDTO getDetail(int id, Integer memberId);
+  CampaignDetailResponseDTO getDetail(int campaignIdx, Integer memberIdx);
 
   /** 관리자 캠페인 상태 변경 (승인, 반려) */
   void updateCampaignStatus(CampaignStatusUpdateDTO updateDTO);
@@ -33,6 +33,7 @@ public interface CampaignService {
 
   /** 신청 하는 로직 */
   CampaignApplicationResponseDTO createApplication(int campaignIdx, int memberIdx, CampaignApplicationRequestDTO campaignApplicationRequestDTO);
+
   /** 캠페인 북마크 추가 */
   boolean addBookmark(int memberIdx, int campaignIdx);
 

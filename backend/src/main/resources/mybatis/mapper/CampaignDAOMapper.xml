@@ -128,7 +128,7 @@
 
 
   <!-- 캠페인 상세: 공통코드(TB_COMMON_CODE)로 유형/카테고리/채널명 조인 -->
-  <select id="selectDetailCampaign" parameterType="map" resultMap="CampaignDetailMap">
+  <select id="selectDetailCampaign" resultMap="CampaignDetailMap">
     SELECT c.CAMPAIGN_IDX                                                                         AS campaignIdx,
            c.MEMBER_IDX                                                                           AS memberIdx,
            c.TITLE                                                                                AS title,
@@ -163,16 +163,18 @@
            v.RESERVATION_NOTICE                                                                   AS reservationNotice,
            CONCAT('https://map.naver.com/v5/search/',
                   REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20'))                                     AS mapUrl,
-           d.PURCHASE_URL                                                                         AS purchaseUrl
-           CASE
-                WHEN EXISTS (
-                    SELECT 1
-                    FROM tb_bookmark b
-                    WHERE b.CAMPAIGN_IDX = c.CAMPAIGN_IDX
-                    AND b.MEMBER_IDX = #{memberIdx}
-                ) THEN 1
-                ELSE 0
-            END AS bookmarked_by_me
+           d.PURCHASE_URL                                                                         AS purchaseUrl,
+          CASE
+                  WHEN #{memberIdx} IS NOT NULL
+                      AND EXISTS (
+                          SELECT 1
+                          FROM tb_bookmark b
+                          WHERE b.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+                          AND b.MEMBER_IDX = #{memberIdx}
+                  )
+              THEN 1
+              ELSE 0
+          END AS bookmarked_by_me
     FROM TB_CAMPAIGN c
            LEFT JOIN TB_CAMPAIGN_VISIT v
                      ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
@@ -187,7 +189,7 @@
            LEFT JOIN TB_COMMON_CODE ch
                      ON ch.group_code = 'CAM_CHANNEL'
                        AND ch.code_id = c.CHANNEL_CODE
-    WHERE c.CAMPAIGN_IDX = #{id}
+    WHERE c.CAMPAIGN_IDX = #{campaignIdx}
       AND c.DEL_YN = 'N' LIMIT 1
   </select>
 
