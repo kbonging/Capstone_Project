@@ -1,10 +1,6 @@
 package com.webcore.platform.campaign.dao;
 
-import com.webcore.platform.campaign.dto.CampaignApplyDTO;
-import com.webcore.platform.campaign.dto.CampaignDTO;
-import com.webcore.platform.campaign.dto.CampaignDeliveryDTO;
-import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
-import com.webcore.platform.campaign.dto.CampaignVisitDTO;
+import com.webcore.platform.campaign.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -49,20 +45,28 @@ public interface CampaignDAO {
       @Param("applyReason") String applyReason,
       @Param("applyStatusCode") String applyStatusCode);
 
-  /** 북마크 추가 */
-  int insertBookmark(@Param("memberIdx") int memberIdx,
-                     @Param("campaignIdx") int campaignIdx);
-
-  /** 북마크 제거 */
-  int deleteBookmark(@Param("memberIdx") int memberIdx,
-                     @Param("campaignIdx") int campaignIdx);
-
   /** 캠페인 지원등록한 아이디 찾기  */
   Integer lastInsertId();
+
+  /** 캠페인 신청자 목록 조회 */
+  List<OwnerCampaignApplicantResponseDTO> selectApplicantsByCampaign(@Param("campaignIdx") int campaignIdx);
+
+  /** 캠페인 신청자 상태 변경 */
+  int updateApplicantStatus(@Param("applicationIdx") int applicationIdx,
+                            @Param("newStatus") String newStatus);
 
   /** 배송형일때 프로필정보에 주소 없으면 등록  */
   int updateReviewerAddress(@Param("memberIdx") int memberIdx,
       @Param("zipCode") String zipCode,
       @Param("address") String address,
       @Param("detailAddress") String detailAddress);
+
+    /** 북마크 추가 */
+    int insertBookmark(@Param("memberIdx") int memberIdx,
+                       @Param("campaignIdx") int campaignIdx);
+
+    /** 북마크 제거 */
+    int deleteBookmark(@Param("memberIdx") int memberIdx,
+                       @Param("campaignIdx") int campaignIdx);
+
 }

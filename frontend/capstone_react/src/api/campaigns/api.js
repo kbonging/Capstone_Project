@@ -218,6 +218,27 @@ export function createApplication(id, payload, token) {
     body: JSON.stringify(payload),
   });
 }
+// ------------------- 캠페인 신청자 목록, 상태 ---------------------
+ /**
+  * 캠페인 신청자 목록 조회
+  */
+ export const getApplicantsByCampaign = (campaignIdx) => {
+  return axios
+      .get(`/api/campaigns/applicants/${campaignIdx}`)
+      .then((res) => res.data);
+ };
+
+ /**
+  * 캠페인 신청자 상태 변경
+  */
+ export const updateApplicantsStatus = (applicationIdx, newStatus, token) => {
+  return axios.put(`/api/campaigns/applicants/${applicationIdx}`, { status: newStatus }, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    }
+  });
+ };
 
 // ------------------------- 찜(북마크) ---------------------------
 
@@ -244,7 +265,7 @@ export async function getBookmarkStatus(campaignIdx, token) {
 }
 
 /**
- * 찜 추가
+ * 북마크 추가
  * @param {number} campaignIdx
  * @param {string} token
  */
@@ -271,7 +292,7 @@ export async function addBookmark(campaignIdx, token) {
 }
 
 /**
- * 찜 취소
+ * 북마크 취소
  * @param {number} campaignIdx
  * @param {string} token
  */

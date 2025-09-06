@@ -321,6 +321,36 @@
     SELECT LAST_INSERT_ID()
   </select>
 
+    <!-- 캠페인 신청자 목록 조회 -->
+    <select id="selectApplicantsByCampaign" parameterType="int" resultType="com.webcore.platform.campaign.dto.OwnerCampaignApplicantResponseDTO">
+        SELECT
+        a.APPLICATION_IDX      AS applicationIdx,
+        a.MEMBER_IDX           AS memberIdx,
+        r.NICKNAME             AS nickname,
+        a.APPLY_REASON         AS applyReason,
+        cc.CODE_NM             AS applyStatusName,
+        cc.CODE_ID             AS applyStatusCode,  <!-- 추가 -->
+        a.REG_DATE             AS regDate,
+        a.MOD_DATE             AS modDate
+        FROM tb_campaign_application a
+        LEFT JOIN tb_reviewer_profile r
+        ON a.MEMBER_IDX = r.MEMBER_IDX
+        LEFT JOIN tb_common_code cc
+        ON a.APPLY_STATUS_CODE = cc.CODE_ID
+        WHERE a.CAMPAIGN_IDX = #{campaignIdx}
+        AND a.DEL_YN = 'N'
+        ORDER BY a.REG_DATE DESC;
+    </select>
+
+    <!-- 캠페인 신청자 상태 변경 -->
+    <update id="updateApplicantStatus" parameterType="map">
+        UPDATE tb_campaign_application
+        SET APPLY_STATUS_CODE = #{newStatus},
+            MOD_DATE = NOW()
+        WHERE APPLICATION_IDX = #{applicationIdx}
+            AND DEL_YN = 'N'
+    </update>
+
   <!-- 리뷰어 프로필 주소 업데이트 -->
   <update id="updateReviewerAddress">
     UPDATE TB_REVIEWER_PROFILE

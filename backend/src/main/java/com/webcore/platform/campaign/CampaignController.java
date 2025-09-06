@@ -1,9 +1,6 @@
 package com.webcore.platform.campaign;
 
-import com.webcore.platform.campaign.dto.CampaignApplicationRequestDTO;
-import com.webcore.platform.campaign.dto.CampaignDTO;
-import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
-import com.webcore.platform.campaign.dto.CampaignStatusUpdateDTO;
+import com.webcore.platform.campaign.dto.*;
 import com.webcore.platform.file.FileStorageService;
 import com.webcore.platform.security.custom.CustomUser;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -165,6 +163,23 @@ public class CampaignController {
     var res = campaignService.createApplication(campaignIdx, memberIdx,
         campaignApplicationRequestDTO);
     return ResponseEntity.ok(res);
+  }
+
+  /** 캠페인 신청자 목록 조회 */
+  @GetMapping("/applicants/{campaignIdx}")
+  public List<OwnerCampaignApplicantResponseDTO> getApplicants(@PathVariable int campaignIdx) {
+      return campaignService.getApplicantsByCampaign(campaignIdx);
+  }
+
+  /** 캠페인 신청자 상태 변경 */
+  @PutMapping("/applicants/{applicationIdx}")
+  public ResponseEntity<Void> updateApplicantStatus(
+          @PathVariable int applicationIdx,
+          @RequestBody Map<String, String> request
+  ) {
+      String newStatus = request.get("status");
+      campaignService.changeApplicantStatus(applicationIdx, newStatus);
+      return ResponseEntity.ok().build();
   }
 
     /** 관리자 캠페인 게시 상태 변경 */

@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { AppContext } from "../../contexts/AppContext";
 import { getOwnerCampaignsList } from "../../api/campaigns/api";
 import Pagination  from "../community/Pagination";
+import OwnerCampaignApply from "./OwnerCampaignApply";
 
 export default function CampaignManageForm() {
   const { token } = useContext(AppContext);
@@ -14,6 +15,19 @@ export default function CampaignManageForm() {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Modal 상태 관리 State
+  const [selectedCampaign, setSelectedCampaiagn] = useState(null);
+
+  // Modal 상태 -> 열기
+  const openApplicantsModal = (campaign) => {
+    setSelectedCampaiagn(campaign);
+  };
+
+  // Modal 상태 -> 닫기
+  const closeApplicantsModal = () => {
+    setSelectedCampaiagn(null);
+  };
 
   // 검색 조건 상태
   const [params, setParams] = useState({
@@ -194,7 +208,7 @@ export default function CampaignManageForm() {
                       </button>
                       <button
                         onClick={() =>
-                          navigate(`/campaign/${c.campaignIdx}/applicants`)
+                          openApplicantsModal(c)
                         }
                         className="px-3 py-1 bg-gray-100 rounded-md text-sm"
                       >
@@ -214,6 +228,14 @@ export default function CampaignManageForm() {
           )}
         </div>
       )}
+
+          {selectedCampaign && (
+            <OwnerCampaignApply
+              campaignIdx={selectedCampaign.campaignIdx}
+              onClose={closeApplicantsModal}
+            />
+          )}
+
     </div>
   );
 }

@@ -196,8 +196,24 @@ public class CampaignServiceImpl implements CampaignService {
     return new CampaignApplicationResponseDTO(applicationIdx);
   }
 
+  /** 캠페인 신청자 목록 조회 */
+  @Override
+  @Transactional
+  public List<OwnerCampaignApplicantResponseDTO> getApplicantsByCampaign(int campaignIdx) {
+      return campaignDAO.selectApplicantsByCampaign(campaignIdx);
+  }
 
-  // 캠페인 게시 상태 변경
+  /** 캠페인 신청자 상태 변경 */
+  @Override
+  @Transactional
+  public void changeApplicantStatus(int applicationIdx, String newStatus) {
+      int updated = campaignDAO.updateApplicantStatus(applicationIdx, newStatus);
+      if (updated == 0) {
+          throw new RuntimeException("신청자 상태 변경 실패: applicationIdx=" + applicationIdx);
+      }
+  }
+
+  // 관리자 캠페인 게시 상태 변경
     @Override
     @Transactional
     public void updateCampaignStatus(CampaignStatusUpdateDTO updateDTO) {

@@ -1,11 +1,7 @@
 package com.webcore.platform.campaign;
-import com.webcore.platform.campaign.dto.CampaignApplicationRequestDTO;
-import com.webcore.platform.campaign.dto.CampaignApplicationResponseDTO;
-import com.webcore.platform.campaign.dto.CampaignDTO;
-import com.webcore.platform.campaign.dto.CampaignApplyDTO;
-import com.webcore.platform.campaign.dto.CampaignDetailResponseDTO;
-import com.webcore.platform.campaign.dto.CampaignStatusUpdateDTO;
+import com.webcore.platform.campaign.dto.*;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CampaignService {
@@ -33,6 +29,12 @@ public interface CampaignService {
 
   /** 신청 하는 로직 */
   CampaignApplicationResponseDTO createApplication(int campaignIdx, int memberIdx, CampaignApplicationRequestDTO campaignApplicationRequestDTO);
+
+  /** 캠페인 신청자 목록 조회 */
+  List<OwnerCampaignApplicantResponseDTO> getApplicantsByCampaign(int campaignIdx);
+
+  /** 캠페인 신청자 상태 변경 */
+  void changeApplicantStatus(int applicationIdx, String newStatus);
 
   /** 캠페인 북마크 추가 */
   boolean addBookmark(int memberIdx, int campaignIdx);
