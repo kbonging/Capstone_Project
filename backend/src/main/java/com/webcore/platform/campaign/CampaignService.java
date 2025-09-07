@@ -31,7 +31,7 @@ public interface CampaignService {
   CampaignApplicationResponseDTO createApplication(int campaignIdx, int memberIdx, CampaignApplicationRequestDTO campaignApplicationRequestDTO);
 
   /** 캠페인 신청자 목록 조회 */
-  List<OwnerCampaignApplicantResponseDTO> getApplicantsByCampaign(int campaignIdx);
+  Map<String, Object> getApplicantsByCampaign(int campaignIdx, int page, String searchCondition, String searchKeyword, String applyStatus);
 
   /** 캠페인 신청자 상태 변경 */
   void changeApplicantStatus(int applicationIdx, String newStatus);

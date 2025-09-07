@@ -1,18 +1,38 @@
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AppContext } from "../../contexts/AppContext";
 import { getApplicantsByCampaign, updateApplicantsStatus } from "../../api/campaigns/api";
+import Pagination from "../community/Pagination";
 
 export default function OwnerCampaignApply({ campaignIdx, onClose }) {
-  const [applicants, setApplicants] = useState([]);
   const { token } = useContext(AppContext);
 
-  useEffect(() => {
-    if (!campaignIdx) return;
-    getApplicantsByCampaign(campaignIdx)
-      .then((data) => setApplicants(data))
-      .catch((err) => console.error(err));
-  }, [campaignIdx]);
+  const [applicants, setApplicants] = useState([]);
+  const [paginationInfo, setPaginationInfo] = useState(null);
 
+  // 검색/필터 상태
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [applyStatus, setApplyStatus] = useState("");
+  const [page, setPage] = useState(1);
+
+  // API 호출 함수
+  const fetchApplicants = (currentPage = 1) => {
+    if (!campaignIdx) return;
+
+    getApplicantsByCampaign(token, campaignIdx, {
+      page: currentPage,
+      searchCondition: "nickname", // 항상 닉네임 기준
+      searchKeyword,
+      applyStatus,
+    })
+      .then((data) => {
+        setApplicants(data.applicantList || []);
+        setPaginationInfo(data.paginationInfo || null);
+        setPage(currentPage); // 페이지 상태 업데이트
+      })
+      .catch((err) => console.error(err));
+  };
+
+  // 상태 변경 API 호출
   const handleStatusChange = (applicationIdx, newStatus) => {
     updateApplicantsStatus(applicationIdx, newStatus, token)
       .then(() => {
@@ -27,8 +47,31 @@ export default function OwnerCampaignApply({ campaignIdx, onClose }) {
       .catch((err) => console.error(err));
   };
 
+  useEffect(() => {
+    if (campaignIdx) {
+      fetchApplicants(1);
+    }
+  }, [campaignIdx]);
+
+
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) onClose();
+  };
+
+  // 검색 버튼/엔터
+  const handleSearch = () => {
+    fetchApplicants(1); // 검색 시 1페이지부터 조회
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  // 페이지네이션 클릭
+  const handlePageChange = (newPage) => {
+    fetchApplicants(newPage);
   };
 
   return (
@@ -39,6 +82,35 @@ export default function OwnerCampaignApply({ campaignIdx, onClose }) {
       <div className="bg-white p-8 rounded-2xl shadow-2xl w-[600px] max-h-[85vh] overflow-y-auto">
         <h2 className="text-2xl font-bold mb-6 text-gray-700">신청자 관리</h2>
 
+        {/* 상태 필터 + 검색 */}
+        <div className="flex gap-2 mb-4 items-center">
+          <select
+            className="border rounded px-2 py-1"
+            value={applyStatus}
+            onChange={(e) => setApplyStatus(e.target.value)}
+          >
+            <option value="">전체</option>
+            <option value="CAMAPP_PENDING">대기</option>
+            <option value="CAMAPP_APPROVED">당첨</option>
+            <option value="CAMAPP_REJECTED">탈락</option>
+          </select>
+          <input
+            type="text"
+            placeholder="닉네임 검색"
+            className="border rounded px-2 py-1 flex-1"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          <button
+            className="px-3 py-1 bg-blue-500 text-white rounded"
+            onClick={handleSearch}
+          >
+            검색
+          </button>
+        </div>
+
+        {/* 신청자 테이블 */}
         <table className="w-full text-sm border-collapse">
           <thead className="bg-blue-50">
             <tr className="text-center text-gray-600 uppercase text-xs tracking-wide">
@@ -49,43 +121,59 @@ export default function OwnerCampaignApply({ campaignIdx, onClose }) {
             </tr>
           </thead>
           <tbody>
-            {applicants.map((app) => (
-              <tr key={app.applicationIdx} className="text-center border-b hover:bg-blue-50 transition">
-                <td className="py-2">{app.nickname}</td>
-                <td className="py-2">{app.applyReason}</td>
-                <td className="py-2 font-medium">
-                    <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        app.applyStatusName === "대기"
-                            ? "bg-gray-100 text-gray-600"
-                            : app.applyStatusName === "당첨"
-                            ? "bg-blue-100 text-blue-600"
-                            : app.applyStatusName === "탈락"
-                            ? "bg-red-100 text-red-600"
-                            : "bg-gray-100 text-gray-600"
-                        }`}
-                    >
-                        {app.applyStatusName}
-                    </span>
-                </td>
-                <td className="py-2 flex justify-center gap-2">
-                    <button
-                    onClick={() => handleStatusChange(app.applicationIdx, "CAMAPP_APPROVED")}
-                    className="px-3 py-1 bg-blue-100 text-blue-600 rounded-md text-xs hover:bg-blue-200 transition"
-                    >
-                    당첨
-                    </button>
-                    <button
-                    onClick={() => handleStatusChange(app.applicationIdx, "CAMAPP_REJECTED")}
-                    className="px-3 py-1 bg-red-100 text-red-600 rounded-md text-xs hover:bg-red-200 transition"
-                    >
-                    탈락
-                    </button>
+            {applicants.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="text-center py-4 text-gray-400">
+                  신청자가 없습니다.
                 </td>
               </tr>
-            ))}
+            ) : (
+              applicants.map((app) => (
+                <tr
+                  key={app.applicationIdx}
+                  className="text-center border-b hover:bg-blue-50 transition"
+                >
+                  <td className="py-2">{app.nickname}</td>
+                  <td className="py-2">{app.applyReason}</td>
+                  <td className="py-2 font-medium">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        app.applyStatusName === "대기"
+                          ? "bg-gray-100 text-gray-600"
+                          : app.applyStatusName === "당첨"
+                          ? "bg-blue-100 text-blue-600"
+                          : app.applyStatusName === "탈락"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {app.applyStatusName}
+                    </span>
+                  </td>
+                  <td className="py-2 flex justify-center gap-2">
+                    <button
+                      onClick={() => handleStatusChange(app.applicationIdx, "CAMAPP_APPROVED")}
+                      className="px-3 py-1 bg-blue-100 text-blue-600 rounded-md text-xs hover:bg-blue-200 transition"
+                    >
+                      당첨
+                    </button>
+                    <button
+                      onClick={() => handleStatusChange(app.applicationIdx, "CAMAPP_REJECTED")}
+                      className="px-3 py-1 bg-red-100 text-red-600 rounded-md text-xs hover:bg-red-200 transition"
+                    >
+                      탈락
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
+
+        {/* 페이지네이션 */}
+        {paginationInfo && (
+          <Pagination pagination={paginationInfo} onPageChange={handlePageChange} />
+        )}
 
         <div className="mt-6 flex justify-end">
           <button

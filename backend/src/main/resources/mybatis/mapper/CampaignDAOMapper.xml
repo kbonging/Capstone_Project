@@ -321,26 +321,78 @@
     SELECT LAST_INSERT_ID()
   </select>
 
-    <!-- 캠페인 신청자 목록 조회 -->
-    <select id="selectApplicantsByCampaign" parameterType="int" resultType="com.webcore.platform.campaign.dto.OwnerCampaignApplicantResponseDTO">
-        SELECT
-        a.APPLICATION_IDX      AS applicationIdx,
-        a.MEMBER_IDX           AS memberIdx,
-        r.NICKNAME             AS nickname,
-        a.APPLY_REASON         AS applyReason,
-        cc.CODE_NM             AS applyStatusName,
-        cc.CODE_ID             AS applyStatusCode,  <!-- 추가 -->
-        a.REG_DATE             AS regDate,
-        a.MOD_DATE             AS modDate
+    <!-- 검색 조건 where절 -->
+    <sql id="applicantSearchWhere">
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchCondition == 'nickname'">
+                    AND r.NICKNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <when test="searchCondition == 'applyReason'">
+                    AND a.APPLY_REASON LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+            </choose>
+        </if>
+
+        <if test="applyStatusCode != null and applyStatusCode != ''">
+            AND a.APPLY_STATUS_CODE = #{applyStatusCode}
+        </if>
+    </sql>
+
+    <!-- 총 신청자 수 -->
+    <select id="countApplicantsByCampaign" resultType="int">
+        SELECT COUNT(*)
         FROM tb_campaign_application a
-        LEFT JOIN tb_reviewer_profile r
-        ON a.MEMBER_IDX = r.MEMBER_IDX
-        LEFT JOIN tb_common_code cc
-        ON a.APPLY_STATUS_CODE = cc.CODE_ID
-        WHERE a.CAMPAIGN_IDX = #{campaignIdx}
-        AND a.DEL_YN = 'N'
-        ORDER BY a.REG_DATE DESC;
+        LEFT JOIN tb_reviewer_profile r ON a.MEMBER_IDX = r.MEMBER_IDX
+        LEFT JOIN tb_common_code cc ON a.APPLY_STATUS_CODE = cc.CODE_ID
+        WHERE a.CAMPAIGN_IDX = #{campaignIdx} AND a.DEL_YN = 'N'
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchCondition != null and searchCondition != ''">
+                    AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <otherwise>
+                    AND r.NICKNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                </otherwise>
+            </choose>
+        </if>
+        <if test="applyStatus != null and applyStatus != ''">
+            AND a.APPLY_STATUS_CODE = #{applyStatus}
+        </if>
     </select>
+
+    <!-- 신청자 목록 조회 -->
+    <select id="selectApplicantsByCampaign" resultType="com.webcore.platform.campaign.dto.OwnerCampaignApplicantResponseDTO">
+        SELECT
+        a.APPLICATION_IDX AS applicationIdx,
+        a.MEMBER_IDX AS memberIdx,
+        r.NICKNAME AS nickname,
+        a.APPLY_REASON AS applyReason,
+        cc.CODE_NM AS applyStatusName,
+        cc.CODE_ID AS applyStatusCode,
+        a.REG_DATE AS regDate,
+        a.MOD_DATE AS modDate
+        FROM tb_campaign_application a
+        LEFT JOIN tb_reviewer_profile r ON a.MEMBER_IDX = r.MEMBER_IDX
+        LEFT JOIN tb_common_code cc ON a.APPLY_STATUS_CODE = cc.CODE_ID
+        WHERE a.CAMPAIGN_IDX = #{campaignIdx} AND a.DEL_YN = 'N'
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchCondition != null and searchCondition != ''">
+                    AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <otherwise>
+                    AND r.NICKNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                </otherwise>
+            </choose>
+        </if>
+        <if test="applyStatus != null and applyStatus != ''">
+            AND a.APPLY_STATUS_CODE = #{applyStatus}
+        </if>
+        ORDER BY a.REG_DATE DESC
+        LIMIT #{firstIndex}, #{recordCount}
+    </select>
+
 
     <!-- 캠페인 신청자 상태 변경 -->
     <update id="updateApplicantStatus" parameterType="map">

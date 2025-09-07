@@ -165,11 +165,17 @@ public class CampaignController {
     return ResponseEntity.ok(res);
   }
 
-  /** 캠페인 신청자 목록 조회 */
-  @GetMapping("/applicants/{campaignIdx}")
-  public List<OwnerCampaignApplicantResponseDTO> getApplicants(@PathVariable int campaignIdx) {
-      return campaignService.getApplicantsByCampaign(campaignIdx);
-  }
+    @GetMapping("/applicants/{campaignIdx}")
+    public ResponseEntity<?> getApplicants(
+            @PathVariable int campaignIdx,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) String searchCondition,
+            @RequestParam(required = false) String searchKeyword,
+            @RequestParam(required = false) String applyStatus) {
+
+        Map<String, Object> result = campaignService.getApplicantsByCampaign(campaignIdx, page, searchCondition, searchKeyword, applyStatus);
+        return ResponseEntity.ok(result);
+    }
 
   /** 캠페인 신청자 상태 변경 */
   @PutMapping("/applicants/{applicationIdx}")

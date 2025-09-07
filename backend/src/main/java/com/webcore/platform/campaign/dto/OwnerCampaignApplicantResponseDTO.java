@@ -12,6 +12,9 @@ public class OwnerCampaignApplicantResponseDTO extends DefaultDTO {
     /** 신청 고유번호 */
     private Integer applicationIdx;
 
+    /** 캠페인 고유번호 */
+    private Integer campaignIdx;
+
     /** 회원 고유번호 */
     private Integer memberIdx;
 

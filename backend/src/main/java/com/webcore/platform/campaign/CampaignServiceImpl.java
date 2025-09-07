@@ -197,11 +197,35 @@ public class CampaignServiceImpl implements CampaignService {
   }
 
   /** 캠페인 신청자 목록 조회 */
-  @Override
-  @Transactional
-  public List<OwnerCampaignApplicantResponseDTO> getApplicantsByCampaign(int campaignIdx) {
-      return campaignDAO.selectApplicantsByCampaign(campaignIdx);
-  }
+    @Override
+    @Transactional
+    public Map<String, Object> getApplicantsByCampaign(int campaignIdx, int page, String searchCondition, String searchKeyword, String applyStatus) {
+        // 1. 전체 레코드 수 조회
+        int totalRecord = campaignDAO.countApplicantsByCampaign(campaignIdx, searchCondition, searchKeyword, applyStatus);
+
+        // 2. PaginationInfo 세팅
+        PaginationInfo paginationInfo = new PaginationInfo();
+        paginationInfo.setCurrentPage(page);
+        paginationInfo.setRecordCountPerPage(10); // 페이지당 10개
+        paginationInfo.setBlockSize(10);
+        paginationInfo.setTotalRecord(totalRecord);
+
+        // 3. 조회 범위 계산
+        int firstIndex = paginationInfo.getFirstRecordIndex();
+        int recordCount = paginationInfo.getRecordCountPerPage();
+
+        // 4. 목록 조회
+        List<OwnerCampaignApplicantResponseDTO> list = campaignDAO.selectApplicantsByCampaign(
+                campaignIdx, firstIndex, recordCount, searchCondition, searchKeyword, applyStatus
+        );
+
+        // 5. 응답 맵
+        Map<String, Object> result = new HashMap<>();
+        result.put("applicantList", list);
+        result.put("paginationInfo", paginationInfo);
+
+        return result;
+    }
 
   /** 캠페인 신청자 상태 변경 */
   @Override

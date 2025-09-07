@@ -219,26 +219,45 @@ export function createApplication(id, payload, token) {
   });
 }
 // ------------------- 캠페인 신청자 목록, 상태 ---------------------
- /**
-  * 캠페인 신청자 목록 조회
-  */
- export const getApplicantsByCampaign = (campaignIdx) => {
-  return axios
-      .get(`/api/campaigns/applicants/${campaignIdx}`)
-      .then((res) => res.data);
- };
 
- /**
-  * 캠페인 신청자 상태 변경
-  */
- export const updateApplicantsStatus = (applicationIdx, newStatus, token) => {
-  return axios.put(`/api/campaigns/applicants/${applicationIdx}`, { status: newStatus }, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+/**
+ * 캠페인 신청자 목록 조회
+ * @param {string} token - 인증 토큰
+ * @param {number} campaignIdx - 캠페인 고유번호
+ * @param {object} params - { page, searchCondition, searchKeyword, applyStatus }
+ * @returns {Promise<{ applicantList: Array, paginationInfo: Object }>}
+ */
+export const getApplicantsByCampaign = (token, campaignIdx, params) => {
+  return axios
+    .get(`/api/campaigns/applicants/${campaignIdx}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      params, // query string으로 자동 변환
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * 신청자 상태 변경
+ * @param {number} applicationIdx - 신청자 고유번호
+ * @param {string} newStatus - CAMAPP_APPROVED | CAMAPP_REJECTED
+ * @param {string} token - 인증 토큰
+ * @returns {Promise<void>}
+ */
+export const updateApplicantsStatus = (applicationIdx, newStatus, token) => {
+  return axios.put(
+    `/api/campaigns/applicants/${applicationIdx}`,
+    { status: newStatus },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
     }
-  });
- };
+  );
+};
 
 // ------------------------- 찜(북마크) ---------------------------
 

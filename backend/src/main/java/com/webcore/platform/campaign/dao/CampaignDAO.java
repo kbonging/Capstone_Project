@@ -48,8 +48,18 @@ public interface CampaignDAO {
   /** 캠페인 지원등록한 아이디 찾기  */
   Integer lastInsertId();
 
-  /** 캠페인 신청자 목록 조회 */
-  List<OwnerCampaignApplicantResponseDTO> selectApplicantsByCampaign(@Param("campaignIdx") int campaignIdx);
+    /** 캠페인 신청자 목록 조회 */
+    List<OwnerCampaignApplicantResponseDTO> selectApplicantsByCampaign(
+            int campaignIdx,
+            int firstIndex,
+            int recordCount,
+            String searchCondition,
+            String searchKeyword,
+            String applyStatus
+    );
+
+    /** 캠페인 신청자 총 개수 조회 */
+    int countApplicantsByCampaign(int campaignIdx, String searchCondition, String searchKeyword, String applyStatus);
 
   /** 캠페인 신청자 상태 변경 */
   int updateApplicantStatus(@Param("applicationIdx") int applicationIdx,
