@@ -412,7 +412,11 @@
 
     <!-- 실제 신청이 있는지 체크 -->
     <select id="getApplicantByIdx" resultType="com.webcore.platform.campaign.dto.OwnerCampaignApplicantResponseDTO" parameterType="int">
-        SELECT APPLICATION_IDX, CAMPAIGN_IDX, MEMBER_IDX, NICKNAME, APPLY_REASON, APPLY_STATUS_CODE, APPLY_STATUS_NAME
+        SELECT APPLICATION_IDX,
+        CAMPAIGN_IDX,
+        MEMBER_IDX,
+        APPLY_REASON,
+        APPLY_STATUS_CODE
         FROM tb_campaign_application
         WHERE APPLICATION_IDX = #{applicationIdx}
         AND DEL_YN = 'N'
