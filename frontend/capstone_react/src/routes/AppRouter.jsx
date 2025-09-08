@@ -19,6 +19,7 @@ import CampaignDetail from "../components/detail/CampaignDetail";
 import CampaignApply from "../pages/CampaignApply";
 import CampaignBookmark from "../pages/CampaignBookmark";
 import RequireReviewer from "./RequireReviewer";
+import MyCampaigns from "../pages/MyCampaigns";
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
@@ -87,7 +88,7 @@ export default function AppRouter() {
         </PrivateRoute>
       }
       />
-      
+      <Route path="/mypage/my-campaigns" element={<MyCampaigns />} />
       {/* <Route path="/search"     element={<SearchPage />} /> */}
       {/* <Route path="/support"    element={<Support    />} /> */}
       {/* <Route path="/events"     element={<Events     />} /> */}
