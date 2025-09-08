@@ -330,3 +330,34 @@ export async function removeBookmark(campaignIdx, token) {
     throw error;
   }
 }
+
+// ------------------- 내 체험단 목록, 신청 취소 ---------------------
+export async function getMyCampaigns({ token, channel, status, q, page = 1 }) {
+  const res = await axios.get(`/api/mypage/my-campaigns`, {
+    params: { channel, status, q, page },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const ct = res.headers?.["content-type"] || "";
+  if (ct.includes("text/html")) {
+    throw new Error("API가 아닌 HTML이 반환되었습니다. API 경로/프록시 설정을 확인하세요.");
+  }
+
+  const data = res.data ?? {};
+  const content = data.content ?? data.list ?? data.campaignList ?? [];
+  const pi = data.paginationInfo ?? data.pageInfo ?? null;
+  const totalPages = data.totalPages ?? pi?.totalPage ?? 1;
+  const totalElements = data.totalElements ?? pi?.totalRecord ?? content.length;
+  const number = (data.number != null) ? data.number + 1 : (pi?.currentPage ?? 1);
+  return { content, totalPages, totalElements, number };
+}
+
+export async function cancelMyApplication({ token, applicationIdx }) {
+  const res = await axios.post(
+    `/api/mypage/my-campaigns/${applicationIdx}/cancel`,
+    {},
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res.data;
+}
+//---------------------------------------------------//
