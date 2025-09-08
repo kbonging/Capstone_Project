@@ -3,7 +3,7 @@ import { AppContext } from "../../contexts/AppContext";
 import { getApplicantsByCampaign, updateApplicantsStatus } from "../../api/campaigns/api";
 import Pagination from "../community/Pagination";
 
-export default function OwnerCampaignApply({ campaignIdx, onClose }) {
+export default function OwnerCampaignApply({ campaignIdx, recruitCount, onClose }) {
   const { token } = useContext(AppContext);
 
   const [applicants, setApplicants] = useState([]);
@@ -32,14 +32,35 @@ export default function OwnerCampaignApply({ campaignIdx, onClose }) {
       .catch((err) => console.error(err));
   };
 
-  // 상태 변경 API 호출
+  // ✅ 당첨자 수 계산
+  const approvedCount = applicants.filter(
+    (app) => app.applyStatusCode === "CAMAPP_APPROVED"
+  ).length;
+
+  // ✅ 상태 변경 함수
   const handleStatusChange = (applicationIdx, newStatus) => {
+    if (newStatus === "CAMAPP_APPROVED") {
+      const approvedCount = applicants.filter(
+        (app) => app.applyStatusCode === "CAMAPP_APPROVED"
+      ).length;
+
+      if (approvedCount >= recruitCount) {
+        alert(`이 캠페인은 최대 ${recruitCount}명까지만 당첨 가능합니다.`);
+        return;
+      }
+    }
+
     updateApplicantsStatus(applicationIdx, newStatus, token)
       .then(() => {
         setApplicants((prev) =>
           prev.map((app) =>
             app.applicationIdx === applicationIdx
-              ? { ...app, applyStatusName: newStatus === "CAMAPP_APPROVED" ? "당첨" : "탈락" }
+              ? {
+                  ...app,
+                  applyStatusCode: newStatus,
+                  applyStatusName:
+                    newStatus === "CAMAPP_APPROVED" ? "당첨" : "탈락",
+                }
               : app
           )
         );
@@ -52,7 +73,6 @@ export default function OwnerCampaignApply({ campaignIdx, onClose }) {
       fetchApplicants(1);
     }
   }, [campaignIdx]);
-
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) onClose();
@@ -79,8 +99,16 @@ export default function OwnerCampaignApply({ campaignIdx, onClose }) {
       className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
       onClick={handleOverlayClick}
     >
-      <div className="bg-white p-8 rounded-2xl shadow-2xl w-[600px] max-h-[85vh] overflow-y-auto">
+      {/* ✅ 모달 가로폭 800px로 변경 */}
+      <div className="bg-white p-8 rounded-2xl shadow-2xl w-[1000px] max-h-[85vh] overflow-y-auto">
         <h2 className="text-2xl font-bold mb-6 text-gray-700">신청자 관리</h2>
+
+        {/* 모집 인원 표시 */}
+        <div className="mb-4 text-sm text-gray-600">
+          현재 당첨자:{" "}
+          <span className="font-semibold text-blue-600">{approvedCount}</span>/
+          {recruitCount}
+        </div>
 
         {/* 상태 필터 + 검색 */}
         <div className="flex gap-2 mb-4 items-center">
@@ -111,13 +139,14 @@ export default function OwnerCampaignApply({ campaignIdx, onClose }) {
         </div>
 
         {/* 신청자 테이블 */}
-        <table className="w-full text-sm border-collapse">
+        <table className="w-full text-sm border-collapse table-fixed">
           <thead className="bg-blue-50">
             <tr className="text-center text-gray-600 uppercase text-xs tracking-wide">
-              <th className="py-3 border-b">닉네임</th>
-              <th className="py-3 border-b">신청 한마디</th>
-              <th className="py-3 border-b">상태</th>
-              <th className="py-3 border-b">관리</th>
+              <th className="py-3 border-b w-[120px]">닉네임</th>
+              {/* ✅ 신청 한마디 영역 넓힘 */}
+              <th className="py-3 border-b w-[400px]">신청 한마디</th>
+              <th className="py-3 border-b w-[100px]">상태</th>
+              <th className="py-3 border-b w-[160px]">관리</th>
             </tr>
           </thead>
           <tbody>
@@ -133,9 +162,18 @@ export default function OwnerCampaignApply({ campaignIdx, onClose }) {
                   key={app.applicationIdx}
                   className="text-center border-b hover:bg-blue-50 transition"
                 >
-                  <td className="py-2">{app.nickname}</td>
-                  <td className="py-2">{app.applyReason}</td>
-                  <td className="py-2 font-medium">
+                  {/* 닉네임 */}
+                  <td className="py-2 px-2 font-semibold truncate" title={app.nickname}>
+                    {app.nickname}
+                  </td>
+
+                  {/* 신청 한마디 → 여러 줄 허용 */}
+                  <td className="py-2 px-2 text-left break-words whitespace-pre-wrap">
+                    {app.applyReason}
+                  </td>
+
+                  {/* 상태 */}
+                  <td className="py-2 font-medium truncate" title={app.applyStatusName}>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold ${
                         app.applyStatusName === "대기"
@@ -150,19 +188,27 @@ export default function OwnerCampaignApply({ campaignIdx, onClose }) {
                       {app.applyStatusName}
                     </span>
                   </td>
-                  <td className="py-2 flex justify-center gap-2">
-                    <button
-                      onClick={() => handleStatusChange(app.applicationIdx, "CAMAPP_APPROVED")}
-                      className="px-3 py-1 bg-blue-100 text-blue-600 rounded-md text-xs hover:bg-blue-200 transition"
-                    >
-                      당첨
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange(app.applicationIdx, "CAMAPP_REJECTED")}
-                      className="px-3 py-1 bg-red-100 text-red-600 rounded-md text-xs hover:bg-red-200 transition"
-                    >
-                      탈락
-                    </button>
+
+                  {/* 관리 버튼 */}
+                  <td className="py-2 px-2">
+                    <div className="flex justify-center items-center gap-2">
+                      <button
+                        onClick={() =>
+                          handleStatusChange(app.applicationIdx, "CAMAPP_APPROVED")
+                        }
+                        className="px-3 py-1 bg-blue-100 text-blue-600 rounded-md text-xs hover:bg-blue-200 transition"
+                      >
+                        당첨
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleStatusChange(app.applicationIdx, "CAMAPP_REJECTED")
+                        }
+                        className="px-3 py-1 bg-red-100 text-red-600 rounded-md text-xs hover:bg-red-200 transition"
+                      >
+                        탈락
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

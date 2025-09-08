@@ -232,6 +232,7 @@ export default function CampaignManageForm() {
           {selectedCampaign && (
             <OwnerCampaignApply
               campaignIdx={selectedCampaign.campaignIdx}
+              recruitCount={selectedCampaign.recruitCount}
               onClose={closeApplicantsModal}
             />
           )}

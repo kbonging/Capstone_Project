@@ -231,6 +231,23 @@ public class CampaignServiceImpl implements CampaignService {
   @Override
   @Transactional
   public void changeApplicantStatus(int applicationIdx, String newStatus) {
+
+      // 신청 내역 조회
+      OwnerCampaignApplicantResponseDTO applicant = campaignDAO.getApplicantByIdx(applicationIdx);
+      if (applicant == null) {
+          throw new RuntimeException("신청자를 찾을 수 없습니다. applicationIdx=" + applicationIdx);
+      }
+
+      // 모집인원 초과 체크
+      if ("CAMAPP_APPROVED".equals(newStatus)) {
+          int recruitCount = campaignDAO.getRecruitCountByCampaign(applicant.getCampaignIdx());
+          int approvedCount = campaignDAO.getApprovedCountByCampaignForUpdate(applicant.getCampaignIdx());
+
+          if (approvedCount >= recruitCount) {
+              throw new RuntimeException("모집인원을 초과할 수 없습니다.");
+          }
+      }
+
       int updated = campaignDAO.updateApplicantStatus(applicationIdx, newStatus);
       if (updated == 0) {
           throw new RuntimeException("신청자 상태 변경 실패: applicationIdx=" + applicationIdx);

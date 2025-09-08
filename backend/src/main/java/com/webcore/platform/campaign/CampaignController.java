@@ -165,6 +165,7 @@ public class CampaignController {
     return ResponseEntity.ok(res);
   }
 
+  /** 캠페인 신청자 목록 조회 */
     @GetMapping("/applicants/{campaignIdx}")
     public ResponseEntity<?> getApplicants(
             @PathVariable int campaignIdx,
@@ -179,6 +180,7 @@ public class CampaignController {
 
   /** 캠페인 신청자 상태 변경 */
   @PutMapping("/applicants/{applicationIdx}")
+  @PreAuthorize("hasRole('OWNER')")
   public ResponseEntity<Void> updateApplicantStatus(
           @PathVariable int applicationIdx,
           @RequestBody Map<String, String> request

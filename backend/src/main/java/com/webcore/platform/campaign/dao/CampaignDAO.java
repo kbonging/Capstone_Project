@@ -33,9 +33,6 @@ public interface CampaignDAO {
   /** 캠페인 상세페이지 조회 */
   CampaignDetailResponseDTO selectDetailCampaign(@Param("campaignIdx") int campaignIdx, @Param("memberIdx") Integer memberIdx);
 
-  /** 관리자 캠페인 상태(승인, 반려) 변경 */
-  int updateCampaignStatus(@Param("campaignIdx") int campaignIdx, @Param("status") String status);
-
   /** 캠페인 신청 페이지 조회 */
   CampaignApplyDTO selectApply(@Param("campaignIdx") int campaignIdx, @Param("memberIdx") Integer memberIdx);
 
@@ -48,6 +45,9 @@ public interface CampaignDAO {
   /** 캠페인 지원등록한 아이디 찾기  */
   Integer lastInsertId();
 
+    /** 캠페인 신청자 총 개수 조회 */
+    int countApplicantsByCampaign(int campaignIdx, String searchCondition, String searchKeyword, String applyStatus);
+
     /** 캠페인 신청자 목록 조회 */
     List<OwnerCampaignApplicantResponseDTO> selectApplicantsByCampaign(
             int campaignIdx,
@@ -58,10 +58,16 @@ public interface CampaignDAO {
             String applyStatus
     );
 
-    /** 캠페인 신청자 총 개수 조회 */
-    int countApplicantsByCampaign(int campaignIdx, String searchCondition, String searchKeyword, String applyStatus);
+    /** 모집 인원 조회 */
+    int getRecruitCountByCampaign(int campaignIdx);
 
-  /** 캠페인 신청자 상태 변경 */
+    /** 현재 당첨된 인원 조회 */
+    int getApprovedCountByCampaignForUpdate(int campaignIdx);
+
+    /** 실제 신청이 존재하는지 체크 */
+    OwnerCampaignApplicantResponseDTO getApplicantByIdx(int applicationIdx);
+
+    /** 캠페인 신청자 상태 변경 */
   int updateApplicantStatus(@Param("applicationIdx") int applicationIdx,
                             @Param("newStatus") String newStatus);
 
@@ -79,4 +85,6 @@ public interface CampaignDAO {
     int deleteBookmark(@Param("memberIdx") int memberIdx,
                        @Param("campaignIdx") int campaignIdx);
 
+    /** 관리자 캠페인 상태(승인, 반려) 변경 */
+    int updateCampaignStatus(@Param("campaignIdx") int campaignIdx, @Param("status") String status);
 }

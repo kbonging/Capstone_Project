@@ -274,19 +274,15 @@ WHERE c.DEL_YN = 'N';
 
 ## 캠페인 신청자 목록 조회 ##
 SELECT
-a.APPLICATION_IDX      AS applicationIdx,
-a.MEMBER_IDX           AS memberIdx,
-r.NICKNAME             AS nickname,
-a.APPLY_REASON         AS applyReason,
-cc.CODE_NM             AS applyStatusName,
-cc.CODE_ID             AS applyStatusCode,
-a.REG_DATE             AS regDate,
-a.MOD_DATE             AS modDate
+a.APPLICATION_IDX AS applicationIdx,
+a.MEMBER_IDX AS memberIdx,
+r.NICKNAME AS nickname,
+a.APPLY_REASON AS applyReason,
+cc.CODE_NM AS applyStatusName,
+cc.CODE_ID AS applyStatusCode,
+a.REG_DATE AS regDate,
+a.MOD_DATE AS modDate
 FROM tb_campaign_application a
-LEFT JOIN tb_reviewer_profile r
-ON a.MEMBER_IDX = r.MEMBER_IDX
-LEFT JOIN tb_common_code cc
-ON a.APPLY_STATUS_CODE = cc.CODE_ID
-WHERE a.CAMPAIGN_IDX = 10
-AND a.DEL_YN = 'N'
-ORDER BY a.REG_DATE DESC;
+LEFT JOIN tb_reviewer_profile r ON a.MEMBER_IDX = r.MEMBER_IDX
+LEFT JOIN tb_common_code cc ON a.APPLY_STATUS_CODE = cc.CODE_ID
+WHERE a.CAMPAIGN_IDX = 10 AND a.DEL_YN = 'N';

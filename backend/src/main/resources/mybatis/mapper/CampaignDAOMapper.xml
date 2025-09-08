@@ -393,6 +393,30 @@
         LIMIT #{firstIndex}, #{recordCount}
     </select>
 
+    <!-- 캠페인 모집인원 조회 -->
+    <select id="getRecruitCountByCampaign" resultType="int" parameterType="int">
+        SELECT RECRUIT_COUNT
+        FROM tb_campaign
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+    </select>
+
+    <!-- 캠페인 당첨자 수 조회 -->
+    <select id="getApprovedCountByCampaignForUpdate" resultType="int" parameterType="int">
+        SELECT COUNT(*)
+        FROM tb_campaign_application
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+            AND APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+            AND DEL_YN = 'N'
+        FOR UPDATE
+    </select>
+
+    <!-- 실제 신청이 있는지 체크 -->
+    <select id="getApplicantByIdx" resultType="com.webcore.platform.campaign.dto.OwnerCampaignApplicantResponseDTO" parameterType="int">
+        SELECT APPLICATION_IDX, CAMPAIGN_IDX, MEMBER_IDX, NICKNAME, APPLY_REASON, APPLY_STATUS_CODE, APPLY_STATUS_NAME
+        FROM tb_campaign_application
+        WHERE APPLICATION_IDX = #{applicationIdx}
+        AND DEL_YN = 'N'
+    </select>
 
     <!-- 캠페인 신청자 상태 변경 -->
     <update id="updateApplicantStatus" parameterType="map">
