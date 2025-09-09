@@ -26,7 +26,7 @@ public class MyCampaignController {
    * 내가 신청한 캠페인 목록 조회
    *
    * @param user JWT 인증된 사용자 정보 (CustomUser)
-   * @param dto  검색/페이징 조건 (channel, status, q, page 등)
+   * @param myCampaignDTO  검색/페이징 조건 (channel, status, q, page 등)
    * @return 캠페인 목록 + 페이지네이션 정보(Map 구조)
    *
    * 동작:
@@ -42,16 +42,16 @@ public class MyCampaignController {
   @GetMapping
   public Map<String, Object> list(
       @AuthenticationPrincipal CustomUser user,
-      @ModelAttribute MyCampaignDTO dto
+      @ModelAttribute MyCampaignDTO myCampaignDTO
   ) {
     //  JWT에서 꺼낸 실제 memberIdx 사용 (보안상 프론트에서 임의 조작 불가)
-    dto.setMemberIdx(user.getMemberDTO().getMemberIdx());
+    myCampaignDTO.setMemberIdx(user.getMemberDTO().getMemberIdx());
 
     // page는 최소 1 이상
-    if (dto.getPage() <= 0) dto.setPage(1);
+    if (myCampaignDTO.getPage() <= 0) myCampaignDTO.setPage(1);
 
     // 서비스 호출 → {"list": [...], "paginationInfo": {...}} 형태 반환
-    return myCampaignService.getMyCampaignList(dto);
+    return myCampaignService.getMyCampaignList(myCampaignDTO);
   }
 
   /**
