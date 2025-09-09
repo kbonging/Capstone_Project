@@ -1,82 +1,89 @@
-// src/main/java/com/webcore/platform/mypage/dto/MyCampaignDTO.java
 package com.webcore.platform.mypage.dto;
 
 import com.webcore.platform.common.dto.DefaultDTO;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * 내 체험단(My Page)에서 노출되는 캠페인 카드 데이터를 담는 DTO
- * - 신청 정보 + 캠페인 기본 정보 + 카드 화면 표시용 필드
+ * 내가 신청한 캠페인 DTO
+ * - DB에서 조회한 컬럼들을 담음
+ * - 프론트에 내려줄 displayStatus(발표일 이전에는 무조건 대기)도 포함
  */
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@ToString
 public class MyCampaignDTO extends DefaultDTO {
 
-  /** 로그인한 사용자 고유번호 */
+  /** 로그인 사용자 고유번호*/
   private Integer memberIdx;
 
-  /* ===================== 신청 정보 ===================== */
-  /** 신청 고유번호 (tb_campaign_application.application_idx) */
+  /** 캠페인 신청 고유번호 */
   private Integer applicationIdx;
 
-  /** 신청 상태 코드 (예: CAMAPP_PENDING / CAMAPP_APPROVED / CAMAPP_REJECTED) */
-  private String applyStatusCode;
+  /** 실제 신청 상태 코드 (예: CAMAPP_PENDING, CAMAPP_APPROVED, ...) */
+  private String  applyStatusCode;
 
-  /** 신청 상태명 (예: 대기, 당첨, 탈락) */
-  private String applyStatusName;
+  /** 실제 신청 상태 이름 (공통코드명) */
+  private String  applyStatusName;
 
-  /* ===================== 캠페인 기본 정보 ===================== */
+  /** 발표일 (yyyy-MM-dd) */
+  private String  announceDate;
+
   /** 캠페인 고유번호 */
   private Integer campaignIdx;
 
   /** 캠페인 제목 */
-  private String title;
+  private String  title;
 
-  /** 상호명 (업체/스토어명) */
-  private String shopName;
+  /** 상호명 */
+  private String  shopName;
 
-  /** 썸네일 이미지 경로(URL) */
-  private String thumbnailUrl;
+  /** 썸네일 이미지 URL */
+  private String  thumbnailUrl;
 
-  /** 캠페인 유형 코드 (예: CAMP001, CAMP003 등) */
-  private String campaignType;
+  /** 캠페인 유형 코드/이름 */
+  private String  campaignType;
+  private String  campaignTypeName;
 
-  /** 캠페인 유형명 (예: 방문형, 배송형) */
-  private String campaignTypeName;
+  /** 카테고리 코드/이름 */
+  private String  categoryCode;
+  private String  categoryName;
 
-  /** 카테고리 코드 */
-  private String categoryCode;
+  /** 채널 코드/이름 */
+  private String  channelCode;
+  private String  channelName;
 
-  /** 카테고리명 (예: 맛집, 기타) */
-  private String categoryName;
+  /** 제공 혜택 설명 */
+  private String  benefitText;
 
-  /** 채널 코드 */
-  private String channelCode;
-
-  /** 채널명 (예: 블로그, 인스타그램, 유튜브, 릴스) */
-  private String channelName;
-
-  /* ===================== 카드 표시용 정보 ===================== */
-  /** 혜택 설명 (예: 5만원 상품권, 부츠 양말 2세트 등) */
-  private String benefitText;
-
-  /** 모집 인원 수 */
+  /** 모집 인원 */
   private Integer recruitCount;
 
-  /** 현재 신청 인원 수 */
+  /** 현재 지원자 수 */
   private Integer appliedCount;
 
-  /** 모집 마감일 (yyyy-MM-dd) */
-  private String applyEndDate;
+  /** 신청 마감일 (yyyy-MM-dd) */
+  private String  applyEndDate;
 
-  /** 남은 일수 (마감일까지 D-day 계산) */
+  /** 마감일까지 남은 일수 (DB DATEDIFF) */
   private Integer remainDays;
 
-  /** 취소 가능 여부 (true면 신청 취소 버튼 노출) */
-  private Boolean cancelable;
-
-  /** 당첨 시 지급 포인트 (없으면 null) */
+  /** 리뷰 보상 포인트 (있을 경우) */
   private Integer rewardPoint;
+
+  /** 수정일, 삭제여부 */
+  private String modDate;
+  private String delYn;
+
+  // ===== 프론트 표시 전용 필드 =====
+
+  /** 화면에 보여줄 상태 코드 (발표일 이전 → 무조건 대기) */
+  private String displayStatusCode;
+
+  /** 화면에 보여줄 상태 이름 */
+  private String displayStatusName;
+
+  /** 취소 가능 여부 */
+  private Boolean cancelable;
 }
