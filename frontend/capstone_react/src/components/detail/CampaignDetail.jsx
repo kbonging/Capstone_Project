@@ -156,41 +156,41 @@ export default function CampaignDetail() {
 
   // 날짜 필드 래핑
   const dates = {
-    applyStart: data.applyStart,
-    applyEnd: data.applyEnd,
-    announce: data.announce,
-    expStart: data.expStart,
-    expEnd: data.expEnd,
-    deadline: data.deadline,
+    applyStartDate: data.applyStartDate,
+    applyEndDate: data.applyEndDate,
+    announceDate: data.announceDate,
+    expStartDate: data.expStartDate,
+    expEndDate: data.expEndDate,
+    deadlineDate: data.deadlineDate,
   };
 
   // Date 객체
-  const applyStart = toDate(dates.applyStart);
-  const applyEnd = toDate(dates.applyEnd);
-  const expStart = toDate(dates.expStart);
-  const expEnd = toDate(dates.expEnd);
-  const announce = toDate(dates.announce);
-  const deadline = toDate(dates.deadline);
-  const initialMonth = applyEnd ?? announce ?? deadline ?? new Date();
+  const applyStartDate = toDate(dates.applyStartDate);
+  const applyEndDate = toDate(dates.applyEndDate);
+  const expStartDate = toDate(dates.expStartDate);
+  const expEndDate = toDate(dates.expEndDate);
+  const announceDate = toDate(dates.announceDate);
+  const deadlineDate = toDate(dates.deadlineDate);
+  const initialMonth = applyEndDate ?? announceDate ?? deadlineDate ?? new Date();
 
   const calendarRanges = [
-    dayRange(applyStart, applyEnd) && {
-      ...dayRange(applyStart, applyEnd),
+    dayRange(applyStartDate, applyEndDate) && {
+      ...dayRange(applyStartDate, applyEndDate),
       label: "모집",
       tone: "muted",
     },
-    dayRange(expStart, expEnd) && {
-      ...dayRange(expStart, expEnd),
+    dayRange(expStartDate, expEndDate) && {
+      ...dayRange(expStartDate, expEndDate),
       label: "체험기간",
       tone: "green",
     },
-    oneDayRange(announce) && {
-      ...oneDayRange(announce),
+    oneDayRange(announceDate) && {
+      ...oneDayRange(announceDate),
       label: "발표",
       tone: "amber",
     },
-    oneDayRange(deadline) && {
-      ...oneDayRange(deadline),
+    oneDayRange(deadlineDate) && {
+      ...oneDayRange(deadlineDate),
       label: "리뷰마감",
       tone: "violet",
     },
@@ -478,13 +478,13 @@ export default function CampaignDetail() {
                 </div>
                 <div className="space-y-1 text-[15px] text-stone-800 dark:text-zinc-200">
                   <div>
-                    신청기간: {fmtDate(dates.applyStart)} ~ {fmtDate(dates.applyEnd)}
+                    신청기간: {fmtDate(dates.applyStartDate)} ~ {fmtDate(dates.applyEndDate)}
                   </div>
-                  <div>발표: {fmtDate(dates.announce)}</div>
+                  <div>발표: {fmtDate(dates.announceDate)}</div>
                   <div>
-                    체험기간: {fmtDate(dates.expStart)} ~ {fmtDate(dates.expEnd)}
+                    체험기간: {fmtDate(dates.expStartDate)} ~ {fmtDate(dates.expEndDate)}
                   </div>
-                  <div>리뷰 마감: {fmtDate(dates.deadline)}</div>
+                  <div>리뷰 마감: {fmtDate(dates.deadlineDate)}</div>
                 </div>
               </div>
             </div>
@@ -527,28 +527,28 @@ export default function CampaignDetail() {
                         체험단 신청기간
                       </span>
                       <span>
-                        {fmtDate(dates.applyStart)} ~ {fmtDate(dates.applyEnd)}
+                        {fmtDate(dates.applyStartDate)} ~ {fmtDate(dates.applyEndDate)}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="w-28 shrink-0 text-stone-500 dark:text-zinc-400">
                         리뷰어 발표
                       </span>
-                      <span>{fmtDate(dates.announce)}</span>
+                      <span>{fmtDate(dates.announceDate)}</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="w-28 shrink-0 text-stone-500 dark:text-zinc-400">
                         체험기간
                       </span>
                       <span>
-                        {fmtDate(dates.expStart)} ~ {fmtDate(dates.expEnd)}
+                        {fmtDate(dates.expStartDate)} ~ {fmtDate(dates.expEndDate)}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="w-28 shrink-0 text-stone-500 dark:text-zinc-400">
                         리뷰 마감
                       </span>
-                      <span>{fmtDate(dates.deadline)}</span>
+                      <span>{fmtDate(dates.deadlineDate)}</span>
                     </div>
                     <div className="mt-2 border-t border-stone-200 pt-2 text-xs text-stone-600 dark:border-zinc-800 dark:text-zinc-400">
                       실시간 지원 현황{" "}

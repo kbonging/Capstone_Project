@@ -23,12 +23,12 @@
     <result property="keyword3"        column="keyword3"/>
     <result property="benefitDetail"   column="benefitDetail"/>
     <result property="recruitCount"    column="recruitCount"/>
-    <result property="applyStart"      column="applyStart"    jdbcType="DATE"/>
-    <result property="applyEnd"        column="applyEnd"      jdbcType="DATE"/>
-    <result property="announce"        column="announce"      jdbcType="DATE"/>
-    <result property="expStart"        column="expStart"      jdbcType="DATE"/>
-    <result property="expEnd"          column="expEnd"        jdbcType="DATE"/>
-    <result property="deadline"        column="deadline"      jdbcType="DATE"/>
+    <result property="applyStartDate"      column="applyStartDate"    jdbcType="DATE"/>
+    <result property="applyEndDate"        column="applyEndDate"      jdbcType="DATE"/>
+    <result property="announceDate"        column="announceDate"      jdbcType="DATE"/>
+    <result property="expStartDate"        column="expStartDate"      jdbcType="DATE"/>
+    <result property="expEndDate"          column="expEndDate"        jdbcType="DATE"/>
+    <result property="deadlineDate"        column="deadlineDate"      jdbcType="DATE"/>
     <result property="recruitStatus"   column="recruitStatus"/>
     <result property="campaignStatus"  column="campaignStatus"/>
     <result property="address"         column="address"/>
@@ -88,12 +88,12 @@
             c.KEYWORD_3           AS keyword3,
             c.BENEFIT_DETAIL      AS benefitDetail,
             c.RECRUIT_COUNT       AS recruitCount,
-            c.APPLY_START_DATE    AS applyStart,
-            c.APPLY_END_DATE      AS applyEnd,
-            c.ANNOUNCE_DATE       AS announce,
-            c.EXP_START_DATE      AS expStart,
-            c.EXP_END_DATE        AS expEnd,
-            c.DEADLINE_DATE       AS deadline,
+            c.APPLY_START_DATE    AS applyStartDate,
+            c.APPLY_END_DATE      AS applyEndDate,
+            c.ANNOUNCE_DATE       AS announceDate,
+            c.EXP_START_DATE      AS expStartDate,
+            c.EXP_END_DATE        AS expEndDate,
+            c.DEADLINE_DATE       AS deadlineDate,
             c.RECRUIT_STATUS      AS recruitStatus,
             c.CAMPAIGN_STATUS     AS campaignStatus,
             v.ADDRESS             AS address,
@@ -156,12 +156,12 @@
            c.KEYWORD_3                                                                            AS keyword3,
            c.BENEFIT_DETAIL                                                                       AS benefitDetail,
            c.RECRUIT_COUNT                                                                        AS recruitCount,
-           c.APPLY_START_DATE                                                                     AS applyStart,
-           c.APPLY_END_DATE                                                                       AS applyEnd,
-           c.ANNOUNCE_DATE                                                                        AS announce,
-           c.EXP_START_DATE                                                                       AS expStart,
-           c.EXP_END_DATE                                                                         AS expEnd,
-           c.DEADLINE_DATE                                                                        AS deadline,
+           c.APPLY_START_DATE                                                                     AS applyStartDate,
+           c.APPLY_END_DATE                                                                       AS applyEndDate,
+           c.ANNOUNCE_DATE                                                                        AS announceDate,
+           c.EXP_START_DATE                                                                       AS expStartDate,
+           c.EXP_END_DATE                                                                         AS expEndDate,
+           c.DEADLINE_DATE                                                                        AS deadlineDate,
            c.RECRUIT_STATUS                                                                       AS recruitStatus,
            c.CAMPAIGN_STATUS                                                                      AS campaignStatus,
            v.ADDRESS                                                                              AS address,

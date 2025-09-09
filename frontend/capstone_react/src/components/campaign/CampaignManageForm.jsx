@@ -202,8 +202,8 @@ export default function CampaignManageForm() {
                 </span>
               </div>
               <div className="text-sm text-gray-500 leading-5">
-                모집기간: {c.applyStart} ~ {c.applyEnd} <br />
-                신청 마감: {c.applyEnd}
+                모집기간: {c.applyStartDate} ~ {c.applyEndDate} <br />
+                신청 마감: {c.applyEndDate}
               </div>
             </div>
           </div>

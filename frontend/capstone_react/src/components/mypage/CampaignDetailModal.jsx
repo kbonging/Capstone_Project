@@ -87,9 +87,9 @@ const modalContentClasses = `
                 </div>
             )}
 
-            <div><strong>신청 기간:</strong> {formatDate(post.applyStart)} ~ {formatDate(post.applyEnd)}</div>
-            <div><strong>체험 기간:</strong> {formatDate(post.expStart)} ~ {formatDate(post.expEnd)}</div>
-            <div><strong>리뷰 마감일:</strong> {formatDate(post.deadline)}</div>
+            <div><strong>신청 기간:</strong> {formatDate(post.applyStartDate)} ~ {formatDate(post.applyEndDate)}</div>
+            <div><strong>체험 기간:</strong> {formatDate(post.expStartDate)} ~ {formatDate(post.expEndDate)}</div>
+            <div><strong>리뷰 마감일:</strong> {formatDate(post.deadlineDate)}</div>
 
 
             <div>

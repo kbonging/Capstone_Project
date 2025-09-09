@@ -51,17 +51,17 @@ public class CampaignDetailResponseDTO extends DefaultDTO {
   private Integer recruitCount;
   // ── 일정 관련 ────────────────────────────────
   /** 신청 시작일 */
-  private LocalDate applyStart;
+  private LocalDate applyStartDate;
   /** 신청 종료일 */
-  private LocalDate applyEnd;
+  private LocalDate applyEndDate;
   /** 리뷰어 발표일 */
-  private LocalDate announce;
+  private LocalDate announceDate;
   /** 체험 시작일 */
-  private LocalDate expStart;
+  private LocalDate expStartDate;
   /** 체험 종료일 */
-  private LocalDate expEnd;
+  private LocalDate expEndDate;
   /** 리뷰 마감일 */
-  private LocalDate deadline;
+  private LocalDate deadlineDate;
   // ── 상태값 ────────────────────────────────
   /** 모집 상태 코드 (예: REC001=모집중, REC002=마감 등) */
   private String recruitStatus;
