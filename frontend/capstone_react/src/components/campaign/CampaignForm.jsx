@@ -21,7 +21,7 @@ export default function CampaignForm({ mode = "create", campaignIdx }) {
     thumbnailUrl: "",
     contactPhone: "",
     campaignType: "",
-    camCateCode: "",
+    categoryCode: "",
     channelCode: "",
     address: "",
     addressDetail: "",
@@ -78,7 +78,7 @@ export default function CampaignForm({ mode = "create", campaignIdx }) {
 
   // Step2 유효성 체크
   const isStep2Valid = useMemo(() => {
-    if (!formData.campaignType || !formData.camCateCode || !formData.channelCode) return false;
+    if (!formData.campaignType || !formData.categoryCode || !formData.channelCode) return false;
 
     if (formData.campaignType === "CAMP001" || formData.campaignType === "CAMP002") {
       if (!formData.address || !formData.addressDetail) return false;

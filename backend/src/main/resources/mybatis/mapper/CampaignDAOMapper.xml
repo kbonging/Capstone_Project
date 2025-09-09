@@ -215,7 +215,7 @@
      EXP_START_DATE, EXP_END_DATE, DEADLINE_DATE,
      CAMPAIGN_STATUS, RECRUIT_STATUS, DEL_YN, REG_DATE)
     VALUES (#{memberIdx}, #{title}, #{shopName}, #{thumbnailUrl},
-            #{contactPhone}, #{campaignType}, #{camCateCode},
+            #{contactPhone}, #{campaignType}, #{categoryCode},
             #{channelCode}, #{mission}, #{keyword1}, #{keyword2}, #{keyword3},
             #{benefitDetail}, #{recruitCount},
             #{applyStartDate}, #{applyEndDate}, #{announceDate},
