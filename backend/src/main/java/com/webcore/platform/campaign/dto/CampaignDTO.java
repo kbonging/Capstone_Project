@@ -30,7 +30,7 @@ public class CampaignDTO extends DefaultDTO {
     /** 캠페인 홍보 유형 (방문/포장/배송/구매) */
     private String campaignType;
     /** 캠페인 카테고리 코드 */
-    private String camCateCode;
+    private String categoryCode;
     /** 채널 코드 */
     private String channelCode;
     /** 체험 미션 내용 */
