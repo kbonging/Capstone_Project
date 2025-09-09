@@ -92,5 +92,7 @@ public class CampaignDetailResponseDTO extends DefaultDTO {
   // ── 선택 정보 ────────────────────────────────
   /** 지원자 수 (TB_CAMPAIGN_APPLY에서 COUNT 집계) */
   private long applicants;
+  /** 당첨자 수 */
+  private Integer approCount;
 
 }

@@ -5,6 +5,7 @@ import { AppContext } from "../../contexts/AppContext";
 import { getOwnerCampaignsList } from "../../api/campaigns/api";
 import Pagination  from "../community/Pagination";
 import OwnerCampaignApply from "./OwnerCampaignApply";
+import { toAbsoluteUrl } from "../../utils/url";
 
 export default function CampaignManageForm() {
   const { token } = useContext(AppContext);
@@ -15,6 +16,7 @@ export default function CampaignManageForm() {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
 
   // Modal 상태 관리 State
   const [selectedCampaign, setSelectedCampaiagn] = useState(null);
@@ -148,78 +150,120 @@ export default function CampaignManageForm() {
           <table className="w-full text-sm table-auto border-t">
             <thead className="text-left border-b-2 border-t-2">
               <tr className="text-gray-500 h-[50px]">
-                <th className="pl-4">캠페인명</th>
-                <th className="text-center">모집기간</th>
+                <th className="pl-4 w-[45%]">캠페인 정보</th>
                 <th className="text-center">지원</th>
                 <th className="text-center">선정</th>
-                <th className="text-center">취소</th>
-                <th className="text-center">모집상태</th>
-                <th className="text-center w-[180px]">관리</th>
+                <th className="text-center w-[15%]">모집상태</th>
+                <th className="text-center w-[150px]">관리</th>
               </tr>
             </thead>
-            <tbody>
-              {campaigns.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="text-center py-10 text-gray-500"
-                  >
-                    등록된 체험단이 없습니다.
-                  </td>
-                </tr>
+<tbody>
+  {campaigns.length === 0 ? (
+    <tr>
+      <td colSpan={6} className="text-center py-10 text-gray-500">
+        등록된 체험단이 없습니다.
+      </td>
+    </tr>
+  ) : (
+    campaigns.map((c) => (
+      <tr
+        key={c.campaignIdx}
+        className="hover:bg-gray-50 border-b h-[110px] text-[15px] cursor-pointer"
+        onClick={() => navigate(`/campaign/detail/${c.campaignIdx}`)} // ✅ 행 클릭 시 상세 이동
+      >
+        {/* 캠페인 정보 열 */}
+        <td className="pl-4 py-3">
+          <div className="flex gap-4 items-center">
+            {/* 썸네일 */}
+            <div className="w-[80px] h-[80px] flex-shrink-0 bg-gray-200 rounded-md overflow-hidden flex items-center justify-center">
+              {c.thumbnailUrl ? (
+                <img
+                  src={toAbsoluteUrl(c.thumbnailUrl)}
+                  alt="썸네일"
+                  className="w-full h-full object-cover"
+                />
               ) : (
-                campaigns.map((c) => (
-                  <tr
-                    key={c.campaignIdx}
-                    className="hover:bg-gray-50 border-b h-[60px] text-[15px]"
-                  >
-                    <td className="pl-4">{c.title}</td>
-                    <td className="text-center">
-                      {c.applyStart} ~ {c.applyEnd}
-                    </td>
-                    <td className="text-center">{c.applicantsCount}</td>
-                    <td className="text-center">{c.selectedCount || 0}</td>
-                    <td className="text-center">{c.cancelCount || 0}</td>
-                    <td className="text-center">
-                      {c.recruitStatus === "OPEN" ? (
-                        <span className="text-green-600 font-semibold">
-                          모집중
-                        </span>
-                      ) : (
-                        <span className="text-gray-500">모집 종료</span>
-                      )}
-                    </td>
-                    <td className="text-center space-x-2">
-                      <button
-                        onClick={() =>
-                          navigate(`/campaign/edit/${c.campaignIdx}`)
-                        }
-                        className="px-3 py-1 bg-blue-100 text-blue-600 rounded-md text-sm"
-                      >
-                        수정
-                      </button>
-                      <button
-                        onClick={() =>
-                          navigate(`/campaign/delete/${c.campaignIdx}`)
-                        }
-                        className="px-3 py-1 bg-red-100 text-red-600 rounded-md text-sm"
-                      >
-                        삭제
-                      </button>
-                      <button
-                        onClick={() =>
-                          openApplicantsModal(c)
-                        }
-                        className="px-3 py-1 bg-gray-100 rounded-md text-sm"
-                      >
-                        &gt;
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                <div className="text-gray-400 text-xs">No Image</div>
               )}
-            </tbody>
+            </div>
+
+            {/* 캠페인 상세 */}
+            <div className="flex flex-col gap-2">
+              <div className="font-semibold text-base">{c.title}</div>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="px-2 py-1 bg-slate-100 rounded-md text-slate-700">
+                  {c.channelName}
+                </span>
+                <span className="px-2 py-1 bg-slate-100 rounded-md text-slate-700">
+                  {c.campaignTypeName}
+                </span>
+                <span className="px-2 py-1 bg-slate-100 rounded-md text-slate-700">
+                  {c.categoryName}
+                </span>
+              </div>
+              <div className="text-sm text-gray-500 leading-5">
+                모집기간: {c.applyStart} ~ {c.applyEnd} <br />
+                신청 마감: {c.applyEnd}
+              </div>
+            </div>
+          </div>
+        </td>
+
+        {/* 지원자/선정 */}
+        <td className="text-center py-3">
+          <span className="font-semibold" style={{ color: "#48be1d" }}>
+            {c.applicants}
+          </span>
+          &nbsp;/&nbsp;
+          <span>{c.recruitCount}</span>
+        </td>
+        <td className="text-center py-3">{c.approCount || 0}</td>
+
+        {/* 모집 상태 */}
+        <td className="text-center py-3">
+          {c.recruitStatus === "OPEN" ? (
+            <span className="text-green-600 font-semibold">모집중</span>
+          ) : (
+            <span className="text-gray-500">모집 종료</span>
+          )}
+        </td>
+
+        {/* 관리 버튼 */}
+        <td
+          className="text-center py-3"
+          onClick={(e) => e.stopPropagation()} // ✅ 이벤트 버블링 막기
+        >
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex gap-2">
+              <button
+                onClick={() => navigate(`/campaign/edit/${c.campaignIdx}`)}
+                className="px-3 py-1 bg-blue-100 text-blue-600 rounded-md text-sm"
+              >
+                수정
+              </button>
+              <button
+                onClick={() => navigate(`/campaign/delete/${c.campaignIdx}`)}
+                className="px-3 py-1 bg-red-100 text-red-600 rounded-md text-sm"
+              >
+                삭제
+              </button>
+            </div>
+            <button
+              onClick={() => openApplicantsModal(c)}
+              className="px-5 py-1 bg-gray-100 rounded-md text-sm"
+            >
+              신청자 관리
+            </button>
+          </div>
+        </td>
+      </tr>
+    ))
+  )}
+</tbody>
+
           </table>
+
+
           {pagination && (
             <Pagination
               pagination={pagination}

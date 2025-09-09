@@ -54,7 +54,7 @@ public class CampaignController {
     campaignDTO.setShowMyParam("true");
 
     Map<String, Object> resultMap = campaignService.getCampaignList(campaignDTO);
-//        log.info("게시글 조회 정보 => {}", resultMap);
+        log.info("게시글 조회 정보 => {}", resultMap);
 
     return new ResponseEntity<>(resultMap, HttpStatus.OK);
   }

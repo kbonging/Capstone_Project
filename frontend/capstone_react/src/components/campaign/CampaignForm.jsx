@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useContext } from "react";
+import React, { useState, useMemo, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../contexts/AppContext";
 import ProgressBar from "./ProgressBar";
@@ -8,9 +8,9 @@ import Step3 from "./steps/Step3";
 import Step4 from "./steps/Step4";
 
 
-import { createCampaign } from "../../api/campaigns/api";
+import { createCampaign, getCampaignDetail } from "../../api/campaigns/api";
 
-export default function CampaignForm() {
+export default function CampaignForm({ mode = "create", campaignIdx }) {
   const [step, setStep] = useState(1);
   const { token } = useContext(AppContext);
   const navigate = useNavigate();
@@ -43,6 +43,22 @@ export default function CampaignForm() {
     expEndDate: "",
     deadlineDate: "",
   });
+
+    // 수정 모드일 때 기존 데이터 불러오기
+  useEffect(() => {
+    if (mode === "edit" && campaignIdx) {
+      (async () => {
+        try {
+          const campaign = await getCampaignDetail(campaignIdx);
+          setFormData(campaign);
+          console.log(campaign);
+        } catch (error) {
+          console.error("캠페인 데이터 불러오기 실패", error);
+          alert("캠페인 데이터를 불러오는데 실패했습니다.");
+        }
+      })();
+    }
+  }, [mode, campaignIdx, token]);
 
   const baseSteps = ["기본설정", "홍보 유형 및 채널과 카테고리", "체험 가능 요일 및 시간", "체험단 설정"];
 

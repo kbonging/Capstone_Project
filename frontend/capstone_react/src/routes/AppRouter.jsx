@@ -14,6 +14,7 @@ import MyPage     from '../pages/MyPage';
 import ProfileManagePage from '../pages/ProfileManagePage';
 import ImageUploadTest from "../components/mypage/ImageUploadTest";
 import CampaignCreate from "../pages/CampaignCreate";
+import CampaignEdit from "../pages/CampaignEdit";
 import CampaignManage from "../pages/CampaignManage";
 import CampaignDetail from "../components/detail/CampaignDetail";
 import CampaignApply from "../pages/CampaignApply";
@@ -81,6 +82,17 @@ export default function AppRouter() {
         </PrivateRoute>
       }
       />
+
+      {/* 체험단 모집 수정 페이지 */}
+      <Route
+        path="/campaign/edit/:campaignIdx"
+        element={
+          <PrivateRoute>
+            <CampaignEdit mode="edit" />
+          </PrivateRoute>
+        }
+      />
+
       {/* 체함단 관리 페이지 */}
       <Route path="/campaign/manage" element={
         <PrivateRoute>
