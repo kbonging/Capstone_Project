@@ -14,67 +14,63 @@ function toRemainDays(item) {
 
 function StatusBadge({ code, name }) {
   const map = {
-    CAMAPP_APPROVED: {
-      bg: "bg-emerald-100",
-      text: "text-emerald-700",
-      label: "당첨",
-    },
-    CAMAPP_REJECTED: {
-      bg: "bg-rose-100",
-      text: "text-rose-700",
-      label: "탈락",
-    },
-    CAMAPP_PENDING: {
-      bg: "bg-zinc-100",
-      text: "text-zinc-700",
-      label: "대기",
-    },
+    CAMAPP_APPROVED: { bg: "bg-emerald-100", text: "text-emerald-700", label: "당첨" },
+    CAMAPP_REJECTED: { bg: "bg-rose-100",    text: "text-rose-700",    label: "탈락" },
+    CAMAPP_PENDING:  { bg: "bg-zinc-100",    text: "text-zinc-700",    label: "대기" },
+    // ✅ 취소 상태 추가(있다면)
+    CAMAPP_CANCELLED:{ bg: "bg-zinc-200",    text: "text-zinc-700",    label: "취소" },
   };
-  const style =
-    map[code] ?? {
-      bg: "bg-zinc-100",
-      text: "text-zinc-700",
-      label: name || "상태",
-    };
+  const style = map[code] ?? { bg: "bg-zinc-100", text: "text-zinc-700", label: name || "상태" };
   const label = style.label || name;
 
   return (
-    <span
-      className={`inline-flex items-center px-2 py-0.5 rounded-md text-[12px] font-semibold ${style.bg} ${style.text}`}
-    >
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[12px] font-semibold ${style.bg} ${style.text}`}>
       {label}
     </span>
   );
+}
+
+function formatRemain(remain) {
+  if (remain === null || remain === undefined) return null;
+  if (remain > 0) return `${remain} 일 남음`;
+  if (remain === 0) return "오늘 마감";
+  return "마감";
 }
 
 /**
  * props
  * - item
  * - onCancel(applicationIdx)
- * - isNew: 신규/읽지않음 여부
- * - onOpen(applicationIdx): 카드 클릭 콜백(읽음처리/상세 이동)
+ * - isNew
+ * - onOpen(applicationIdx)
  */
 export default function MyCampaignCard({ item, onCancel, isNew, onOpen }) {
-  const remain = toRemainDays(item);
-  const applicationIdx = item.applicationIdx;
-  const campaignIdx = item.campaignIdx;
-  const title = item.title;
-  const thumbnailUrl = item.thumbnailUrl;
-  const appliedCount = item.appliedCount ?? 0;
-  const recruitCount = item.recruitCount ?? 0;
-  const benefitText = item.benefitText;
-  const channelName = item.channelName;
+  const remain           = toRemainDays(item);
+  const applicationIdx   = item.applicationIdx;
+  const campaignIdx      = item.campaignIdx;
+  const title            = item.title;
+  const thumbnailUrl     = item.thumbnailUrl;
+  const appliedCount     = item.appliedCount ?? 0;
+  const recruitCount     = item.recruitCount ?? 0;
+  const benefitText      = item.benefitText;
+  const channelName      = item.channelName;
   const campaignTypeName = item.campaignTypeName;
-  const categoryName = item.categoryName;
-  const rewardPoint = item.rewardPoint;
-  const cancelable = !!item.cancelable;
-  const applyStatusCode = item.applyStatusCode;
-  const applyStatusName = item.applyStatusName;
+  const categoryName     = item.categoryName;
+  const rewardPoint      = item.rewardPoint;
 
-  const showCancel = cancelable && applyStatusCode === "CAMAPP_PENDING";
+  // ✅ 발표일 전 마스킹된 상태 사용
+  const displayStatusCode = item.displayStatusCode ?? item.applyStatusCode;
+  const displayStatusName = item.displayStatusName ?? item.applyStatusName;
+
+  // ✅ 백엔드 계산값을 신뢰
+  const showCancel = !!item.cancelable;
+
+  // ✅ 절대경로 보완 (이미 http/https면 그대로)
+  const imgSrc = /^https?:\/\//i.test(thumbnailUrl || "") ? thumbnailUrl : toAbsoluteUrl(thumbnailUrl);
 
   return (
-    <div className="w-[220px]">
+    // ✅ flex 레이아웃에서 폭 줄어듦 방지
+    <div className="w-[220px] shrink-0">
       {/* 이미지 카드 */}
       <div
         className="relative w-full h-[160px] overflow-hidden rounded-md border bg-white cursor-pointer"
@@ -82,15 +78,9 @@ export default function MyCampaignCard({ item, onCancel, isNew, onOpen }) {
         title={title}
       >
         {thumbnailUrl ? (
-          <img
-           src={toAbsoluteUrl(thumbnailUrl)}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
+          <img src={imgSrc} alt={title} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full grid place-items-center text-sm text-zinc-400">
-            no image
-          </div>
+          <div className="w-full h-full grid place-items-center text-sm text-zinc-400">no image</div>
         )}
 
         {/* 좌상단: #캠페인ID */}
@@ -100,10 +90,10 @@ export default function MyCampaignCard({ item, onCancel, isNew, onOpen }) {
 
         {/* 우상단: 상태 배지 */}
         <div className="absolute top-1.5 right-2">
-          <StatusBadge code={applyStatusCode} name={applyStatusName} />
+          <StatusBadge code={displayStatusCode} name={displayStatusName} />
         </div>
 
-        {/* 우하단: 취소 버튼 */}
+        {/* 우하단: 취소 (백엔드에서 OK면 노출) */}
         {showCancel && (
           <button
             onClick={(e) => {
@@ -120,41 +110,32 @@ export default function MyCampaignCard({ item, onCancel, isNew, onOpen }) {
 
       {/* 이미지 아래: 남은일수 / 신청현황 */}
       <div className="flex items-center justify-between text-[13px] mt-1.5 px-0.5">
-        {typeof remain === "number" ? (
+        {formatRemain(remain) ? (
           <div className="font-semibold">
-            <span className="text-emerald-600">{remain}</span>
-            <span className="text-zinc-600"> 일 남음</span>
+            <span className={remain > 0 ? "text-emerald-600" : remain === 0 ? "text-amber-600" : "text-zinc-500"}>
+              {formatRemain(remain)}
+            </span>
           </div>
-        ) : (
-          <span />
-        )}
+        ) : <span />}
         <div className="text-zinc-600">
-          신청{" "}
-          <span className="text-emerald-600 font-semibold">{appliedCount}</span>{" "}
-          / {recruitCount}
+          신청 <span className="text-emerald-600 font-semibold">{appliedCount}</span> / {recruitCount}
         </div>
       </div>
 
       {/* 제목 */}
       <div className="mt-2">
-        <h3 className="text-[17px] font-semibold leading-snug line-clamp-1">
-          {title}
-        </h3>
+        <h3 className="text-[17px] font-semibold leading-snug line-clamp-1">{title}</h3>
       </div>
 
       {/* 혜택 설명 */}
       {benefitText && (
-        <p className="mt-2 text-[13px] text-zinc-600 leading-relaxed">
-          {benefitText}
-        </p>
+        <p className="mt-2 text-[13px] text-zinc-600 leading-relaxed">{benefitText}</p>
       )}
 
-      {/* 채널/유형/카테고리 라인 (N은 카테고리 옆) */}
+      {/* 채널/유형/카테고리 + New 뱃지 */}
       <div className="mt-2 flex items-center flex-wrap gap-x-1.5 gap-y-1 text-[13px]">
         {channelName && <span className="text-zinc-600">{channelName}</span>}
-        {campaignTypeName && (
-          <span className="text-zinc-500">| {campaignTypeName}</span>
-        )}
+        {campaignTypeName && <span className="text-zinc-500">| {campaignTypeName}</span>}
         {categoryName && (
           <span className="text-zinc-500 inline-flex items-center gap-2">
             | {categoryName}
