@@ -1,12 +1,9 @@
 // src/components/mypage/Profile.jsx
 import React, { useState, useContext } from "react";
 import ProfileStats from "./ProfileStats";
-import { AppContext } from '../../contexts/AppContext';
-import { useNavigate } from "react-router-dom";
 
-export default function Profile() {
-  const { user } = useContext(AppContext);
-  const navigate = useNavigate();
+export default function Profile({ user }) {
+
   const [activeTab, setActiveTab] = useState("진행중");
 
   const getUserRole = (user) => {
@@ -23,13 +20,6 @@ export default function Profile() {
   let userStats1 = [];
   let userStats2 = [];
   let nameToDisplay = "";
-
-  const handleClick = (label) => {
-    // 사이드바에서 커뮤니티로 이동하는 기능과 중복될 수 있으므로, 주석 처리 또는 제거 고려
-    // if (label === '커뮤니티') {
-    //   navigate('/community');
-    // }
-  };
 
   if (userRole === "ROLE_OWNER") {
     role = "소상공인";

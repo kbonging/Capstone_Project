@@ -1,42 +1,44 @@
-// src/pages/MyPage.jsx
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import MyPageLayout from "../components/mypage/MyPageLayout";
 import ProfileTabs from "../components/mypage/ProfileTabs";
 import Profile from "../components/mypage/Profile";
 import { AppContext } from '../contexts/AppContext';
 import AdminAllow from '../components/mypage/AdminAllow';
+import { getUserByIdx } from "../api/memberApi";
 
 export default function MyPage() {
-  const { user } = useContext(AppContext);
+  const { user: loggedInUser, token } = useContext(AppContext);
+  const { memberIdx } = useParams();
+  const [ targetUser, setTargetUser ] = useState(null);
 
-  // 백엔드 JSON 구조에 맞게 유저의 역할을 추출하는 함수
-  const getUserRole = (user) => {
-    if (user && user.authDTOList && user.authDTOList.length > 0) {
-      return user.authDTOList[0].auth;
+  useEffect(() => {
+    if (memberIdx) {
+      getUserByIdx(memberIdx, token)
+        .then((data) => setTargetUser(data))
+        .catch((err) => console.error(err));
+    } else {
+      setTargetUser(loggedInUser);
     }
-    return null;
-  };
+  }, [memberIdx, loggedInUser, token]);
 
-  const userRole = getUserRole(user);
+  const loggedInRole = loggedInUser?.authDTOList?.[0]?.auth;
+  const targetRole = targetUser?.authDTOList?.[0]?.auth;
 
-  // userRole이 결정될 때까지 로딩 상태 표시
-  if (!userRole) {
-    return <div>Loading...</div>;
-  }
+  if (!targetUser || !loggedInRole) return <div>Loading...</div>;
 
-  // userRole이 'ROLE_ADMIN'인 경우 AdminAllow 컴포넌트를 렌더링
-  if (userRole === 'ROLE_ADMIN') {
+  if (loggedInRole === 'ROLE_ADMIN') {
     return (
-      <MyPageLayout userRole={userRole}>
+      <MyPageLayout userRole={loggedInRole}>
         <AdminAllow />
       </MyPageLayout>
     );
   }
 
   return (
-    <MyPageLayout userRole={userRole}>
-      <ProfileTabs userRole={userRole} />
-      <Profile userRole={userRole} />
+    <MyPageLayout userRole={loggedInRole}>
+      {!memberIdx && <ProfileTabs userRole={targetRole} />}
+      <Profile user={targetUser} />
     </MyPageLayout>
   );
 }

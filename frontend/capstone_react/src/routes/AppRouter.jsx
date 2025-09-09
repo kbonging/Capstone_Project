@@ -98,6 +98,7 @@ export default function AppRouter() {
       <Route path="/FindPwd" element={<FindPwd />} />
       <Route path="/FindId" element={<FindId />} />
       <Route path="/mypage"     element={<MyPage />} />
+      <Route path="/mypage/:memberIdx" element={<MyPage />} />
       <Route path="/mypage/manage" element={<ProfileManagePage />} />
       <Route path="/mypage/wishlist" element={<CampaignBookmark />} />
 

@@ -96,6 +96,8 @@ public class SecurityConfig {
 
                         // 회원(members)
                         .requestMatchers("/api/members/check-id/**").permitAll() // 아이디 중복 체크
+                        .requestMatchers(HttpMethod.GET, "/api/members/*")
+                        .hasAnyRole("USER", "OWNER", "ADMIN")
 
                         // 이메일(emails)
                         .requestMatchers( "/api/emails/**").permitAll()

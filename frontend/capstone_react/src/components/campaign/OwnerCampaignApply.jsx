@@ -1,4 +1,5 @@
 import { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../contexts/AppContext";
 import { getApplicantsByCampaign, updateApplicantsStatus } from "../../api/campaigns/api";
 import Pagination from "../community/Pagination";
@@ -6,6 +7,8 @@ import Pagination from "../community/Pagination";
 export default function OwnerCampaignApply({ campaignIdx, recruitCount, onClose }) {
   const { token } = useContext(AppContext);
 
+  const navigate = useNavigate();
+  
   const [applicants, setApplicants] = useState([]);
   const [paginationInfo, setPaginationInfo] = useState(null);
 
@@ -143,7 +146,6 @@ export default function OwnerCampaignApply({ campaignIdx, recruitCount, onClose 
           <thead className="bg-blue-50">
             <tr className="text-center text-gray-600 uppercase text-xs tracking-wide">
               <th className="py-3 border-b w-[120px]">닉네임</th>
-              {/* ✅ 신청 한마디 영역 넓힘 */}
               <th className="py-3 border-b w-[400px]">신청 한마디</th>
               <th className="py-3 border-b w-[100px]">상태</th>
               <th className="py-3 border-b w-[160px]">관리</th>
@@ -163,7 +165,11 @@ export default function OwnerCampaignApply({ campaignIdx, recruitCount, onClose 
                   className="text-center border-b hover:bg-blue-50 transition"
                 >
                   {/* 닉네임 */}
-                  <td className="py-2 px-2 font-semibold truncate" title={app.nickname}>
+                  <td
+                    className="py-2 px-2 font-semibold truncate hover:underline-offset-0 hover:text-black cursor-pointer"
+                    title={app.nickname}
+                    onClick={() => navigate(`/mypage/${app.memberIdx}`)} // ✅ 클릭 시 이동
+                  >
                     {app.nickname}
                   </td>
 
