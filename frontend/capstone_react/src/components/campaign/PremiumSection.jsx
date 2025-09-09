@@ -7,7 +7,7 @@ export default function PremiumSection({
   onMore,
 }) {
   return (
-    <section className="mt-8">
+    <section className="mx-auto mt-8">
       <div className="mb-3 flex items-center justify-between">
         {/* 제목 */}
         <h2 className="text-base font-semibold text-stone-900 dark:text-stone-100">
@@ -24,7 +24,7 @@ export default function PremiumSection({
       </div>
 
       {/* 카드 그리드 */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className=" mx-28 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((it) => (
           <CampaignCard key={it.campaignIdx} data={it} />
         ))}

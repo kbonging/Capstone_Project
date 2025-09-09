@@ -3,6 +3,7 @@ import Carousel from "../components/common/Carousel";
 import QuickNav from "../components/common/QuickNav";
 import PremiumSection from "../components/campaign/PremiumSection";
 import { getPremiumCampaigns } from "../api/campaigns";
+import ShowcaseSlider from "../components/Home/ShowcaseSlider";
 
 export default function HomePage() {
   const [premium, setPremium] = useState([]);
@@ -13,6 +14,33 @@ export default function HomePage() {
       setPremium(res || []);
     })();
   }, []);
+
+  const heroItems = [
+    {
+      badge: "시원한 바람이 반겨주는 곳",
+      title: "푸른 자연을 만나는\n경북 청송 추천 코스",
+      href: "#",
+      image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop",
+      alt: "청송 협곡",
+      tint: "#eaf6d6", // 연녹 배경
+    },
+    {
+      badge: "그림처럼 투명한 물빛💓",
+      title: "나만 알고 싶은\n제주 스노클링 명소 3",
+      href: "#",
+      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop",
+      alt: "제주 물빛",
+      tint: "#d8f5f7", // 파스텔 민트
+    },
+    {
+      badge: "물놀이 가고플 때,",
+      title: "재미에 낭만을 더한,\n전국 워터파크 추천 4",
+      href: "#",
+      image: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=1600&auto=format&fit=crop",
+      alt: "워터파크",
+      tint: "#dfefff", // 연하늘
+    },
+  ];
 
   const banners = [
     {
@@ -30,36 +58,35 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="mx-auto w-full min-h-screen max-w-6xl px-4 py-4 md:px-6 md:py-6">
-      {/* 배너 영역: 모바일 1열 → md 이상 2열 */}
-      <section aria-label="프로모션 배너" className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {/* 각 캐러셀은 부모 높이에 맞춤: 모바일 낮게, 데스크탑 높게 */}
-        <div className=" rounded-xl   backdrop-blur
-                        h-40 xs:h-48 sm:h-56 md:h-64 lg:h-80">
-          {/* Carousel이 className을 받는다면 주입 */}
+    <div className=" w-full   ">
+      {/* ✅ 헤더 바로 아래 풀-블리드 히어로 */}
+      <div className="w-full">
+        <ShowcaseSlider />
+      </div>
+
+      {/* 기존 2열 배너 */}
+      {/* <section aria-label="프로모션 배너" className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="rounded-xl backdrop-blur h-40 xs:h-48 sm:h-56 md:h-64 lg:h-80">
           <Carousel items={banners} className="h-full" />
         </div>
-        <div className="overflow-hidden rounded-xl  backdrop-blur
-                        h-40 xs:h-48 sm:h-56 md:h-64 lg:h-80">
+        <div className="overflow-hidden rounded-xl backdrop-blur h-40 xs:h-48 sm:h-56 md:h-64 lg:h-80">
           <Carousel items={[...banners].reverse()} className="h-full" />
         </div>
-      </section>
+      </section> */}
 
-      {/* 퀵 내비: 모바일 풀폭, md 이상은 가운데 고정폭 */}
+      {/* 퀵 내비 */}
       <section className="mt-6 sm:mt-8 flex justify-center" aria-label="빠른 이동">
         <div className="w-full sm:max-w-xl md:max-w-2xl">
           <QuickNav />
         </div>
       </section>
 
-      {/* 프리미엄 섹션: 상단 여백 반응형, 내부 그리드는 PremiumSection에서 처리 */}
-      <section className="mt-8 sm:mt-10 md:mt-12" aria-label="프리미엄 체험단">
+      {/* 프리미엄 섹션 */}
+      <section className="mx- mt-8 sm:mt-10 md:mt-12" aria-label="프리미엄 체험단">
         <PremiumSection
           title="프리미엄 체험단"
           items={premium}
           onMore={() => (window.location.href = "/campaigns?premium=1")}
-          // (선택) PremiumSection이 className을 지원하면 다음처럼 여백/정렬 강화 가능
-          // className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
         />
       </section>
     </div>
