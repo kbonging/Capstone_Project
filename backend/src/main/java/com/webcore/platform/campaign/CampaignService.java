@@ -18,7 +18,13 @@ public interface CampaignService {
    * */
   int createCampaign(Map<String, Object> requestDto);
 
-  //상세조회
+  /** 체험단 모집 글 수정 처리
+   *  @param requestDto 캠페인 등록 요청 데이터 (제목, 상호명, 유형, 일정, 혜택 등)
+   *  @return 등록된 캠페인의 고유 식별자 (CAMPAIGN_IDX)
+   * */
+  int updateCampaign(Map<String, Object> requestDto);
+  
+  /** 캠페인 상세 정보 조회 */
   CampaignDetailResponseDTO getDetail(int campaignIdx, Integer memberIdx);
 
   /** 관리자 캠페인 상태 변경 (승인, 반려) */

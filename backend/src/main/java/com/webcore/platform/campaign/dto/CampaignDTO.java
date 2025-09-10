@@ -16,9 +16,9 @@ import java.time.LocalDate;
 @ToString(callSuper = true)
 public class CampaignDTO extends DefaultDTO {
     /** 캠페인 고유번호 (PK) */
-    private int campaignIdx;
+    private Integer campaignIdx;
     /** 소상공인 회원 고유번호 (FK) */
-    private int memberIdx;
+    private Integer memberIdx;
     /** 체험단 제목 */
     private String title;
     /** 캠페인 상호명 */
