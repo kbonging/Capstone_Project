@@ -9,20 +9,23 @@ import java.util.List;
 @Mapper
 public interface CampaignDAO {
 
-  /**
-   * 캠페인 기본정보 등록
-   */
+  /** 캠페인 기본정보 등록 */
   int insertCampaign(CampaignDTO campaignDTO);
 
-  /**
-   * 방문형/포장형 캠페인 등록
-   */
+  /** 방문형/포장형 캠페인 등록 */
   int insertCampaignVisit(CampaignVisitDTO visitDTO);
 
-  /**
-   * 배송형/구매형 캠페인 등록
-   */
+  /** 배송형/구매형 캠페인 등록 */
   int insertCampaignDelivery(CampaignDeliveryDTO deliveryDTO);
+
+  /** 캠페인 기본정보 수정 */
+  int updateCampaign(CampaignDTO campaignDTO);
+
+  /**  방문형/포장형 캠페인 수정 */
+  int updateCampaignVisit(CampaignVisitDTO visitDTO);
+
+  /**  배송형/구매형 캠페인 수정 */
+  int updateCampaignDelivery(CampaignDeliveryDTO deliveryDTO);
 
   /** 캠페인 전체 목록 조회 */
   List<CampaignDetailResponseDTO> selectCampaignList(CampaignDTO campaignDTO);

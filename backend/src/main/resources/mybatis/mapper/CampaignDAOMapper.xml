@@ -239,7 +239,59 @@
     VALUES (#{campaignIdx}, #{purchaseUrl})
   </insert>
 
-  <!-- 캠페인 게시 상태 변경 -->
+    <!-- 캠페인 기본 수정 -->
+    <update id="updateCampaign" parameterType="com.webcore.platform.campaign.dto.CampaignDTO">
+        UPDATE TB_CAMPAIGN
+        SET
+        TITLE           = #{title},
+        SHOP_NAME       = #{shopName},
+        THUMBNAIL_URL   = #{thumbnailUrl},
+        CONTACT_PHONE   = #{contactPhone},
+        CAMPAIGN_TYPE   = #{campaignType},
+        CAM_CATE_CODE   = #{categoryCode},
+        CHANNEL_CODE    = #{channelCode},
+        MISSION         = #{mission},
+        KEYWORD_1       = #{keyword1},
+        KEYWORD_2       = #{keyword2},
+        KEYWORD_3       = #{keyword3},
+        BENEFIT_DETAIL  = #{benefitDetail},
+        RECRUIT_COUNT   = #{recruitCount},
+        APPLY_START_DATE = #{applyStartDate},
+        APPLY_END_DATE   = #{applyEndDate},
+        ANNOUNCE_DATE    = #{announceDate},
+        EXP_START_DATE   = #{expStartDate},
+        EXP_END_DATE     = #{expEndDate},
+        DEADLINE_DATE    = #{deadlineDate},
+        CAMPAIGN_STATUS  = #{campaignStatus},
+        RECRUIT_STATUS   = #{recruitStatus},
+        MOD_DATE         = NOW()
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+    </update>
+
+    <!-- 방문형/포장형 캠페인 수정 -->
+    <update id="updateCampaignVisit" parameterType="com.webcore.platform.campaign.dto.CampaignVisitDTO">
+        UPDATE TB_CAMPAIGN_VISIT
+        SET
+        ADDRESS            = #{address},
+        ADDRESS_DETAIL     = #{addressDetail},
+        EXP_DAY            = #{expDay},
+        START_TIME         = #{startTime},
+        END_TIME           = #{endTime},
+        RESERVATION_NOTICE = #{reservationNotice}
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+    </update>
+
+
+    <!-- 배송형/구매형 캠페인 수정 -->
+    <update id="updateCampaignDelivery" parameterType="com.webcore.platform.campaign.dto.CampaignDeliveryDTO">
+        UPDATE TB_CAMPAIGN_DELIVERY
+        SET
+        PURCHASE_URL = #{purchaseUrl}
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+    </update>
+
+
+    <!-- 캠페인 게시 상태 변경 -->
   <update id="updateCampaignStatus">
     UPDATE tb_campaign
     SET campaign_status = #{status}

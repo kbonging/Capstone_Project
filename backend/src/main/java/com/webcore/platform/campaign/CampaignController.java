@@ -2,6 +2,7 @@ package com.webcore.platform.campaign;
 
 import com.webcore.platform.campaign.dto.*;
 import com.webcore.platform.file.FileStorageService;
+import com.webcore.platform.member.dto.MemberDTO;
 import com.webcore.platform.security.custom.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ public class CampaignController {
   private final FileStorageService fileStorageService;
 
   /**
-   * 공개 캠페인 목록 조회 (일반 사용자) ******* 준영이형 이거 사용하면 됨 ********
+   * 공개 캠페인 목록 조회 (일반 사용자)
    */
   @GetMapping("")
   public ResponseEntity<?> getCampaignList(
@@ -54,13 +55,13 @@ public class CampaignController {
     campaignDTO.setShowMyParam("true");
 
     Map<String, Object> resultMap = campaignService.getCampaignList(campaignDTO);
-        log.info("게시글 조회 정보 => {}", resultMap);
+//        log.info("게시글 조회 정보 => {}", resultMap);
 
     return new ResponseEntity<>(resultMap, HttpStatus.OK);
   }
 
   /**
-   * 관리자 승인/반려용 캠페인 목록 조회 ************ 진형이형 이거 사용 하면 됑 *********
+   * 관리자 승인/반려용 캠페인 목록 조회
    */
   @GetMapping("/admin")
   @PreAuthorize("hasRole('ADMIN')")
@@ -100,9 +101,9 @@ public class CampaignController {
             .body("에러 발생: " + e.getMessage());
       }
     }
-    log.info("📩 캠페인 등록 요청 데이터 => {}", requestDto);
-    log.info("📎 업로드된 파일 => {}", thumbnail != null ? thumbnail.getOriginalFilename() : "없음");
-    log.info("👤 로그인 사용자 => {}", customUser);
+//    log.info("📩 캠페인 등록 요청 데이터 => {}", requestDto);
+//    log.info("📎 업로드된 파일 => {}", thumbnail != null ? thumbnail.getOriginalFilename() : "없음");
+//    log.info("👤 로그인 사용자 => {}", customUser);
 
     // 3. 서비스 호출
     int campaignIdx = campaignService.createCampaign(requestDto);
@@ -116,7 +117,71 @@ public class CampaignController {
     }
   }
 
-  /**
+    /**
+     * 체험단 모집글 수정
+     */
+    @PutMapping("/{campaignIdx}")
+    public ResponseEntity<?> updateCampaign(
+            @PathVariable int campaignIdx,
+            @RequestPart("request") Map<String, Object> requestDto,
+            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail,
+            @AuthenticationPrincipal CustomUser customUser) {
+
+        MemberDTO loginMember = customUser.getMemberDTO();
+        int loginMemberIdx = loginMember.getMemberIdx();
+
+        // 1. 로그인 사용자 정보 추가
+        requestDto.put("memberIdx", loginMemberIdx);
+        requestDto.put("campaignIdx", campaignIdx);
+
+        // 기존 게시글 정보 조회
+        CampaignDetailResponseDTO originalCampaign = campaignService.getDetail(campaignIdx, customUser.getMemberDTO().getMemberIdx());
+
+        // 게시글 존재 여부
+        if(originalCampaign == null){
+            return new ResponseEntity<>("켐페인이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
+
+        boolean isAdmin = loginMember.getAuthDTOList().stream()
+                .anyMatch(auth -> "ROLE_ADMIN".equals(auth.getAuth()));
+
+        // 작성자 또는 관리자만 수정 가능
+        if (originalCampaign.getMemberIdx() != loginMemberIdx && !isAdmin) {
+            return new ResponseEntity<>("작성자 본인 아님", HttpStatus.FORBIDDEN);
+        }
+
+        // 2. 썸네일 업로드 처리 (새 파일이 올라왔을 때만)
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            try {
+                String thumbnailUrl = fileStorageService.storeFile(thumbnail, "thumbnails");
+
+                // 업로드 성공 시 경로 추가
+                requestDto.put("thumbnailUrl", thumbnailUrl);
+
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("에러 발생: " + e.getMessage());
+            }
+        }
+
+        log.info("✏️ 캠페인 수정 요청 데이터 => {}", requestDto);
+        log.info("📎 업로드된 파일 => {}", thumbnail != null ? thumbnail.getOriginalFilename() : "없음");
+        log.info("👤 로그인 사용자 => {}", customUser);
+
+        // 3. 서비스 호출
+        int updated = campaignService.updateCampaign(requestDto);
+
+        if (true) {
+            log.info("Campaign updated successfully");
+            return new ResponseEntity<>("체험단 모집 글 수정 완료되었습니다.", HttpStatus.OK);
+        } else {
+            log.info("Campaign update failed");
+            return new ResponseEntity<>("체험단 모집 글 수정 실패했습니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    /**
    * 캠페인 상세페이지 조회
    */
   @GetMapping("/{campaignIdx}")
