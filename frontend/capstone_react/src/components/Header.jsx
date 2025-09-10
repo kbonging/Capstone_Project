@@ -2,7 +2,7 @@
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext"; // 경로는 프로젝트 구조에 맞게 유지
-import LogoImage from "../images/Logo.png";
+import LogoImage from "../images/MainLogo.png";
 // import LogoImageDark from "../images/Logo-dark.png"; // 다크 전용 로고 있으면 사용
 
 export default function Header() {
@@ -11,7 +11,7 @@ export default function Header() {
 
   return (
     <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/70 backdrop-blur">
-      <div className="max-w-[1350px] mx-auto h-16 flex items-center justify-between px-4 text-zinc-900 dark:text-zinc-100">
+      <div className="max-w-[1350px] mx-auto h-16 flex items-center justify-between px-1 text-zinc-900 dark:text-zinc-100">
         {/* 로고 */}
         <h1 className="text-2xl font-bold uppercase">
           <Link to="/" className="inline-flex items-center">
@@ -24,7 +24,7 @@ export default function Header() {
             <img
               src={LogoImage}
               alt="Revory Logo"
-              className="w-[90px] h-full inline-block dark:brightness-200"
+              className="h-[100px] w-auto dark:brightness-200"
             />
           </Link>
         </h1>
