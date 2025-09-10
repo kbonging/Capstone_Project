@@ -219,7 +219,7 @@ export default function CampaignForm({ mode = "create", campaignIdx }) {
                   alert("캠페인이 성공적으로 등록되었습니다.");
                 }
 
-                navigate("/campaigns/manage");
+                navigate("/campaign/manage");
               } catch (error) {
                 console.error(
                   "캠페인 저장 실패",

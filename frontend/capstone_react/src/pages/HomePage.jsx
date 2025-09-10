@@ -64,16 +64,6 @@ export default function HomePage() {
         <ShowcaseSlider />
       </div>
 
-      {/* 기존 2열 배너 */}
-      {/* <section aria-label="프로모션 배너" className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-xl backdrop-blur h-40 xs:h-48 sm:h-56 md:h-64 lg:h-80">
-          <Carousel items={banners} className="h-full" />
-        </div>
-        <div className="overflow-hidden rounded-xl backdrop-blur h-40 xs:h-48 sm:h-56 md:h-64 lg:h-80">
-          <Carousel items={[...banners].reverse()} className="h-full" />
-        </div>
-      </section> */}
-
       {/* 퀵 내비 */}
       <section className="mt-6 sm:mt-8 flex justify-center" aria-label="빠른 이동">
         <div className="w-full sm:max-w-xl md:max-w-2xl">
@@ -82,11 +72,9 @@ export default function HomePage() {
       </section>
 
       {/* 프리미엄 섹션 */}
-      <section className="mx- mt-8 sm:mt-10 md:mt-12" aria-label="프리미엄 체험단">
+      <section className="px-16 max-w-screen-2xl mt-8 sm:mt-10 md:mt-12" aria-label="프리미엄 체험단">
         <PremiumSection
-          title="프리미엄 체험단"
           items={premium}
-          onMore={() => (window.location.href = "/campaigns?premium=1")}
         />
       </section>
     </div>
