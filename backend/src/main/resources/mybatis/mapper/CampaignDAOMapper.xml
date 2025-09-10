@@ -463,6 +463,13 @@
         WHERE MEMBER_IDX = #{memberIdx} AND CAMPAIGN_IDX = #{campaignIdx}
     </delete>
 
+    <!-- 마감 기한 지난 캠페인 종료 -->
+    <update id="updateExpiredCampaignsToClosed">
+        UPDATE tb_campaign
+        SET recruit_status = 'CLOSED'
+        WHERE recruit_status = 'OPEN'
+            AND apply_end_date &lt; NOW()
+    </update>
 </mapper>
 
 

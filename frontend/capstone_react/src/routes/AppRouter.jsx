@@ -21,6 +21,7 @@ import CampaignApply from "../pages/CampaignApply";
 import CampaignBookmark from "../pages/CampaignBookmark";
 import RequireReviewer from "./RequireReviewer";
 import MyCampaigns from "../pages/MyCampaigns";
+import AdminCampaignTime from "../pages/AdminCampaignTime";
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
@@ -112,6 +113,7 @@ export default function AppRouter() {
       <Route path="/mypage"     element={<MyPage />} />
       <Route path="/mypage/:memberIdx" element={<MyPage />} />
       <Route path="/mypage/manage" element={<ProfileManagePage />} />
+      <Route path="/mypage/admin" element={<AdminCampaignTime />} />
       <Route path="/mypage/wishlist" element={<CampaignBookmark />} />
 
       <Route path="/test/image-upload" element={<ImageUploadTest />} />
