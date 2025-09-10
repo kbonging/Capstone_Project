@@ -139,6 +139,36 @@ export function createCampaign(formData, token) {
 }
 
 /**
+ * 캠페인 수정 API (파일 업로드 포함)
+ * @param {number|string} campaignIdx 수정할 캠페인 ID
+ * @param {Object} formData 캠페인 수정 폼 데이터 (JSON)
+ * @param {string} token 로그인한 사용자의 JWT
+ * @returns {Promise} Axios Promise
+ */
+export function updateCampaign(campaignIdx, formData, token) {
+  const data = new FormData();
+
+  // JSON 데이터를 Blob 형태로 추가
+  data.append(
+    "request",
+    new Blob([JSON.stringify(formData)], { type: "application/json" })
+  );
+
+  // 파일이 새로 업로드된 경우만 추가
+  if (formData.thumbnailFile) {
+    data.append("thumbnail", formData.thumbnailFile);
+  }
+
+  return axios.put(`/api/campaigns/${campaignIdx}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+
+/**
  * 관리자가 캠페인의 상태(대기, 승인, 반려)를 변경합니다.
  * @param {number} campaignIdx - 캠페인 ID
  * @param {string} status - 변경할 상태 ('APPROVED' 또는 'REJECTED')

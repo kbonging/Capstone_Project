@@ -8,7 +8,7 @@ import Step3 from "./steps/Step3";
 import Step4 from "./steps/Step4";
 
 
-import { createCampaign, getCampaignDetail } from "../../api/campaigns/api";
+import { createCampaign, getCampaignDetail, updateCampaign } from "../../api/campaigns/api";
 
 export default function CampaignForm({ mode = "create", campaignIdx }) {
   const [step, setStep] = useState(1);
@@ -195,38 +195,51 @@ export default function CampaignForm({ mode = "create", campaignIdx }) {
             다음
           </button>
         )}
+
         {step === stepsForType.length && (
-        <button
-          onClick={async () => {  // <-- async 추가
-            if (!isStep4Valid) {
-              alert("필수 항목을 모두 입력해주세요.");
-              return;
-            }
+          <button
+            onClick={async () => {
+              if (!isStep4Valid) {
+                alert("필수 항목을 모두 입력해주세요.");
+                return;
+              }
 
-            console.log("✅ 최종 제출 데이터:", formData);
+              console.log("✅ 최종 제출 데이터:", formData);
 
-            try {
-              const response = await createCampaign(formData, token);
-              console.log("캠페인 등록 성공", response.data);
-              navigate("/campaigns/manage");
-            } catch (error) {
-              console.error("캠페인 등록 실패", error.response?.data || error.message);
+              try {
+                if (mode === "edit") {
+                  // 수정 API 호출
+                  const response = await updateCampaign(campaignIdx, formData, token);
+                  console.log("캠페인 수정 성공", response.data);
+                  alert("캠페인이 성공적으로 수정되었습니다.");
+                } else {
+                  // 등록 API 호출
+                  const response = await createCampaign(formData, token);
+                  console.log("캠페인 등록 성공", response.data);
+                  alert("캠페인이 성공적으로 등록되었습니다.");
+                }
+
+                navigate("/campaign/manage");
+              } catch (error) {
+                console.error(
+                  "캠페인 저장 실패",
+                  error.response?.data || error.message
+                );
                 alert(
                   error.response?.data ||
-                  "캠페인 등록 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
-              );
-            }
-          }}
-          disabled={!isStep4Valid}
-          className={`px-4 py-2 rounded ${
-            !isStep4Valid
-              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-              : "bg-green-100 text-green-800 hover:bg-green-200"
-          }`}
-        >
-          체험단 등록
-        </button>
-
+                    "캠페인 저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+                );
+              }
+            }}
+            disabled={!isStep4Valid}
+            className={`px-4 py-2 rounded ${
+              !isStep4Valid
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-green-100 text-green-800 hover:bg-green-200"
+            }`}
+          >
+            {mode === "edit" ? "체험단 수정" : "체험단 등록"}
+          </button>
         )}
       </div>
 

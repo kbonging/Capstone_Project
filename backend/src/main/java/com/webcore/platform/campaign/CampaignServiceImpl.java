@@ -105,7 +105,59 @@ public class CampaignServiceImpl implements CampaignService {
     return campaignDTO.getCampaignIdx();
   }
 
-  // 켐페인 상세조회 페이지 로직
+    @Override
+    @Transactional
+    public int updateCampaign(Map<String, Object> requestDto) {
+        // 1. 캠페인 기본 정보 수정
+        CampaignDTO campaignDTO = objectMapper.convertValue(requestDto, CampaignDTO.class);
+
+        // PK(campaignIdx)는 프론트에서 반드시 넘어와야 함
+        if (campaignDTO.getCampaignIdx() == null) {
+            throw new IllegalArgumentException("캠페인 ID(campaignIdx)는 필수입니다.");
+        }
+
+        // 기본정보 수정 실행
+        int updatedRows = campaignDAO.updateCampaign(campaignDTO);
+        if (updatedRows == 0) {
+            throw new RuntimeException("캠페인 수정에 실패했습니다. (campaignIdx=" + campaignDTO.getCampaignIdx() + ")");
+        }
+
+        // 2. 유형별 분기 처리
+        String type = campaignDTO.getCampaignType();
+
+        if ("CAMP001".equals(type) || "CAMP002".equals(type)) {
+            // expDay 리스트 → 문자열 변환
+            Object expDayObj = requestDto.get("expDay");
+            String expDayStr = "";
+            if (expDayObj instanceof List<?> expDayList) {
+                expDayStr = String.join("/", expDayList.stream()
+                        .map(String::valueOf)
+                        .toArray(String[]::new));
+            }
+            requestDto.put("expDay", expDayStr);
+
+            // 방문형/포장형 DTO 매핑
+            CampaignVisitDTO visitDTO = objectMapper.convertValue(requestDto, CampaignVisitDTO.class);
+            visitDTO.setCampaignIdx(campaignDTO.getCampaignIdx());
+
+            log.info("방문형/포장형 updateDTO -> {}", visitDTO);
+            campaignDAO.updateCampaignVisit(visitDTO);
+
+        } else if ("CAMP003".equals(type) || "CAMP004".equals(type)) {
+            // 배송형/구매형 DTO 매핑
+            CampaignDeliveryDTO deliveryDTO = objectMapper.convertValue(requestDto, CampaignDeliveryDTO.class);
+            deliveryDTO.setCampaignIdx(campaignDTO.getCampaignIdx());
+
+            log.info("배송형/구매형 updateDTO -> {}", deliveryDTO);
+            campaignDAO.updateCampaignDelivery(deliveryDTO);
+        }
+
+
+        // 3. 수정 완료된 캠페인 PK 반환
+        return campaignDTO.getCampaignIdx();
+    }
+
+    // 켐페인 상세조회 페이지 로직
   @Override
   public CampaignDetailResponseDTO getDetail(int campaignIdx, Integer memberIdx) {
     CampaignDetailResponseDTO dto = campaignDAO.selectDetailCampaign(campaignIdx, memberIdx);
