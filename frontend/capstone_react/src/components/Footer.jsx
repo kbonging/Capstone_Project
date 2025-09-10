@@ -2,76 +2,61 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 text-gray-300 py-12 mt-auto">
-      <div className="max-w-7xl mx-auto px-6 flex flex-wrap justify-between gap-y-10">
-        {/* 로고 & 간단 설명 */}
-        <div className="w-full sm:w-1/3">
-          <h2 className="text-3xl font-extrabold text-white mb-4 tracking-tight">Revory</h2>
-          <p className="text-gray-400 max-w-xs">
-            체험단, 커뮤니티, 그리고 다양한 서비스를 한 곳에서 경험하세요.
+    <footer className="bg-gray-50 text-black-300 px-8 py-12 mt-auto">
+      {/* 위쪽 3개 블록 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-7xl mx-auto mb-10">
+        <div>
+          <h3 className="text-lg font-semibold text-black mb-2">
+            Discover Revory
+          </h3>
+          <p className="text-sm leading-relaxed">
+            리뷰와 경험이 중요한 공간에 오신 것을 환영합니다. Revory에서는 생생한 리뷰와 진솔한 후기가 중심이 되며,
+             광고에 방해받지 않고 진짜 목소리를 만나보실 수 있습니다.
           </p>
-          <p className="mt-6 text-sm text-gray-500">&copy; 2025 Revory. All rights reserved.</p>
         </div>
 
-        {/* 메뉴 그룹 */}
-        <div className="w-full sm:w-2/3 grid grid-cols-3 gap-8">
-          <div>
-            <h4 className="text-white font-semibold mb-5 uppercase tracking-wide">고객센터</h4>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <a href="/help" className="hover:text-white transition-colors duration-300">
-                  문의하기
-                </a>
-              </li>
-              <li>
-                <a href="/faq" className="hover:text-white transition-colors duration-300">
-                  FAQ
-                </a>
-              </li>
-            </ul>
-          </div>
+        <div>
+          <h3 className="text-lg font-semibold text-black mb-2">
+            Make Medium yours
+          </h3>
+          <p className="text-sm leading-relaxed">
+            관심 있는 제품과 서비스를 팔로우하면, 가장 알찬 리뷰와 정보를 홈 화면과 알림으로 바로 받아보실 수 있습니다.
+          </p>
+        </div>
 
-          <div>
-            <h4 className="text-white font-semibold mb-5 uppercase tracking-wide">정책</h4>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <a href="/terms" className="hover:text-white transition-colors duration-300">
-                  이용약관
-                </a>
-              </li>
-              <li>
-                <a href="/privacy" className="hover:text-white transition-colors duration-300">
-                  개인정보처리방침
-                </a>
-              </li>
-              <li>
-                <a href="/policy" className="hover:text-white transition-colors duration-300">
-                  운영정책
-                </a>
-              </li>
-            </ul>
-          </div>
+        <div>
+          <h3 className="text-lg font-semibold text-black mb-2">
+            ⓒ주식진행시켜 REVORY (REVIEW NOTE)
+          </h3>
+          <p className="text-sm leading-relaxed">
+            대표: 최진형<br/>
+            address<br/>
+            email<br/>
+            사업자 등록번호<br/>
+            고객센터 012020
 
-          <div>
-            <h4 className="text-white font-semibold mb-5 uppercase tracking-wide">서비스</h4>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <a href="/trials" className="hover:text-white transition-colors duration-300">
-                  체험단
-                </a>
-              </li>
-              <li>
-                <a href="/search" className="hover:text-white transition-colors duration-300">
-                  검색
-                </a>
-              </li>
-              <li>
-                <a href="/community" className="hover:text-white transition-colors duration-300">
-                  커뮤니티
-                </a>
-              </li>
-            </ul>
-          </div>
+            {/* <a href="#" className="underline hover:text-black">
+              Browse
+            </a> */}
+          </p>
+        </div>
+      </div>
+
+      <hr className="border-neutral-700 mb-6" />
+
+      {/* 하단 로고 & 네비게이션 */}
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-sm">
+        <div className="text-black text-2xl font-bold mb-4 md:mb-0">Medium</div>
+        <div className="flex gap-6">
+          <a href="#" className="hover:text-white">
+            소개
+          </a>
+          <a href="#" className="hover:text-white">
+            고객센터
+          </a>
+          <a href="#" className="hover:text-white">
+            이용약관
+          </a>
         </div>
       </div>
     </footer>
