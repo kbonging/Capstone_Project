@@ -110,6 +110,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/owner").permitAll() // 소상공인 회원가입은 누구나 가능 (POST)
                         .requestMatchers("/api/owner", "/api/owner/**").hasRole("OWNER") // 회원 가입 제외 모든 경로는 권한 필요
 
+                        // 관리자
+                        .requestMatchers( "/api/admin/**").hasRole("ADMIN")
+
                         // 캠페인 관련
                         .requestMatchers(HttpMethod.GET, "/api/campaigns", "/api/campaigns/**").permitAll() // 캠페인 전체 목록 조회는 모두 접근 가능
                         .requestMatchers(HttpMethod.GET, "/api/campaigns/*/apply-page").hasRole("USER") // 신청페이지는 리뷰어만 들어갈수있음

@@ -90,4 +90,7 @@ public interface CampaignDAO {
 
     /** 관리자 캠페인 상태(승인, 반려) 변경 */
     int updateCampaignStatus(@Param("campaignIdx") int campaignIdx, @Param("status") String status);
+
+    /** 마감 기한 지난 캠페인 종료 */
+    int updateExpiredCampaignsToClosed();
 }

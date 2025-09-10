@@ -19,16 +19,21 @@ export default function CampaignManageForm() {
 
 
   // Modal 상태 관리 State
-  const [selectedCampaign, setSelectedCampaiagn] = useState(null);
+  // const [selectedCampaign, setSelectedCampaiagn] = useState(null);
 
   // Modal 상태 -> 열기
   const openApplicantsModal = (campaign) => {
-    setSelectedCampaiagn(campaign);
+    setSearchParams({
+      ...Object.fromEntries(searchParams.entries()),
+      modalCampaign: campaign.campaignIdx,
+    });
   };
 
   // Modal 상태 -> 닫기
   const closeApplicantsModal = () => {
-    setSelectedCampaiagn(null);
+    const paramsObj = Object.fromEntries(searchParams.entries());
+    delete paramsObj.modalCampaign;
+    setSearchParams(paramsObj);
   };
 
   // 검색 조건 상태
@@ -84,6 +89,11 @@ export default function CampaignManageForm() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [searchParams, token]);
+
+  const modalCampaignIdx = searchParams.get("modalCampaign");
+  const modalCampaign = campaigns.find(
+    (c) => c.campaignIdx.toString() === modalCampaignIdx
+  );
 
   return (
     <div className="bg-white text-gray-800 min-h-screen">
@@ -272,15 +282,13 @@ export default function CampaignManageForm() {
           )}
         </div>
       )}
-
-          {selectedCampaign && (
-            <OwnerCampaignApply
-              campaignIdx={selectedCampaign.campaignIdx}
-              recruitCount={selectedCampaign.recruitCount}
-              onClose={closeApplicantsModal}
-            />
-          )}
-
+        {modalCampaign && (
+          <OwnerCampaignApply
+            campaignIdx={modalCampaign.campaignIdx}
+            recruitCount={modalCampaign.recruitCount}
+            onClose={closeApplicantsModal}
+          />
+        )}
     </div>
   );
 }

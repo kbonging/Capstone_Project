@@ -51,7 +51,9 @@ export default function Sidebar({ userRole }) {
 
     if (role === "ROLE_ADMIN") {
       return {
-        관리: [{ name: "체험단 승인", path: "/mypage" }],
+        관리: [{ name: "체험단 승인", path: "/mypage" },
+              {name: "체험단 시간", path: "/mypage/admin"}
+        ],
       };
     }
 
