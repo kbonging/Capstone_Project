@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const closeExpiredCampaigns = async (token) => {
     try {
-        const response = await axios.post(
+        const response = await axios.put(
             "/api/admin/campaigns/close-expired",
             {},
             {
