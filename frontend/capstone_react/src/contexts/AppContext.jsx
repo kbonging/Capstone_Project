@@ -1,5 +1,6 @@
 // src/contexts/AppContext.jsx
 import React, { createContext, useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchUser } from '../api/authApi';
 
 export const AppContext = createContext();
@@ -9,6 +10,9 @@ export function AppProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem('token'));
   // 페이지 로딩 시 사용자 정보를 받아올때까지 지연시키기 위해 만듦
   const [loading, setLoading] = useState(true);
+
+  // logout용 main navigate
+  const navigate = useNavigate();
 
   // 🔽 초기 마운트 시 토큰이 있으면 사용자 정보 불러오기
   useEffect(() => {
@@ -40,7 +44,7 @@ export function AppProvider({ children }) {
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
-    // 필요하면 페이지 이동도 처리
+    navigate("/")
   };
 
   return (
