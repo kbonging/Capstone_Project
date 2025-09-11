@@ -191,7 +191,6 @@ public class CampaignServiceImpl implements CampaignService {
     return dto;
   }
 
-  /** 관리자 캠페인 상태 변경 (승인, 반려) */
   @Override
   @Transactional
   public CampaignApplicationResponseDTO createApplication(int campaignIdx, int memberIdx, CampaignApplicationRequestDTO campaignApplicationRequestDTO) {

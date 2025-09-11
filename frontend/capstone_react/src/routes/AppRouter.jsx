@@ -22,6 +22,8 @@ import CampaignBookmark from "../pages/CampaignBookmark";
 import RequireReviewer from "./RequireReviewer";
 import MyCampaigns from "../pages/MyCampaigns";
 import AdminCampaignTime from "../pages/AdminCampaignTime";
+import CampaignSearchPage from "../pages/CampaignSearchPage";
+
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
@@ -110,13 +112,27 @@ export default function AppRouter() {
       <Route path="/signup/reviewer" element={<ReviewerFormPage />} />
       <Route path="/FindPwd" element={<FindPwd />} />
       <Route path="/FindId" element={<FindId />} />
+      
+      {/* 프로필 */}
       <Route path="/mypage"     element={<MyPage />} />
+      
+      {/* 타회원 프로필 */}
       <Route path="/mypage/:memberIdx" element={<MyPage />} />
+      
+      {/* 프로필 관리 */}
       <Route path="/mypage/manage" element={<ProfileManagePage />} />
+      
+      {/* 캠페인 마감 관리 */}
       <Route path="/mypage/admin" element={<AdminCampaignTime />} />
+      
+      {/* 찜목록 */}
       <Route path="/mypage/wishlist" element={<CampaignBookmark />} />
 
+      {/* 체함단 검색 페이지 */}
+      <Route path="/campaigns" element={<CampaignSearchPage />} />
+
       <Route path="/test/image-upload" element={<ImageUploadTest />} />
+
       {/* 404 페이지도 추가 가능  나중에 할거임*/}
     </Routes>
   );

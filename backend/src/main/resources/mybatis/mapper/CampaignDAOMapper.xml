@@ -58,74 +58,119 @@
             </choose>
         </if>
 
+        <!-- 모집 상태 -->
         <if test="recruitStatus != null and recruitStatus != ''">
             AND c.RECRUIT_STATUS = #{recruitStatus}
         </if>
 
+        <!-- 내 글만 보기 -->
         <if test="showMyParam != null and showMyParam == 'true' and memberIdx != 0">
             AND member_idx = #{memberIdx}
         </if>
+
+        <!-- 지역 필터 -->
+        <if test="region != null and region != ''">
+            <choose>
+                <when test="region == '온라인'">
+                    AND (c.CAMPAIGN_TYPE IN ('CAMP003', 'CAMP004'))
+                </when>
+                <otherwise>
+                    AND v.ADDRESS LIKE CONCAT('%', #{region}, '%')
+                </otherwise>
+            </choose>
+        </if>
+
+        <!-- 캠페인 유형 -->
+        <if test="campaignType != null and campaignType != ''">
+            AND c.CAMPAIGN_TYPE = #{campaignType}
+        </if>
+
+        <!-- 카테고리 -->
+        <if test="categoryCode != null and categoryCode != ''">
+            AND c.CAM_CATE_CODE = #{categoryCode}
+        </if>
+
+        <!-- 채널 -->
+        <if test="channelCode != null and channelCode != ''">
+            AND c.CHANNEL_CODE = #{channelCode}
+        </if>
     </sql>
 
-    <!-- 캠페인 목록 조회 쿼리 (전체 조회용) -->
+    <!-- 캠페인 전체 목록 조회 -->
     <select id="selectCampaignList" parameterType="com.webcore.platform.campaign.dto.CampaignDTO" resultMap="CampaignDetailMap">
         SELECT
-            c.CAMPAIGN_IDX        AS campaignIdx,
-            c.MEMBER_IDX          AS memberIdx,
-            c.TITLE               AS title,
-            c.SHOP_NAME           AS shopName,
-            c.THUMBNAIL_URL       AS thumbnailUrl,
-            c.CONTACT_PHONE       AS contactPhone,
-            c.CAMPAIGN_TYPE       AS campaignType,
-            FN_GET_CODE_NM(c.CAMPAIGN_TYPE)  AS campaignTypeName,
-            c.CAM_CATE_CODE       AS categoryCode,
-            FN_GET_CODE_NM(c.CAM_CATE_CODE)  AS categoryName,
-            c.CHANNEL_CODE        AS channelCode,
-            FN_GET_CODE_NM(c.CHANNEL_CODE)   AS channelName,
-            c.MISSION             AS mission,
-            c.KEYWORD_1           AS keyword1,
-            c.KEYWORD_2           AS keyword2,
-            c.KEYWORD_3           AS keyword3,
-            c.BENEFIT_DETAIL      AS benefitDetail,
-            c.RECRUIT_COUNT       AS recruitCount,
-            c.APPLY_START_DATE    AS applyStartDate,
-            c.APPLY_END_DATE      AS applyEndDate,
-            c.ANNOUNCE_DATE       AS announceDate,
-            c.EXP_START_DATE      AS expStartDate,
-            c.EXP_END_DATE        AS expEndDate,
-            c.DEADLINE_DATE       AS deadlineDate,
-            c.RECRUIT_STATUS      AS recruitStatus,
-            c.CAMPAIGN_STATUS     AS campaignStatus,
-            v.ADDRESS             AS address,
-            v.ADDRESS_DETAIL      AS addressDetail,
-            v.EXP_DAY             AS expDay,
-            v.START_TIME          AS startTime,
-            v.END_TIME            AS endTime,
-            v.RESERVATION_NOTICE  AS reservationNotice,
-            CONCAT('https://map.naver.com/v5/search/',
-            REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20')) AS mapUrl,
-            d.PURCHASE_URL        AS purchaseUrl,
-            (
-                SELECT COUNT(*)
-                FROM TB_CAMPAIGN_APPLICATION a
-                WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX AND del_yn='N'
-            ) AS applicants,
-            (
-            SELECT COUNT(*)
-            FROM TB_CAMPAIGN_APPLICATION ca
-            WHERE ca.CAMPAIGN_IDX = c.CAMPAIGN_IDX
-            AND del_yn='N'
-            AND ca.apply_status_code='CAMAPP_APPROVED'
-            ) as approCount
+        c.CAMPAIGN_IDX        AS campaignIdx,
+        c.MEMBER_IDX          AS memberIdx,
+        c.TITLE               AS title,
+        c.SHOP_NAME           AS shopName,
+        c.THUMBNAIL_URL       AS thumbnailUrl,
+        c.CONTACT_PHONE       AS contactPhone,
+        c.CAMPAIGN_TYPE       AS campaignType,
+        FN_GET_CODE_NM(c.CAMPAIGN_TYPE)  AS campaignTypeName,
+        c.CAM_CATE_CODE       AS categoryCode,
+        FN_GET_CODE_NM(c.CAM_CATE_CODE)  AS categoryName,
+        c.CHANNEL_CODE        AS channelCode,
+        FN_GET_CODE_NM(c.CHANNEL_CODE)   AS channelName,
+        c.MISSION             AS mission,
+        c.KEYWORD_1           AS keyword1,
+        c.KEYWORD_2           AS keyword2,
+        c.KEYWORD_3           AS keyword3,
+        c.BENEFIT_DETAIL      AS benefitDetail,
+        c.RECRUIT_COUNT       AS recruitCount,
+        c.APPLY_START_DATE    AS applyStartDate,
+        c.APPLY_END_DATE      AS applyEndDate,
+        c.ANNOUNCE_DATE       AS announceDate,
+        c.EXP_START_DATE      AS expStartDate,
+        c.EXP_END_DATE        AS expEndDate,
+        c.DEADLINE_DATE       AS deadlineDate,
+        c.RECRUIT_STATUS      AS recruitStatus,
+        c.CAMPAIGN_STATUS     AS campaignStatus,
+        v.ADDRESS             AS address,
+        v.ADDRESS_DETAIL      AS addressDetail,
+        v.EXP_DAY             AS expDay,
+        v.START_TIME          AS startTime,
+        v.END_TIME            AS endTime,
+        v.RESERVATION_NOTICE  AS reservationNotice,
+        CONCAT('https://map.naver.com/v5/search/', REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20')) AS mapUrl,
+        d.PURCHASE_URL        AS purchaseUrl,
+        (
+        SELECT COUNT(*)
+        FROM TB_CAMPAIGN_APPLICATION a
+        WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX AND del_yn='N'
+        ) AS applicants,
+        (
+        SELECT COUNT(*)
+        FROM TB_CAMPAIGN_APPLICATION ca
+        WHERE ca.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        AND del_yn='N'
+        AND ca.apply_status_code='CAMAPP_APPROVED'
+        ) as approCount
         FROM TB_CAMPAIGN c
         LEFT JOIN TB_CAMPAIGN_VISIT v ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
         LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
         WHERE c.DEL_YN = 'N'
         <include refid="searchWhere"></include>
-        ORDER BY c.REG_DATE DESC
+
+        <!-- 동적 정렬 -->
+        <choose>
+            <when test="sort != null and sort == 'latest'">
+                ORDER BY c.REG_DATE DESC
+            </when>
+            <when test="sort != null and sort == 'deadline'">
+                ORDER BY c.APPLY_END_DATE ASC
+            </when>
+            <when test="sort != null and sort == 'popular'">
+                ORDER BY approCount DESC
+            </when>
+            <otherwise>
+                ORDER BY c.REG_DATE DESC
+            </otherwise>
+        </choose>
+
         LIMIT #{firstIndex}, #{recordCount}
     </select>
 
+    <!-- 캠페인 개수 조회 -->
     <select id="selectCampaignCount" parameterType="com.webcore.platform.campaign.dto.CampaignDTO" resultType="int">
         SELECT COUNT(*)
         FROM TB_CAMPAIGN c

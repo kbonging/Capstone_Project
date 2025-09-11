@@ -22,7 +22,7 @@ export default function ProfileManagePage() {
   }
   
   return (
-    <MyPageLayout userRole={userRole}> {/* userRole을 MyPageLayout에 전달 */}
+    <MyPageLayout userRole={userRole}>
       {/* 탭 UI: 관리 탭 활성화 */}
       <ProfileTabs userRole={userRole} />
       {/* 프로필 관리 폼 */}

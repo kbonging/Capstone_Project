@@ -31,7 +31,7 @@ export default function Header() {
 
         {/* 네비게이션 (데스크탑 전용) */}
         <nav className="hidden md:flex flex-1 pl-8 space-x-6">
-          <Link to="/search" className="hover:text-zinc-600 dark:hover:text-zinc-300">
+          <Link to="/campaigns" className="hover:text-zinc-600 dark:hover:text-zinc-300">
             체험단검색
           </Link>
           <Link to="/community" className="hover:text-zinc-600 dark:hover:text-zinc-300">

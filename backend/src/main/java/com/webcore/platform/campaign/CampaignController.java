@@ -33,9 +33,9 @@ public class CampaignController {
   public ResponseEntity<?> getCampaignList(
       CampaignDTO campaignDTO,
       @AuthenticationPrincipal CustomUser customUser) {
-//        log.info("[GET] /api/campaigns [Request] => {}", campaignDTO);
+
     Map<String, Object> resultMap = campaignService.getCampaignList(campaignDTO);
-//        log.info("캠페인 목록 조회 완료, 총{}건", campaignList.size());
+
     log.info("게시글 조회 정보 => {}", resultMap);
 
     return new ResponseEntity<>(resultMap, HttpStatus.OK);
@@ -257,7 +257,7 @@ public class CampaignController {
 
     /** 관리자 캠페인 게시 상태 변경 */
     @PatchMapping("/status")
-    @PreAuthorize("hasRole('ADMIN')") // ADMIN 권한만 접근 가능
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateCampaignStatus(
             @RequestBody CampaignStatusUpdateDTO updateDTO
     ) {

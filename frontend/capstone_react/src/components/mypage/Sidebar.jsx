@@ -82,18 +82,6 @@ export default function Sidebar({ userRole }) {
             </h2>
             <ul className="space-y-1">
               {items.map((item) => (
-                // <li
-                //   key={item.name}
-                //   onClick={() => handleClick(item.path)}
-                //   className={`px-3 py-2 rounded-md cursor-pointer transition 
-                //     ${
-                //       location.pathname.startsWith(item.path)
-                //         ? "bg-gray-100 font-bold text-blue-600"
-                //         : "hover:bg-gray-50 hover:text-blue-600 text-gray-700"
-                //     }`}
-                // >
-                //   {item.name}
-                // </li>
                     <li
                       key={item.name}
                       onClick={() => handleClick(item.path)}
