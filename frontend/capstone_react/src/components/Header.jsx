@@ -2,7 +2,7 @@
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext"; // 경로는 프로젝트 구조에 맞게 유지
-import LogoImage from "../images/MainLogo.png";
+import LogoImage from "../images/main_logo.png";
 // import LogoImageDark from "../images/Logo-dark.png"; // 다크 전용 로고 있으면 사용
 
 export default function Header() {
@@ -24,7 +24,7 @@ export default function Header() {
             <img
               src={LogoImage}
               alt="Revory Logo"
-              className="h-[100px] w-auto dark:brightness-200"
+              className="h-[30px] w-auto dark:brightness-200"
             />
           </Link>
         </h1>
