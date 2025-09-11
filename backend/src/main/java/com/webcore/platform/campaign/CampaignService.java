@@ -23,7 +23,10 @@ public interface CampaignService {
    *  @return 등록된 캠페인의 고유 식별자 (CAMPAIGN_IDX)
    * */
   int updateCampaign(Map<String, Object> requestDto);
-  
+
+  /** 캠페인 삭제 */
+  boolean deleteCampaign(int campaignIdx);
+
   /** 캠페인 상세 정보 조회 */
   CampaignDetailResponseDTO getDetail(int campaignIdx, Integer memberIdx);
 

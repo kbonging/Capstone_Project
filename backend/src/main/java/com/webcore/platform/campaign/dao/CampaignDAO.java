@@ -27,6 +27,9 @@ public interface CampaignDAO {
   /**  배송형/구매형 캠페인 수정 */
   int updateCampaignDelivery(CampaignDeliveryDTO deliveryDTO);
 
+  /** 캠페인 삭제 */
+  int deleteCampaign(int campaignIdx);
+
   /** 캠페인 전체 목록 조회 */
   List<CampaignDetailResponseDTO> selectCampaignList(CampaignDTO campaignDTO);
 

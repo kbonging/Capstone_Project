@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AppContext } from "../../contexts/AppContext";
-import { getOwnerCampaignsList } from "../../api/campaigns/api";
+import { getOwnerCampaignsList, deleteCampaign } from "../../api/campaigns/api";
 import Pagination  from "../community/Pagination";
 import OwnerCampaignApply from "./OwnerCampaignApply";
 import { toAbsoluteUrl } from "../../utils/url";
@@ -94,6 +94,27 @@ export default function CampaignManageForm() {
   const modalCampaign = campaigns.find(
     (c) => c.campaignIdx.toString() === modalCampaignIdx
   );
+
+  // 👇 useEffect 아래쪽에 추가
+  const handleDeleteCampaign = async (campaignIdx) => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+
+    console.log("[DELETE] 요청 시작:", campaignIdx);
+    try {
+      await deleteCampaign(campaignIdx, token);
+      console.log("[DELETE] 성공:", campaignIdx);
+      alert("삭제되었습니다.");
+
+      // ✅ 목록 갱신
+      const queryString = new URLSearchParams(searchParams).toString();
+      const data = await getOwnerCampaignsList(token, queryString);
+      setCampaigns(data.campaignList);
+      setPagination(data.paginationInfo);
+    } catch (err) {
+      console.error("[DELETE] 실패:", err);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <div className="bg-white text-gray-800 min-h-screen">
@@ -252,7 +273,7 @@ export default function CampaignManageForm() {
                 수정
               </button>
               <button
-                onClick={() => navigate(`/campaign/delete/${c.campaignIdx}`)}
+                onClick={() => handleDeleteCampaign(c.campaignIdx)}
                 className="px-3 py-1 bg-red-100 text-red-600 rounded-md text-sm"
               >
                 삭제

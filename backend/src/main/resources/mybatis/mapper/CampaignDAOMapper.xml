@@ -183,41 +183,41 @@
 
   <!-- 캠페인 상세: 공통코드(TB_COMMON_CODE)로 유형/카테고리/채널명 조인 -->
   <select id="selectDetailCampaign" resultMap="CampaignDetailMap">
-    SELECT c.CAMPAIGN_IDX                                                                         AS campaignIdx,
-           c.MEMBER_IDX                                                                           AS memberIdx,
-           c.TITLE                                                                                AS title,
-           c.SHOP_NAME                                                                            AS shopName,
-           c.THUMBNAIL_URL                                                                        AS thumbnailUrl,
-           c.CONTACT_PHONE                                                                        AS contactPhone,
-           c.CAMPAIGN_TYPE                                                                        AS campaignType,
-           prom.code_nm                                                                           AS campaignTypeName,
-           c.CAM_CATE_CODE                                                                        AS categoryCode,
-           cate.code_nm                                                                           AS categoryName,
-           c.CHANNEL_CODE                                                                         AS channelCode,
-           ch.code_nm                                                                             AS channelName,
-           c.MISSION                                                                              AS mission,
-           c.KEYWORD_1                                                                            AS keyword1,
-           c.KEYWORD_2                                                                            AS keyword2,
-           c.KEYWORD_3                                                                            AS keyword3,
-           c.BENEFIT_DETAIL                                                                       AS benefitDetail,
-           c.RECRUIT_COUNT                                                                        AS recruitCount,
-           c.APPLY_START_DATE                                                                     AS applyStartDate,
-           c.APPLY_END_DATE                                                                       AS applyEndDate,
-           c.ANNOUNCE_DATE                                                                        AS announceDate,
-           c.EXP_START_DATE                                                                       AS expStartDate,
-           c.EXP_END_DATE                                                                         AS expEndDate,
-           c.DEADLINE_DATE                                                                        AS deadlineDate,
-           c.RECRUIT_STATUS                                                                       AS recruitStatus,
-           c.CAMPAIGN_STATUS                                                                      AS campaignStatus,
-           v.ADDRESS                                                                              AS address,
-           v.ADDRESS_DETAIL                                                                       AS addressDetail,
-           v.`EXP_DAY`                                                                            AS expDay, -- 예약어 충돌 대비
-           v.START_TIME                                                                           AS startTime,
-           v.END_TIME                                                                             AS endTime,
-           v.RESERVATION_NOTICE                                                                   AS reservationNotice,
+    SELECT c.CAMPAIGN_IDX              AS campaignIdx,
+           c.MEMBER_IDX                AS memberIdx,
+           c.TITLE                     AS title,
+           c.SHOP_NAME                 AS shopName,
+           c.THUMBNAIL_URL             AS thumbnailUrl,
+           c.CONTACT_PHONE             AS contactPhone,
+           c.CAMPAIGN_TYPE             AS campaignType,
+           prom.code_nm                AS campaignTypeName,
+           c.CAM_CATE_CODE             AS categoryCode,
+           cate.code_nm                AS categoryName,
+           c.CHANNEL_CODE              AS channelCode,
+           ch.code_nm                  AS channelName,
+           c.MISSION                   AS mission,
+           c.KEYWORD_1                 AS keyword1,
+           c.KEYWORD_2                 AS keyword2,
+           c.KEYWORD_3                 AS keyword3,
+           c.BENEFIT_DETAIL            AS benefitDetail,
+           c.RECRUIT_COUNT             AS recruitCount,
+           c.APPLY_START_DATE          AS applyStartDate,
+           c.APPLY_END_DATE            AS applyEndDate,
+           c.ANNOUNCE_DATE             AS announceDate,
+           c.EXP_START_DATE            AS expStartDate,
+           c.EXP_END_DATE              AS expEndDate,
+           c.DEADLINE_DATE             AS deadlineDate,
+           c.RECRUIT_STATUS            AS recruitStatus,
+           c.CAMPAIGN_STATUS           AS campaignStatus,
+           v.ADDRESS                   AS address,
+           v.ADDRESS_DETAIL            AS addressDetail,
+           v.`EXP_DAY`                 AS expDay, -- 예약어 충돌 대비
+           v.START_TIME                AS startTime,
+           v.END_TIME                   AS endTime,
+           v.RESERVATION_NOTICE         AS reservationNotice,
            CONCAT('https://map.naver.com/v5/search/',
-                  REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20'))                                     AS mapUrl,
-           d.PURCHASE_URL                                                                         AS purchaseUrl,
+                  REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20'))       AS mapUrl,
+           d.PURCHASE_URL            AS purchaseUrl,
           CASE
                   WHEN #{memberIdx} IS NOT NULL
                       AND EXISTS (
@@ -335,6 +335,12 @@
         WHERE CAMPAIGN_IDX = #{campaignIdx}
     </update>
 
+    <!-- 캠페인 삭제 -->
+    <delete id="deleteCampaign" parameterType="int">
+        UPDATE TB_CAMPAIGN
+        SET DEL_YN = 'Y', MOD_DATE = NOW()
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+    </delete>
 
     <!-- 캠페인 게시 상태 변경 -->
   <update id="updateCampaignStatus">

@@ -157,6 +157,13 @@ public class CampaignServiceImpl implements CampaignService {
         return campaignDTO.getCampaignIdx();
     }
 
+    @Override
+    @Transactional
+    public boolean deleteCampaign(int campaignIdx) {
+      int result = campaignDAO.deleteCampaign(campaignIdx);
+        return result > 0;
+    }
+
     // 켐페인 상세조회 페이지 로직
   @Override
   public CampaignDetailResponseDTO getDetail(int campaignIdx, Integer memberIdx) {

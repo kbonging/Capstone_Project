@@ -171,7 +171,7 @@ public class CampaignController {
         // 3. 서비스 호출
         int updated = campaignService.updateCampaign(requestDto);
 
-        if (true) {
+        if (updated > 0) {
             log.info("Campaign updated successfully");
             return new ResponseEntity<>("체험단 모집 글 수정 완료되었습니다.", HttpStatus.OK);
         } else {
@@ -180,6 +180,43 @@ public class CampaignController {
         }
     }
 
+    /**
+     * 체험단 모집글 삭제
+     */
+    @DeleteMapping("/{campaignIdx}")
+    public ResponseEntity<?> deleteCampaign(
+            @PathVariable int campaignIdx,
+            @AuthenticationPrincipal CustomUser customUser){
+
+        // 로그인한 사용자 정보
+        MemberDTO loginMember = customUser.getMemberDTO();
+        int loginMemberIdx = loginMember.getMemberIdx();
+
+        // 게시글 정보 조회
+        CampaignDetailResponseDTO originalCampaign = campaignService.getDetail(campaignIdx, loginMemberIdx);
+
+        // 게시글 존재 여부
+        if(originalCampaign == null){
+            return new ResponseEntity<>("켐페인이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
+
+        // 관리자 유무
+        boolean isAdmin = loginMember.getAuthDTOList().stream()
+                .anyMatch(auth -> "ROLE_ADMIN".equals(auth.getAuth()));
+
+        // 작성자 또는 관리자만 수정 가능
+        if (originalCampaign.getMemberIdx() != loginMemberIdx && !isAdmin) {
+            return new ResponseEntity<>("작성자 본인 아님", HttpStatus.FORBIDDEN);
+        }
+
+        boolean result = campaignService.deleteCampaign(campaignIdx);
+        if(result){
+            return new ResponseEntity<>("체험단 모집 글 삭제 완료되었습니다.", HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>("체험단 모집 글 삭제 실패했습니다.", HttpStatus.BAD_REQUEST);
+
+    }
 
     /**
    * 캠페인 상세페이지 조회

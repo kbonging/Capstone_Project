@@ -167,6 +167,21 @@ export function updateCampaign(campaignIdx, formData, token) {
   });
 }
 
+/**
+ * 캠페인 삭제 API
+ * @param {number|string} campaignIdx 삭제할 캠페인 ID
+ * @param {string} token 로그인한 사용자의 JWT
+ * @returns {Promise} Axios Promise
+ */
+export function deleteCampaign(campaignIdx, token) {
+  return axios.delete(`/api/campaigns/${campaignIdx}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+
 
 /**
  * 관리자가 캠페인의 상태(대기, 승인, 반려)를 변경합니다.
