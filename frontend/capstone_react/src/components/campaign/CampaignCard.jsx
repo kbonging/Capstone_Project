@@ -2,7 +2,11 @@ import React from "react";
 import { FiMapPin, FiHeart } from "react-icons/fi";
 import Badge from "../common/Badge";
 
-export default function CampaignCard({ data, isActive = false, cropped = true }) {
+export default function CampaignCard({
+  data,
+  isActive = false,
+  cropped = true,
+}) {
   return (
     <a
       href={`/campaign/${data.campaignIdx}`}
