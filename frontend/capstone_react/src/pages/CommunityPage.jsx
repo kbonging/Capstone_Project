@@ -23,7 +23,7 @@ export default function CommunityPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
-  // ✅ 검색 조건 상태
+  //  검색 조건 상태
   const [params, setParams] = useState({
     categoryId: searchParams.get("categoryId") || "",
     searchKeyword: searchParams.get("searchKeyword") || "",
@@ -75,7 +75,7 @@ export default function CommunityPage() {
     onSearch(updatedParams, false); // URL 쿼리 갱신(page 유지)
   };
 
-  // ✅ 내글 체크박스 핸들러
+  //  내글 체크박스 핸들러
   const handleMycommunities = (e) =>{
     const checked = e.target.checked;
     const updatedParams ={
@@ -86,7 +86,7 @@ export default function CommunityPage() {
     onSearch(updatedParams);
   }
 
-  // ✅ searchParams 변경 시 API 호출
+  //  searchParams 변경 시 API 호출
   useEffect(() => {
     const queryString = new URLSearchParams(searchParams).toString();
     setError(null);

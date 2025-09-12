@@ -17,7 +17,7 @@ export async function loginUser({ memberId, memberPwd }) {
     );
   }
 
-  // ✅ JWT 추출: 응답 헤더에서 Authorization 읽기
+  //  JWT 추출: 응답 헤더에서 Authorization 읽기
   const authHeader = res.headers.get("Authorization");
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {

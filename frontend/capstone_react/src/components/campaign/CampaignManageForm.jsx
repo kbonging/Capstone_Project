@@ -76,7 +76,7 @@ export default function CampaignManageForm() {
     onSearch(updatedParams, false); // URL 쿼리 갱신(page 유지)
   };
 
-  // ✅ searchParams 변경 → API 호출
+  //  searchParams 변경 → API 호출
   useEffect(() => {
     const queryString = new URLSearchParams(searchParams).toString();
     setError(null);
@@ -105,7 +105,7 @@ export default function CampaignManageForm() {
       console.log("[DELETE] 성공:", campaignIdx);
       alert("삭제되었습니다.");
 
-      // ✅ 목록 갱신
+      //  목록 갱신
       const queryString = new URLSearchParams(searchParams).toString();
       const data = await getOwnerCampaignsList(token, queryString);
       setCampaigns(data.campaignList);
@@ -200,7 +200,7 @@ export default function CampaignManageForm() {
       <tr
         key={c.campaignIdx}
         className="hover:bg-gray-50 border-b h-[110px] text-[15px] cursor-pointer"
-        onClick={() => navigate(`/campaign/${c.campaignIdx}`)} // ✅ 행 클릭 시 상세 이동
+        onClick={() => navigate(`/campaign/${c.campaignIdx}`)} //  행 클릭 시 상세 이동
       >
         {/* 캠페인 정보 열 */}
         <td className="pl-4 py-3">
@@ -262,7 +262,7 @@ export default function CampaignManageForm() {
         {/* 관리 버튼 */}
         <td
           className="text-center py-3"
-          onClick={(e) => e.stopPropagation()} // ✅ 이벤트 버블링 막기
+          onClick={(e) => e.stopPropagation()} // 이벤트 버블링 막기
         >
           <div className="flex flex-col items-center gap-2">
             <div className="flex gap-2">

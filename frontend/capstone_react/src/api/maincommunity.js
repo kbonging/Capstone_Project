@@ -68,7 +68,7 @@ export function mapCommunityForNews(raw) {
   const title = raw?.title ?? "";
   const desc = summarize(stripHtml(raw?.content ?? ""), 60);
 
-  // ✅ 서버가 내려주는 사람이 읽는 이름(codeNm)이 있으면 그걸 우선 배지로 사용
+  //  서버가 내려주는 사람이 읽는 이름(codeNm)이 있으면 그걸 우선 배지로 사용
   const badge = raw?.codeNm || raw?.categoryId || "소식";
 
   return {

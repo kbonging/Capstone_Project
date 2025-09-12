@@ -43,7 +43,7 @@ export default function CampaignSearchPage() {
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState(null);
 
-  // ✅ 상태를 객체 하나로 통합
+  //  상태를 객체 하나로 통합
   const [params, setParams] = useState({
     region: "",
     campaignType: "",
@@ -53,12 +53,12 @@ export default function CampaignSearchPage() {
     page: 1,
   });
 
-  // ✅ params 업데이트 함수
+  //  params 업데이트 함수
   const updateParams = (updates) => {
     setParams((prev) => ({ ...prev, ...updates }));
   };
 
-  // ✅ 캠페인 목록 가져오기
+  //  캠페인 목록 가져오기
   useEffect(() => {
     const fetchCampaigns = async () => {
       setLoading(true);

@@ -204,7 +204,7 @@ export default function CampaignForm({ mode = "create", campaignIdx }) {
                 return;
               }
 
-              console.log("✅ 최종 제출 데이터:", formData);
+              console.log("최종 제출 데이터:", formData);
 
               try {
                 if (mode === "edit") {

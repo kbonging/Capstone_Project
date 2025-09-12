@@ -380,8 +380,8 @@ export default function CampaignDetail() {
                       <div className="mt-3">
                         <div className="overflow-hidden rounded-xl border border-stone-200 dark:border-zinc-800">
                           <KakaoMap
-                            address={addressForMap} // ✅ 정제된 순수 주소만
-                            title={titleForMap} // ✅ 상호/제목
+                            address={addressForMap} // 정제된 순수 주소만
+                            title={titleForMap} //  상호/제목
                             height="220px"
                             level={3}
                           />

@@ -88,7 +88,7 @@ export async function getCampaigns({
 
   const data = await res.json();
 
-  // ✅ 서버 응답 호환: campaignList | list | items
+  //  서버 응답 호환: campaignList | list | items
   const list = Array.isArray(data.campaignList)
     ? data.campaignList
     : Array.isArray(data.list)

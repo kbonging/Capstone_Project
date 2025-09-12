@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { toAbsoluteUrl } from "./../../utils/url";
 
 function toRemainDays(item) {
@@ -17,7 +18,6 @@ function StatusBadge({ code, name }) {
     CAMAPP_APPROVED: { bg: "bg-emerald-100", text: "text-emerald-700", label: "당첨" },
     CAMAPP_REJECTED: { bg: "bg-rose-100",    text: "text-rose-700",    label: "탈락" },
     CAMAPP_PENDING:  { bg: "bg-zinc-100",    text: "text-zinc-700",    label: "대기" },
-    // ✅ 취소 상태 추가(있다면)
     CAMAPP_CANCELLED:{ bg: "bg-zinc-200",    text: "text-zinc-700",    label: "취소" },
   };
   const style = map[code] ?? { bg: "bg-zinc-100", text: "text-zinc-700", label: name || "상태" };
@@ -45,6 +45,8 @@ function formatRemain(remain) {
  * - onOpen(applicationIdx)
  */
 export default function MyCampaignCard({ item, onCancel, isNew, onOpen }) {
+  const navigate = useNavigate();
+
   const remain           = toRemainDays(item);
   const applicationIdx   = item.applicationIdx;
   const campaignIdx      = item.campaignIdx;
@@ -58,29 +60,53 @@ export default function MyCampaignCard({ item, onCancel, isNew, onOpen }) {
   const categoryName     = item.categoryName;
   const rewardPoint      = item.rewardPoint;
 
-  // ✅ 발표일 전 마스킹된 상태 사용
+  // 발표일 전 마스킹된 상태 사용
   const displayStatusCode = item.displayStatusCode ?? item.applyStatusCode;
   const displayStatusName = item.displayStatusName ?? item.applyStatusName;
 
-  // ✅ 백엔드 계산값을 신뢰
+  // 백엔드 계산값을 신뢰
   const showCancel = !!item.cancelable;
 
-  // ✅ 절대경로 보완 (이미 http/https면 그대로)
+  // 절대경로 보완 (이미 http/https면 그대로)
   const imgSrc = /^https?:\/\//i.test(thumbnailUrl || "") ? thumbnailUrl : toAbsoluteUrl(thumbnailUrl);
 
+  //  이미지 클릭 시 리뷰등록 페이지로 이동
+  const goReviewSubmit = (e) => {
+    e.stopPropagation(); // 카드의 onClick(onOpen)과 충돌 방지
+    if (!campaignIdx) return;
+    navigate(`/campaigns/${campaignIdx}/review/submit`, {
+      state: { applicationIdx }, // 필요 시 리뷰 등록 페이지에서 활용
+    });
+  };
+
   return (
-    // ✅ flex 레이아웃에서 폭 줄어듦 방지
+    // flex 레이아웃에서 폭 줄어듦 방지
     <div className="w-[220px] shrink-0">
-      {/* 이미지 카드 */}
+      {/* 카드 전체 클릭: 기존처럼 읽음 처리 등 */}
       <div
         className="relative w-full h-[160px] overflow-hidden rounded-md border bg-white cursor-pointer"
         onClick={() => onOpen?.(applicationIdx)}
         title={title}
       >
+        {/* 썸네일 클릭 → 리뷰등록으로 이동 */}
         {thumbnailUrl ? (
-          <img src={imgSrc} alt={title} className="w-full h-full object-cover" />
+          <img
+            src={imgSrc}
+            alt={title}
+            onClick={goReviewSubmit}
+            role="button"
+            aria-label="리뷰 등록으로 이동"
+            className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition"
+          />
         ) : (
-          <div className="w-full h-full grid place-items-center text-sm text-zinc-400">no image</div>
+          <div
+            onClick={goReviewSubmit}
+            role="button"
+            aria-label="리뷰 등록으로 이동"
+            className="w-full h-full grid place-items-center text-sm text-zinc-400 hover:opacity-90 transition"
+          >
+            no image
+          </div>
         )}
 
         {/* 좌상단: #캠페인ID */}
