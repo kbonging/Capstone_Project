@@ -286,3 +286,5 @@ FROM tb_campaign_application a
 LEFT JOIN tb_reviewer_profile r ON a.MEMBER_IDX = r.MEMBER_IDX
 LEFT JOIN tb_common_code cc ON a.APPLY_STATUS_CODE = cc.CODE_ID
 WHERE a.CAMPAIGN_IDX = 10 AND a.DEL_YN = 'N';
+
+

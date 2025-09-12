@@ -1,0 +1,52 @@
+<!-- src/main/resources/mappers/CampaignDetailMapper.xml -->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webcore.platform.notification.dao.NotificationDAO">
+    <!-- 1. 전체/개인 알림 조회 -->
+    <select id="selectNotifications" parameterType="int" resultType="com.webcore.platform.notification.dto.NotificationDTO">
+        SELECT
+        n.NOTIFICATION_IDX,
+        n.MEMBER_IDX,
+        n.NOTI_TYPE_CD,
+        n.NOTI_TITLE,
+        n.NOTI_MESSAGE,
+        n.NOTI_LINK_URL,
+        n.DEL_YN,
+        n.REG_DATE,
+        n.MOD_DATE,
+        CASE WHEN r.NOTIFICATION_IDX IS NULL THEN FALSE ELSE TRUE END AS isRead
+        FROM TB_NOTIFICATION n
+        LEFT JOIN TB_NOTIFICATION_READ r
+        ON n.NOTIFICATION_IDX = r.NOTIFICATION_IDX
+        AND r.MEMBER_IDX = #{memberIdx}
+        WHERE n.DEL_YN = 'N'
+        AND (n.MEMBER_IDX IS NULL OR n.MEMBER_IDX = #{memberIdx})
+        ORDER BY n.REG_DATE DESC
+    </select>
+
+    <!-- 2. 알림 INSERT -->
+    <insert id="insertNotification" parameterType="com.webcore.platform.notification.dto.NotificationDTO" useGeneratedKeys="true" keyProperty="notificationIdx">
+        INSERT INTO TB_NOTIFICATION
+        (MEMBER_IDX, NOTI_TYPE_CD, NOTI_TITLE, NOTI_MESSAGE, NOTI_LINK_URL, REG_DATE)
+        VALUES
+        (#{memberIdx}, #{notiTypeCd}, #{notiTitle}, #{notiMessage}, #{notiLinkUrl}, NOW())
+    </insert>
+
+    <!-- 3. 읽음 처리 (한 번만 INSERT) -->
+    <insert id="insertNotificationRead" parameterType="com.webcore.platform.notification.dto.NotificationReadDTO">
+        INSERT INTO TB_NOTIFICATION_READ (NOTIFICATION_IDX, MEMBER_IDX, READ_AT)
+        SELECT #{notificationIdx}, #{memberIdx}, NOW()
+        WHERE NOT EXISTS (
+        SELECT 1
+        FROM TB_NOTIFICATION_READ
+        WHERE NOTIFICATION_IDX = #{notificationIdx} AND MEMBER_IDX = #{memberIdx}
+        )
+    </insert>
+
+
+</mapper>
+
+
+
+
