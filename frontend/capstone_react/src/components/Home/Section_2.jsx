@@ -3,6 +3,12 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FiMoreHorizontal } from "react-icons/fi";
 import CampaignCard from "../campaign/CampaignCard";
 import { PlusButton } from "../PlusButton";
+import {
+  getCampaigns,
+  mapCampaignForCard,
+  toCampaignTypeCode,
+} from "../../api/campaigns/campaigns";
+import { toAbsoluteUrl } from "../../utils/url";
 
 /* ===== 공용: 가운데 정렬 래퍼 ===== */
 function CenterWrap({ max = 880, className = "", children }) {
@@ -21,7 +27,7 @@ function useColumns() {
     const lg = matchMedia("(min-width:1024px)");
     const xl = matchMedia("(min-width:1280px)");
     const calc = () => {
-      if (xl.matches) return setCols(4); // 데스크탑은 4칸
+      if (xl.matches) return setCols(4);
       if (lg.matches) return setCols(3);
       if (sm.matches) return setCols(2);
       setCols(1);
@@ -44,7 +50,7 @@ const chunk = (arr, size) => {
   return out;
 };
 
-/* ===== Ribbon Header (Revory + 로고) ===== */
+/* ===== Ribbon Header ===== */
 function RibbonHeader({
   title = "Revory",
   subtitle = "체험하고 리뷰 쓰면 혜택이 팡팡!",
@@ -62,13 +68,18 @@ function RibbonHeader({
           <span className="text-gray-400 select-none">|</span>
           <p className="text-sm text-gray-600 dark:text-zinc-300 truncate">{subtitle}</p>
         </div>
-        <img src={logoUrl} alt="Revory logo" className="h-7 w-auto shrink-0" loading="lazy" />
+        <img
+          src={logoUrl}
+          alt="Revory logo"
+          className="h-7 w-auto shrink-0"
+          loading="lazy"
+        />
       </div>
     </CenterWrap>
   );
 }
 
-/* ===== 병풍(폭 재분배) Row: 마지막 호버 유지 ===== */
+/* ===== 병풍 Row ===== */
 function Row({ items, gapPx = 24 }) {
   const ref = useRef(null);
   const [rowW, setRowW] = useState(0);
@@ -105,7 +116,11 @@ function Row({ items, gapPx = 24 }) {
             className="flex-none min-w-0 transition-all duration-300 ease-out"
             style={{ width: `${Math.max(MIN, Math.round(width))}px` }}
           >
-            <CampaignCard data={it} isActive={isActive} cropped={activeIdx === null ? true : !isActive} />
+            <CampaignCard
+              data={it}
+              isActive={isActive}
+              cropped={activeIdx === null ? true : !isActive}
+            />
           </div>
         );
       })}
@@ -113,7 +128,7 @@ function Row({ items, gapPx = 24 }) {
   );
 }
 
-/* ===== 상단 탭 바 (리본과 동일 폭) ===== */
+/* ===== 탭 바 ===== */
 function TopTabBar({ tabs, active, onChange, layout = "spread" }) {
   const alignCls =
     layout === "left" ? "justify-start" : layout === "center" ? "justify-center" : "justify-center";
@@ -145,8 +160,8 @@ function TopTabBar({ tabs, active, onChange, layout = "spread" }) {
                 <span className="inline-block">{t.label}</span>
                 <span
                   className={[
-                    "pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-0 h-10 rounded-full transition-all duration-200",
-                    isActive ? "w-full bg-gray-200 dark:bg-zinc-100 opacity-60" : "w-0 bg-transparent",
+                    "pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-0 h-10 rounded-md transition-all duration-200",
+                    isActive ? "w-full bg-blue-100 dark:bg-zinc-100 opacity-60" : "w-0 bg-transparent",
                   ].join(" ")}
                   aria-hidden
                 />
@@ -164,7 +179,7 @@ function TopTabBar({ tabs, active, onChange, layout = "spread" }) {
   );
 }
 
-/* ===== 줌인/줌아웃 카드 ===== */
+/* ===== 줌 카드 & 그리드 ===== */
 function ZoomCard({ data }) {
   return (
     <a
@@ -173,21 +188,26 @@ function ZoomCard({ data }) {
     >
       <div className="relative h-56 w-full overflow-hidden">
         <img
-          src={data.thumbnailUrl}
+          src={toAbsoluteUrl(data.thumbnailUrl)}
           alt={data.title}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-110"
         />
+        {data.isClosed && (
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+            <span className="text-white font-bold text-lg">종료된 체험단</span>
+          </div>
+        )}
       </div>
       <div className="p-3">
         <h3 className="line-clamp-1 font-semibold text-stone-900 dark:text-zinc-100">{data.title}</h3>
-        {data.region && <p className="mt-1 text-sm text-stone-600 dark:text-zinc-400">{data.region}</p>}
+        {data.region && (
+          <p className="mt-1 text-sm text-stone-600 dark:text-zinc-400">{data.region}</p>
+        )}
       </div>
     </a>
   );
 }
-
-/* ===== 4칸 그리드(줌카드용) ===== */
 function ZoomCardGrid({ items }) {
   if (!items?.length) {
     return <div className="py-10 text-center text-stone-500">조건에 맞는 결과가 없어요.</div>;
@@ -229,115 +249,199 @@ function CategoryChips({ value, onChange }) {
   );
 }
 
-/* ===== 카테고리 매칭 ===== */
-function matchCategory(item, cat) {
-  if (!cat || cat === "전체") return true;
-  const src = (
-    item.serviceType ||
-    item.campaignTypeName ||
-    item.categoryName ||
-    item.channelName ||
-    (Array.isArray(item.tags) ? item.tags.join(" ") : "") ||
-    ""
-  )
-    .toString()
-    .toLowerCase();
-  const hasAny = (words) => words.some((w) => src.includes(w));
-  if (cat === "배송형") return hasAny(["배송", "택배", "delivery", "ship"]);
-  if (cat === "방문형") return hasAny(["방문", "오프라인", "매장", "visit", "in-store"]);
-  if (cat === "포장형") return hasAny(["포장", "테이크아웃", "takeout", "to-go"]);
-  if (cat === "구매형") return hasAny(["구매", "구입", "쇼핑", "purchase", "buy"]);
-  return true;
-}
-
-/* ===== 마감 임박 계산 ===== */
-function getDaysLeft(item) {
-  if (typeof item?.daysLeft === "number") return item.daysLeft;
-  if (item?.endDate) {
-    const d = Math.ceil((new Date(item.endDate) - new Date()) / (1000 * 60 * 60 * 24));
-    return isNaN(d) ? null : d;
-  }
-  return null;
-}
-
 /* ===== 메인 섹션 ===== */
-export default function Section_2({ items = [], onMore }) {
+export default function Section_2() {
+  // 탭 정의
+  const tabs = [
+    { key: "latest", label: "최신", sort: "latest" },
+    { key: "popular", label: "인기", sort: "popular" },
+    { key: "deadline", label: "마감임박", sort: "deadline" },
+  ];
+
+  // 탭 상태
+  const [tab, setTab] = useState(0);
+  const activeTab = tabs[tab];
+
+  // 칩(인기 탭 전용)
+  const [cat, setCat] = useState("전체");
+
+  // 레이아웃 계산
+  const cols = useColumns();
+
+  // 탭별 데이터 캐시
+  const [store, setStore] = useState({
+    latest:   { page: 1, items: [], totalPage: 1, loading: false, error: null },
+    popular:  { page: 1, items: [], totalPage: 1, loading: false, error: null, cat: "전체" },
+    deadline: { page: 1, items: [], totalPage: 1, loading: false, error: null },
+  });
+
+  // 공통 fetcher
+  const fetchTab = async ({ which, append = false, override = {} } = {}) => {
+    const key = which ?? activeTab.key;
+    const snap = store[key];
+    const page = override.page ?? snap.page ?? 1;
+    const sort = tabs.find((t) => t.key === key)?.sort ?? "latest";
+
+    // 인기 탭에서는 campaignType 필터 적용
+    const campaignType =
+      key === "popular" && cat !== "전체" ? toCampaignTypeCode(cat) : "";
+
+    setStore((s) => ({
+      ...s,
+      [key]: { ...s[key], loading: true, error: null },
+    }));
+
+    try {
+      const res = await getCampaigns({
+        page,
+        recordCount: 12,
+        sort,
+        campaignType,
+      });
+
+      const list = Array.isArray(res.list)
+        ? res.list
+        : Array.isArray(res.campaignList)
+        ? res.campaignList
+        : Array.isArray(res.items)
+        ? res.items
+        : [];
+
+      // 공통 매핑
+      let mapped = list.map(mapCampaignForCard);
+
+      // ====== 탭별 후처리 ======
+      if (key === "deadline") {
+        // 0~7일 남은 항목만, 남은 기간 오름차순
+        const THRESHOLD = 7;
+        const openWithin = mapped
+          .filter(
+            (it) =>
+              typeof it.daysLeft === "number" &&
+              it.daysLeft >= 0 &&
+              it.daysLeft <= THRESHOLD
+          )
+          .sort((a, b) => (a.daysLeft ?? Infinity) - (b.daysLeft ?? Infinity));
+
+        // 혹시 응답에 종료 항목이 섞여 온 경우를 대비해 뒤로 밀기
+        const closed = mapped.filter(
+          (it) => typeof it.daysLeft === "number" && it.daysLeft < 0
+        );
+
+        mapped = [...openWithin, ...closed];
+      } else {
+        // 공통 규칙: 종료 캠페인은 항상 맨 뒤로
+        mapped.sort((a, b) => {
+          const aClosed = typeof a.daysLeft === "number" && a.daysLeft < 0;
+          const bClosed = typeof b.daysLeft === "number" && b.daysLeft < 0;
+          if (aClosed === bClosed) return 0; // 원래 정렬 유지
+          return aClosed ? 1 : -1; // 종료는 뒤로
+        });
+      }
+
+      const totalPage =
+        res?.paginationInfo?.totalPage ??
+        res?.paginationInfo?.totalPages ??
+        res?.totalPages ??
+        1;
+
+      setStore((s) => ({
+        ...s,
+        [key]: {
+          ...s[key],
+          page,
+          totalPage,
+          items: append ? [...(s[key].items || []), ...mapped] : mapped,
+          loading: false,
+          error: null,
+        },
+      }));
+    } catch (e) {
+      setStore((s) => ({
+        ...s,
+        [key]: {
+          ...s[key],
+          loading: false,
+          error: e?.message || "불러오기 실패",
+        },
+      }));
+    }
+  };
+
+  // 탭 바뀔 때 최초 로딩
+  useEffect(() => {
+    const key = activeTab.key;
+    if (!store[key].items?.length) {
+      fetchTab({ which: key, append: false });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
+
+  // 인기 탭에서 카테고리 변경 시 재조회
+  useEffect(() => {
+    if (activeTab.key !== "popular") return;
+    fetchTab({ which: "popular", append: false, override: { page: 1 } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cat]);
+
+  // ========= 표시 구성 =========
   const MAX_ROWS = 3;
   const COLS_DESKTOP = 4;
   const LIMIT = MAX_ROWS * COLS_DESKTOP; // 12개
 
-  const cols = useColumns();
-  const rows = useMemo(() => chunk(items, cols), [items, cols]);
+  const key = activeTab.key;
+  const state = store[key];
+  const items = state.items ?? [];
+  const rows = useMemo(() => {
+    if (key !== "latest") return [];
+    const colsNow = cols || 1;
+    return chunk(items, colsNow);
+  }, [items, cols, key]);
 
-  const [tab, setTab] = useState(0);
-  const tabs = [
-    { key: "ai", label: "최신" },
-    { key: "hot", label: "인기" },
-    { key: "planner", label: "마감임박" },
-  ];
+  const canMore = state.page < state.totalPage;
 
-  const [cat, setCat] = useState("전체");
-  const filteredForZoom = useMemo(
-    () => (tab === 1 ? items.filter((it) => matchCategory(it, cat)) : items),
-    [items, tab, cat]
-  );
+  const handleMore = () => {
+    if (!canMore || state.loading) return;
+    fetchTab({ which: key, append: true, override: { page: state.page + 1 } });
+  };
 
-  const DEADLINE_DAYS = 7;
-  const urgentItems = useMemo(() => {
-    return items
-      .map((x) => ({ ...x, _days: getDaysLeft(x) }))
-      .filter((x) => typeof x._days === "number" && x._days >= 0 && x._days <= DEADLINE_DAYS)
-      .sort((a, b) => a._days - b._days);
-  }, [items]);
-
-  useEffect(() => {
-    if (onMore) onMore(tab);
-  }, [tab]); // eslint-disable-line
-
-  // ====== 탭별 표시/더보기 로직 ======
+  // ========= 렌더 =========
   let content = null;
-  let showMore = false;
 
-  if (tab === 1) {
-    // 인기: 줌카드 + 4칸 × 3줄 제한
-    const total = filteredForZoom.length;
-    const visible = filteredForZoom.slice(0, LIMIT);
-    showMore = total > LIMIT;
-
+  if (state.loading && !items.length) {
+    content = <div className="py-16 text-center text-stone-500">불러오는 중…</div>;
+  } else if (state.error && !items.length) {
+    content = <div className="py-16 text-center text-rose-500">에러: {state.error}</div>;
+  } else if (key === "popular") {
+    // 인기: 줌카드 + 칩 + 4칸 그리드
     content = (
       <>
         <CategoryChips value={cat} onChange={setCat} />
         <div className="mx-auto w-full px-3 sm:px-4 mt-4" style={{ maxWidth: "1180px" }}>
-          <ZoomCardGrid items={visible} />
-          {showMore && (
+          <ZoomCardGrid items={items.slice(0, LIMIT)} />
+          {canMore && (
             <div className="mt-4 flex justify-end">
-              <PlusButton  onClick={() => onMore && onMore(tab)} />
+              <PlusButton onClick={handleMore} />
             </div>
           )}
         </div>
       </>
     );
-  } else if (tab === 2) {
-    // 마감임박: 줌카드 + 4칸 × 3줄 제한
-    const total = urgentItems.length;
-    const visible = urgentItems.slice(0, LIMIT);
-    showMore = total > LIMIT;
-
+  } else if (key === "deadline") {
+    // 마감임박: 0~7일 필터 + 종료는 뒤로
     content = (
       <div className="mx-auto w-full px-3 sm:px-4 mt-4" style={{ maxWidth: "1180px" }}>
-        <ZoomCardGrid items={visible} />
-        {showMore && (
+        <ZoomCardGrid items={items.slice(0, LIMIT)} />
+        {canMore && (
           <div className="mt-4 flex justify-end">
-            <PlusButton  onClick={() => onMore && onMore(tab)} />
+            <PlusButton onClick={handleMore} />
           </div>
         )}
       </div>
     );
   } else {
-    // 최신: 병풍(Row) 3줄만 노출
+    // 최신: 병풍(Row) 3줄
     const visibleRows = rows.slice(0, MAX_ROWS);
-    showMore = rows.length > MAX_ROWS;
-
     content = (
       <div className="mx-auto w-full px-3 sm:px-4 mt-4" style={{ maxWidth: "1180px" }}>
         <div className="space-y-6">
@@ -345,10 +449,9 @@ export default function Section_2({ items = [], onMore }) {
             <Row key={i} items={r} />
           ))}
         </div>
-        {showMore && (
+        {canMore && (
           <div className="mt-4 flex justify-end">
-             <PlusButton  onClick={() => onMore && onMore(tab)} />
-            
+            <PlusButton onClick={handleMore} />
           </div>
         )}
       </div>
