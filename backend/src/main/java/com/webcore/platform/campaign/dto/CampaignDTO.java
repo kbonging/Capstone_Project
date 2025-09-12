@@ -68,8 +68,6 @@ public class CampaignDTO extends DefaultDTO {
     private String reviewerMyCampaign;
     /** 신청 마감 기한 지난글 제거 */
     private String onlyActive;
-    /** 관리자는 반려된 것도 봐야함 */
-    private Boolean isAdmin;
 
     /** 지역 필터 (서울, 경기, 온라인 등) */
     private String region;

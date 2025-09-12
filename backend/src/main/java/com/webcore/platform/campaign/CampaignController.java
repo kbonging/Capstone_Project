@@ -82,7 +82,6 @@ public class CampaignController {
       @AuthenticationPrincipal CustomUser customUser) {
     log.info("[GET] /api/campaigns/admin [Request]");
 
-    campaignDTO.setIsAdmin(true);
     Map<String, Object> resultMap = campaignService.getCampaignList(campaignDTO);
 
     return new ResponseEntity<>(resultMap, HttpStatus.OK);
