@@ -120,8 +120,11 @@ public class SecurityConfig {
                         .hasAnyRole("USER", "OWNER", "ADMIN")// 캠페인 모든 경로는 권한 필요
 
                         // 커뮤니티
-                        .requestMatchers("/api/community", "/api/community/**") // 커뮤니티 모든 경로는 권한 필요
+                        .requestMatchers(HttpMethod.POST,"/api/community", "/api/community/**") // 커뮤니티 POST 경로는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")
+
+                        .requestMatchers(HttpMethod.GET,"/api/community") // 커뮤니티 불러오기 권한 필요 X
+                        .permitAll()
 
                         .requestMatchers("/api/comments", "/api/comments/**")// 댓글 경로는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")
