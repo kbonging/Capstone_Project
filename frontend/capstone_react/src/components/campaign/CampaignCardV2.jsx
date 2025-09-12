@@ -12,6 +12,18 @@ export default function CampaignCardV2({ campaign }) {
 
   const locationLabel = getShortAddress(campaign.address);
 
+  const getRemainingDaysLabel = (applyEndDate) => {
+    if (!applyEndDate) return "";
+    const today = new Date();
+    const diffDays = Math.ceil(
+      (new Date(applyEndDate) - today) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays > 0) return `${diffDays}일 남음`;
+    if (diffDays == 0) return "오늘 신청 마감";
+    return "마감";
+  };
+
   return (
     <a
       href={`/campaign/${campaign.campaignIdx}`}
@@ -43,13 +55,7 @@ export default function CampaignCardV2({ campaign }) {
           <div className="flex items-center gap-2 flex-wrap">
             {campaign.applyEndDate && (
               <span className="text-emerald-600 font-medium">
-                {`${Math.max(
-                  0,
-                  Math.ceil(
-                    (new Date(campaign.applyEndDate) - new Date()) /
-                      (1000 * 60 * 60 * 24)
-                  )
-                )}일 남음`}
+                {getRemainingDaysLabel(campaign.applyEndDate)}
               </span>
             )}
             <span className="hidden sm:inline">|</span>
@@ -63,7 +69,7 @@ export default function CampaignCardV2({ campaign }) {
           </div>
           <div className="flex items-center gap-1 text-sky-600">
             <FiHeart />
-            {campaign.likes ?? 0}
+            {campaign.bookmarkCount ?? 0}
           </div>
         </div>
 

@@ -84,6 +84,8 @@ public class CampaignDetailResponseDTO extends DefaultDTO {
   private String mapUrl;
   /** 로그인한 사용자가 찜했는지 여부(0 = 안함, 1 = 함) */
   private Integer bookmarkedByMe;
+  /** 전체 북마크 개수 */
+  private Integer bookmarkCount;
   // ── 배송형 캠페인 정보 ────────────────────────
   /** 제품 구매/신청 URL */
   private String purchaseUrl;

@@ -41,8 +41,8 @@
     <result property="purchaseUrl"     column="purchaseUrl"/>
     <result property="applicants"      column="applicants"    jdbcType="BIGINT"/>
     <result property="approCount"      column="approCount"/>
-
     <result property="bookmarkedByMe"  column="bookmarked_by_me"/>
+      <result property="bookmarkCount" column="bookmarkCount" />
   </resultMap>
 
     <!-- 검색키워드가 있을경우 -->
@@ -154,7 +154,12 @@
         WHERE ca.CAMPAIGN_IDX = c.CAMPAIGN_IDX
         AND del_yn='N'
         AND ca.apply_status_code='CAMAPP_APPROVED'
-        ) as approCount
+        ) as approCount,
+        (
+        SELECT COUNT(*)
+        FROM TB_BOOKMARK b
+        WHERE b.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        ) as bookmarkCount
         FROM TB_CAMPAIGN c
         LEFT JOIN TB_CAMPAIGN_VISIT v ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
         LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
