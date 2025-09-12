@@ -52,7 +52,7 @@ export default function HomePage() {
 
   return (
     <div className=" w-full   ">
-      {/* ✅ 헤더 바로 아래 풀-블리드 히어로 */}
+      {/*  헤더 바로 아래 풀-블리드 히어로 */}
       <div className="w-full">
         <ShowcaseSlider />
       </div>

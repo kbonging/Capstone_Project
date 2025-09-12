@@ -23,6 +23,7 @@ import RequireReviewer from "./RequireReviewer";
 import MyCampaigns from "../pages/MyCampaigns";
 import AdminCampaignTime from "../pages/AdminCampaignTime";
 import CampaignSearchPage from "../pages/CampaignSearchPage";
+import ReviewSubmitPage from "../pages/ReviewSubmitPage";
 
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
@@ -104,6 +105,7 @@ export default function AppRouter() {
       }
       />
       <Route path="/mypage/my-campaigns" element={<MyCampaigns />} />
+      <Route path="/campaigns/:campaignId/review/submit" element={<ReviewSubmitPage />} />
       {/* <Route path="/search"     element={<SearchPage />} /> */}
       {/* <Route path="/support"    element={<Support    />} /> */}
       {/* <Route path="/events"     element={<Events     />} /> */}

@@ -11,7 +11,7 @@ import { FiMoon, FiSun } from 'react-icons/fi';
  * - 선택한 모드에 따라 FAB 아이콘이 즉시 바뀜
  */
 export default function ThemeToggleFab() {
-  const { mode, setMode } = useThemeCtx(); // ✅ mode 추가
+  const { mode, setMode } = useThemeCtx(); // mode 추가
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
 
@@ -152,7 +152,7 @@ export default function ThemeToggleFab() {
           style={circleStyle}
           title="테마 전환"
         >
-          {/* ✅ 현재 적용 모드에 따라 아이콘 변경 */}
+          {/* 현재 적용 모드에 따라 아이콘 변경 */}
           {isEffectiveDark ? <FiMoon /> : <FiSun />}
         </button>
       </div>

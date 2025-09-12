@@ -46,7 +46,7 @@
       c.BENEFIT_DETAIL    AS benefitText,
       c.RECRUIT_COUNT     AS recruitCount,
       c.APPLY_END_DATE    AS applyEndDate,
-      c.ANNOUNCE_DATE     AS announceDate,   -- ✅ 발표일
+      c.ANNOUNCE_DATE     AS announceDate,   --  발표일
 
       (SELECT COUNT(1)
        FROM tb_campaign_application aa

@@ -35,12 +35,12 @@ export default function OwnerCampaignApply({ campaignIdx, recruitCount, onClose 
       .catch((err) => console.error(err));
   };
 
-  // ✅ 당첨자 수 계산
+  //  당첨자 수 계산
   const approvedCount = applicants.filter(
     (app) => app.applyStatusCode === "CAMAPP_APPROVED"
   ).length;
 
-  // ✅ 상태 변경 함수
+  // 상태 변경 함수
   const handleStatusChange = (applicationIdx, newStatus) => {
     if (newStatus === "CAMAPP_APPROVED") {
       const approvedCount = applicants.filter(
@@ -102,7 +102,7 @@ export default function OwnerCampaignApply({ campaignIdx, recruitCount, onClose 
       className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
       onClick={handleOverlayClick}
     >
-      {/* ✅ 모달 가로폭 800px로 변경 */}
+      {/*  모달 가로폭 800px로 변경 */}
       <div className="bg-white p-8 rounded-2xl shadow-2xl w-[1000px] max-h-[85vh] overflow-y-auto">
         <h2 className="text-2xl font-bold mb-6 text-gray-700">신청자 관리</h2>
 
@@ -168,7 +168,7 @@ export default function OwnerCampaignApply({ campaignIdx, recruitCount, onClose 
                   <td
                     className="py-2 px-2 font-semibold truncate hover:underline-offset-0 hover:text-black cursor-pointer"
                     title={app.nickname}
-                    onClick={() => navigate(`/mypage/${app.memberIdx}`)} // ✅ 클릭 시 이동
+                    onClick={() => navigate(`/mypage/${app.memberIdx}`)} // 클릭 시 이동
                   >
                     {app.nickname}
                   </td>

@@ -110,7 +110,7 @@ export default function CommunityForm({ mode = "create"}) {
         // 게시글 등록일 경우
         await createPost(formData, token);
         alert("등록되었습니다.");
-        navigate("/community"); // ✅ 등록 후 커뮤니티 목록으로 이동
+        navigate("/community"); // 등록 후 커뮤니티 목록으로 이동
       }
     } catch (err) {
       console.error("등록/수정 실패", err);

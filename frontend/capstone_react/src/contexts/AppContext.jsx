@@ -28,10 +28,10 @@ export function AppProvider({ children }) {
           localStorage.removeItem('token');
         })
         .finally(() => {
-          setLoading(false); // ✅ 무조건 로딩 끝 표시
+          setLoading(false); //  무조건 로딩 끝 표시
         });
     }else{
-      setLoading(false); // ✅ 토큰 없거나 이미 유저 있으면 로딩 종료
+      setLoading(false); //  토큰 없거나 이미 유저 있으면 로딩 종료
     }
   }, [token, user]);
 
