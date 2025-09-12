@@ -61,8 +61,16 @@ public class CampaignDTO extends DefaultDTO {
     private String campaignStatus;
     /** 모집 상태 */
     private String recruitStatus;
-    /** 내 글만 보기 여부 (true or "")*/
+
+    /** 소상공인 내 글만 보기 여부 (true or "")*/
     private String showMyParam;
+    /** 리뷰어 본인 신청 글 보기 */
+    private String reviewerMyCampaign;
+    /** 신청 마감 기한 지난글 제거 */
+    private String onlyActive;
+    /** 관리자는 반려된 것도 봐야함 */
+    private Boolean isAdmin;
+
     /** 지역 필터 (서울, 경기, 온라인 등) */
     private String region;
     /** 정렬 기준 : latest, deadline, popular */

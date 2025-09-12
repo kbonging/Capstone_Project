@@ -63,9 +63,19 @@
             AND c.RECRUIT_STATUS = #{recruitStatus}
         </if>
 
-        <!-- 내 글만 보기 -->
+        <!-- 소상공인 내 글만 보기 -->
         <if test="showMyParam != null and showMyParam == 'true' and memberIdx != 0">
             AND member_idx = #{memberIdx}
+        </if>
+
+        <!-- 신청 마감 기간 지난 글 제외 (메인/체험단 검색)-->
+        <if test="onlyActive != null and onlyActive == 'true'">
+            AND c.APPLY_END_DATE >= NOW()
+        </if>
+
+        <!-- 반려, 대기 캠페인도 확인해야하는 관리자 -->
+        <if test="isAdmin == null or isAdmin == false">
+            AND c.CAMPAIGN_STATUS = 'APPROVED'
         </if>
 
         <!-- 지역 필터 -->

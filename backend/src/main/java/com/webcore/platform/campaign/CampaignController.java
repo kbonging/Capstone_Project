@@ -27,19 +27,31 @@ public class CampaignController {
   private final FileStorageService fileStorageService;
 
   /**
-   * 공개 캠페인 목록 조회 (일반 사용자)
+   * 공개 캠페인 목록 조회 (메인/체험단 검색)
    */
   @GetMapping("")
   public ResponseEntity<?> getCampaignList(
       CampaignDTO campaignDTO,
       @AuthenticationPrincipal CustomUser customUser) {
 
+      campaignDTO.setOnlyActive("true");
     Map<String, Object> resultMap = campaignService.getCampaignList(campaignDTO);
 
     log.info("게시글 조회 정보 => {}", resultMap);
 
     return new ResponseEntity<>(resultMap, HttpStatus.OK);
   }
+
+//  /**
+//   *  리뷰어 캠페인 목록 조회
+//   * */
+//  @GetMapping("/reviewer")
+//  @PreAuthorize("hasRole('USER')")
+//  public ResponseEntity<?> getReviewerCampaignList(
+//          CampaignDTO campaignDTO,
+//          @AuthenticationPrincipal CustomUser customUser) {
+//    return
+//  }
 
   /**
    * 소상공인 캠페인 목록 조회
@@ -69,9 +81,9 @@ public class CampaignController {
       CampaignDTO campaignDTO,
       @AuthenticationPrincipal CustomUser customUser) {
     log.info("[GET] /api/campaigns/admin [Request]");
+
+    campaignDTO.setIsAdmin(true);
     Map<String, Object> resultMap = campaignService.getCampaignList(campaignDTO);
-//        log.info("캠페인 목록 조회 완료, 총{}건", campaignList.size());
-//        log.info("게시글 조회 정보 => {}", resultMap);
 
     return new ResponseEntity<>(resultMap, HttpStatus.OK);
   }
