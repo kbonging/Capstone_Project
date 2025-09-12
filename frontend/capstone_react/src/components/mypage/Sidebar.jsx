@@ -5,7 +5,7 @@ import { AppContext } from "../../contexts/AppContext"; // AppContext 가져오�
 export default function Sidebar({ userRole }) { 
   const navigate = useNavigate();
   const location = useLocation(); 
-  const { logout } = useContext(AppContext); // logout 함수 사용
+  const { logout, user } = useContext(AppContext); // logout 함수 사용
 
   const getMenusByRole = (role) => {
     if (role === "ROLE_OWNER") {
@@ -82,22 +82,22 @@ export default function Sidebar({ userRole }) {
             </h2>
             <ul className="space-y-1">
               {items.map((item) => (
-                    <li
-                      key={item.name}
-                      onClick={() => handleClick(item.path)}
-                      className={`px-3 py-2 rounded-md cursor-pointer transition 
-                        ${
-                          (item.path === "/campaign/manage" &&
-                            (location.pathname.startsWith("/campaign/manage") ||
-                            location.pathname.startsWith("/campaign/edit"))) 
-                            ? "bg-gray-100 font-bold text-blue-600"
-                            : location.pathname.startsWith(item.path)
-                            ? "bg-gray-100 font-bold text-blue-600"
-                            : "hover:bg-gray-50 hover:text-blue-600 text-gray-700"
-                        }`}
-                    >
-                      {item.name}
-                    </li>
+                <li
+                  key={item.name}
+                  onClick={() => handleClick(item.path)}
+                  className={`px-3 py-2 rounded-md cursor-pointer transition 
+                    ${
+                      item.path === "/mypage" &&
+                      location.pathname === "/mypage"
+                        ? "bg-gray-100 font-bold text-blue-600"
+                        : location.pathname.startsWith(item.path) &&
+                          item.path !== "/mypage"
+                        ? "bg-gray-100 font-bold text-blue-600"
+                        : "hover:bg-gray-50 hover:text-blue-600 text-gray-700"
+                    }`}
+                >
+                  {item.name}
+                </li>
               ))}
             </ul>
           </div>

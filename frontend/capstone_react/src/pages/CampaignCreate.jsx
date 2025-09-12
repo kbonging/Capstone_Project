@@ -27,7 +27,7 @@ export default function CampaignCreate() {
             체험단 등록
           </h1>
         </div>
-        <CampaignForm />
+        <CampaignForm key={Date.now()}/>
       </MyPageLayout>
     );
 }
