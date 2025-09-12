@@ -1,5 +1,39 @@
 // src/api/campaigns.js
 
+
+import { toAbsoluteUrl } from "../../utils/url";
+
+/**
+ * 전시관(Section4)용 이미지 목록 추출
+ * - 백엔드 응답의 thumbnailUrl을 카드 매핑 후 뽑아낸다
+ * - 필요하면 campaignType/region/sort로 필터링
+ */
+export async function getGalleryImages({
+  limit = 24,
+  sort = "popular",          // latest | popular | deadline
+  campaignType = "",         // CAMP001~4
+  region = "",               // 예: "서울"
+} = {}) {
+  const { list } = await getCampaigns({
+    page: 1,
+    recordCount: limit,
+    sort,
+    campaignType, // 예: toCampaignTypeCode("방문형")
+    region,
+  });
+
+  // 카드 표준화 후 썸네일만 추출 + 절대 URL 보정 + 중복 제거 + 빈값 제거
+  const urls = list
+    .map(mapCampaignForCard)
+    .map((c) => toAbsoluteUrl(c.thumbnailUrl))
+    .filter(Boolean);
+
+  // 간단 중복 제거
+  const uniq = Array.from(new Set(urls));
+  return uniq;
+}
+
+
 // 백엔드 코드 기준 매핑 (예시 응답 참조)
 // CAMP001=방문형, CAMP002=포장형, CAMP003=배송형, CAMP004=구매형(있다면)
 const CAT_TO_CODE = {

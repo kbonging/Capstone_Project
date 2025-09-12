@@ -25,7 +25,7 @@ export default function CampaignCard({
         "h-full flex flex-col",
         "transition-transform duration-300 ease-out origin-left",
         // 종료된 카드면 확대/호버 효과 제거
-        isClosed ? "pointer-events-auto" : isActive ? "scale-[1.02]" : "",
+        isClosed ? "pointer-events-auto" : "",
         // 종료된 카드 전체 톤 다운
         isClosed ? "opacity-90" : "",
       ].join(" ")}
