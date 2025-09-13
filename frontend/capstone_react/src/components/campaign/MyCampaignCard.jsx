@@ -74,7 +74,7 @@ export default function MyCampaignCard({ item, onCancel, isNew, onOpen }) {
   const goReviewSubmit = (e) => {
     e.stopPropagation(); // 카드의 onClick(onOpen)과 충돌 방지
     if (!campaignIdx) return;
-    navigate(`/campaigns/${campaignIdx}/review/submit`, {
+    navigate(`/campaigns/${campaignIdx}/reviews/submit`, {
       state: { applicationIdx }, // 필요 시 리뷰 등록 페이지에서 활용
     });
   };

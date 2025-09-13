@@ -12,7 +12,7 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 export default function CampaignCalendar({
   initialMonth,
   ranges = [],
-  bottomLabel = "체험준비",
+  // bottomLabel = "체험준비",
 }) {
   const safeInit =
     initialMonth instanceof Date && !isNaN(initialMonth)
@@ -246,7 +246,7 @@ export default function CampaignCalendar({
 
       {/* 하단 상태바(옵션) */}
       <div className="rounded-b-xl border-t border-stone-200 bg-sky-50 px-3 py-1.5 text-center text-[11px] text-sky-700 dark:border-zinc-800 dark:bg-zinc-800/60 dark:text-sky-300">
-        {bottomLabel}
+        {/* {bottomLabel} */}
       </div>
     </div>
   );

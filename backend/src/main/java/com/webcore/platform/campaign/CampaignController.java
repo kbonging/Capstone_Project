@@ -400,7 +400,32 @@ public class CampaignController {
     }
   }
 
+  @GetMapping("/{campaignId}/reviews/access")
+  public ResponseEntity<?> canAccessReviewSubmit(
+      @PathVariable int campaignId,
+      @AuthenticationPrincipal CustomUser user
+  ) {
+    if (user == null) {
+      // RequireReviewer에서 401 처리용
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(Map.of("message", "로그인이 필요합니다."));
+    }
 
+    String status = campaignService.findApplicationStatus(campaignId, user.getMemberDTO().getMemberIdx());
+    // 승인된 신청자만 통과
+    if ("CAMAPP_APPROVED".equals(status)) {
+      return ResponseEntity.ok(Map.of("allowed", true, "status", status));
+    }
+
+    // 승인 미완료/탈락 → 403과 함께 상태코드/문구 전달
+    String msg =
+        "CAMAPP_PENDING".equals(status) ? "승인 대기 중입니다."
+            : "CAMAPP_REJECTED".equals(status) ? "리뷰어 신청이 탈락되었습니다."
+                : "승인된 신청자만 리뷰 등록이 가능합니다.";
+
+    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        .body(Map.of("allowed", false, "status", status, "message", msg));
+  }
 
 
 }
