@@ -7,6 +7,7 @@ import com.webcore.platform.campaign.dto.*;
 import com.webcore.platform.common.CommonService;
 import com.webcore.platform.common.PaginationInfo;
 import com.webcore.platform.constants.Paging;
+import com.webcore.platform.file.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -24,6 +26,7 @@ public class CampaignServiceImpl implements CampaignService {
   private final ObjectMapper objectMapper;
   private final CampaignDAO campaignDAO;
   private final CommonService commonService;
+  private final FileStorageService fileStorageService;
 
   @Override
   public Map<String, Object> getCampaignList(CampaignDTO campaignDTO) {
@@ -345,4 +348,36 @@ public class CampaignServiceImpl implements CampaignService {
         int result = campaignDAO.deleteBookmark(memberIdx, campaignIdx);
         return result > 0;
     }
+
+  @Transactional
+  @Override
+  public void submitCampaignReview(int campaignId,
+      int memberIdx,
+      String reviewUrl,
+      MultipartFile file) throws Exception {
+    Integer appIdx = campaignDAO.findApplicationIdx(campaignId, memberIdx);
+    if (appIdx == null) throw new IllegalStateException("승인된 신청자만 리뷰를 등록할 수 있습니다.");
+    if (campaignDAO.countReviewByApplication(appIdx) > 0) {
+      throw new IllegalStateException("이미 리뷰가 등록되었습니다.");
+    }
+
+    // 파일 저장 (파일명만 DB에 저장)
+    String fileName = null;
+    if (file != null && !file.isEmpty()) {
+      fileName = fileStorageService.storeFile(file, "reviewes");
+    }
+
+    CampaignReviewDTO dto = new CampaignReviewDTO();
+    dto.setApplicationIdx(appIdx);
+    dto.setReviewUrl(reviewUrl);
+    dto.setImageUrl(fileName); // DB에는 파일명만 저장
+
+    int ins = campaignDAO.insertCampaignReview(dto);
+    if (ins != 1) throw new IllegalStateException("리뷰 저장 실패");
+  }
+
+
+
+
+
 }

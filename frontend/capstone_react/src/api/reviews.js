@@ -4,11 +4,10 @@ export async function postReviewProof({ token, campaignId, reviewUrl, file }) {
   form.append("reviewUrl", reviewUrl);
   form.append("file", file); // 서버에서 @RequestParam("file") MultipartFile file
 
-  const res = await fetch(`/api/campaigns/${campaignId}/reviews/proof`, {
+  const res = await fetch(`/api/campaigns/${campaignId}/reviews`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      // ⚠️ FormData 사용할 때는 Content-Type 설정하지 말 것(브라우저가 boundary 포함해 자동 세팅)
     },
     body: form,
   });
