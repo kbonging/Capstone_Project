@@ -3,6 +3,7 @@ import com.webcore.platform.campaign.dto.*;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface CampaignService {
   /**
@@ -50,6 +51,10 @@ public interface CampaignService {
 
   /** 캠페인 북마크 제거 */
   boolean removeBookmark(int memberIdx, int campaignIdx);
+
+  /** 리뷰 URL + 파일 URL 저장 */
+  void submitCampaignReview(int campaignId, int memberIdx, String reviewUrl, MultipartFile imageUrl) throws Exception;
+
 
 }
 

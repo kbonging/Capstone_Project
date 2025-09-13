@@ -20,7 +20,7 @@ export default function RequireReviewer({ children }) {
     (async () => {
       try {
         const token = localStorage.getItem("token");
-        await getApplyPage(id, token);
+        await getApplyPage(id, token); // ✅ 여기서 승인 상태 포함해서 내려오도록 백엔드 수정 필요
         if (!alive) return;
         setState({ ok: true, gate: null });
       } catch (e) {
@@ -31,7 +31,16 @@ export default function RequireReviewer({ children }) {
             return;
           }
           if (e.status === 403) {
-            setState({ ok: false, gate: { type: "forbidden" } });
+            // 서버 응답 body에 status 포함한다고 가정 (CAMAPP_PENDING, CAMAPP_REJECTED 등)
+            const serverType = e.body?.status || "forbidden";
+            setState({
+              ok: false,
+              gate: {
+                type: serverType,
+                message:
+                  e.body?.message || "승인된 신청자만 리뷰 등록이 가능합니다.",
+              },
+            });
             return;
           }
         }
@@ -118,24 +127,33 @@ function GateModal({
 
   if (!open) return null;
 
-  const title =
-    type === "unauth"
-      ? "로그인이 필요합니다"
-      : type === "forbidden"
-      ? "권한이 없습니다"
-      : "오류가 발생했습니다";
+  // 상태 코드 → 제목 / 설명 매핑
+  const titleMap = {
+    unauth: "로그인이 필요합니다",
+    CAMAPP_PENDING: "승인 대기 중입니다",
+    CAMAPP_REJECTED: "리뷰어 신청이 탈락되었습니다",
+    forbidden: "권한이 없습니다",
+    error: "오류가 발생했습니다",
+  };
 
-  const desc =
-    message ??
-    (type === "unauth"
-      ? "신청을 위해 먼저 로그인해 주세요."
-      : type === "forbidden"
-      ? "리뷰어 전용 페이지입니다."
-      : "접근할 수 없는 페이지입니다.");
+  const descMap = {
+    unauth: "신청을 위해 먼저 로그인해 주세요.",
+    CAMAPP_PENDING: "승인 완료 후 리뷰 등록이 가능합니다.",
+    CAMAPP_REJECTED: "해당 캠페인 리뷰 등록 권한이 없습니다.",
+    forbidden: "리뷰어 전용 페이지입니다.",
+    error: "접근할 수 없는 페이지입니다.",
+  };
+
+  const title = titleMap[type] || "알 수 없는 상태";
+  const desc = (message ?? descMap[type]) || "관리자에게 문의하세요.";
 
   const iconTone =
     type === "unauth"
       ? "bg-sky-100 text-sky-600 dark:bg-sky-950/50 dark:text-sky-300"
+      : type === "CAMAPP_PENDING"
+      ? "bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-300"
+      : type === "CAMAPP_REJECTED"
+      ? "bg-rose-100 text-rose-600 dark:bg-rose-950/50 dark:text-rose-300"
       : type === "forbidden"
       ? "bg-rose-100 text-rose-600 dark:bg-rose-950/50 dark:text-rose-300"
       : "bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-300";
@@ -161,6 +179,7 @@ function GateModal({
     </button>
   );
 
+  // 상태별 버튼 구성
   let actions;
   if (type === "unauth") {
     actions = (
@@ -175,7 +194,13 @@ function GateModal({
         </Secondary>
       </div>
     );
-  } else if (type === "forbidden") {
+  } else if (type === "CAMAPP_PENDING") {
+    actions = (
+      <div className="mt-4 flex gap-2">
+        <Secondary onClick={goHome}>홈으로</Secondary>
+      </div>
+    );
+  } else if (type === "CAMAPP_REJECTED" || type === "forbidden") {
     actions = (
       <div className="mt-4 flex gap-2">
         <Primary onClick={goHome}>
