@@ -107,4 +107,8 @@ public interface CampaignDAO {
 
   // 리뷰 저장
   int insertCampaignReview(CampaignReviewDTO dto);
+
+  // 리뷰등록 페이지 갈수있는 승인상태 체크
+  String selectApplicationStatus(@Param("campaignId") int campaignId,
+      @Param("memberIdx") int memberIdx);
 }

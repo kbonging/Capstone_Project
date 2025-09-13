@@ -376,7 +376,11 @@ public class CampaignServiceImpl implements CampaignService {
     if (ins != 1) throw new IllegalStateException("리뷰 저장 실패");
   }
 
-
+  @Override
+  public String findApplicationStatus(int campaignId, int memberIdx) {
+    // 없으면 null 반환 가능 → 컨트롤러에서 기본 문구로 처리
+    return campaignDAO.selectApplicationStatus(campaignId, memberIdx);
+  }
 
 
 

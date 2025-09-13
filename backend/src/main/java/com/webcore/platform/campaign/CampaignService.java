@@ -55,6 +55,7 @@ public interface CampaignService {
   /** 리뷰 URL + 파일 URL 저장 */
   void submitCampaignReview(int campaignId, int memberIdx, String reviewUrl, MultipartFile imageUrl) throws Exception;
 
-
+  /** 리뷰를 등록할수 있는지 상태  */
+  String findApplicationStatus(int campaignId, int memberIdx);
 }
 

@@ -617,6 +617,15 @@
              )
   </insert>
 
+  <select id="selectApplicationStatus" resultType="string">
+    SELECT a.APPLY_STATUS_CODE
+    FROM TB_CAMPAIGN_APPLICATION a
+    WHERE a.CAMPAIGN_IDX = #{campaignId}
+      AND a.MEMBER_IDX   = #{memberIdx}
+    ORDER BY a.APPLICATION_IDX DESC
+      LIMIT 1
+  </select>
+
 </mapper>
 
 
