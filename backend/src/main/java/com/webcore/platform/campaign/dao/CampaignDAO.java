@@ -96,4 +96,15 @@ public interface CampaignDAO {
 
     /** 마감 기한 지난 캠페인 종료 */
     int updateExpiredCampaignsToClosed();
+
+
+  // 로그인 유저의 신청(application_idx) 조회
+  Integer findApplicationIdx(@Param("campaignId") int campaignId,
+      @Param("memberIdx") int memberIdx);
+
+  // 동일 신청에 리뷰 존재 여부
+  int countReviewByApplication(@Param("applicationIdx") int applicationIdx);
+
+  // 리뷰 저장
+  int insertCampaignReview(CampaignReviewDTO dto);
 }

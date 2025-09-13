@@ -584,6 +584,34 @@
         WHERE recruit_status = 'OPEN'
             AND apply_end_date &lt; NOW()
     </update>
+
+
+  <!-- 필요시 승인 조건 추가: AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED' -->
+  <select id="findApplicationIdx" resultType="int">
+    SELECT a.APPLICATION_IDX
+    FROM TB_CAMPAIGN_APPLICATION a
+    WHERE a.CAMPAIGN_IDX = #{campaignId}
+      AND a.MEMBER_IDX   = #{memberIdx}
+      AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+      LIMIT 1
+  </select>
+
+
+  <select id="countReviewByApplication" resultType="int">
+    SELECT COUNT(1)
+    FROM TB_REVIEW
+    WHERE APPLICATION_IDX = #{applicationIdx}
+  </select>
+
+  <insert id="insertCampaignReview"
+    parameterType="com.webcore.platform.campaign.dto.CampaignReviewDTO">
+    INSERT INTO TB_REVIEW (
+      APPLICATION_IDX, REVIEW_URL, IMAGE_URL, REG_DATE
+    ) VALUES (
+               #{applicationIdx}, #{reviewUrl}, #{imageUrl}, NOW()
+             )
+  </insert>
+
 </mapper>
 
 

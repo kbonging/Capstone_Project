@@ -284,6 +284,29 @@ CREATE TABLE `tb_campaign_application` (
         on update cascade
 );
 
+/* ========================
+ * 체험단 리뷰 (단일 리뷰 증빙)
+ * 신청 1건당 리뷰 1건만 허용 (UNIQUE)
+ * ======================== */
+CREATE TABLE `TB_REVIEW` (
+    `REVIEW_IDX`     INT            NOT NULL AUTO_INCREMENT COMMENT '리뷰 고유 번호',
+    `APPLICATION_IDX` INT           NOT NULL                COMMENT '신청 고유번호 (TB_CAMPAIGN_APPLICATION)',
+    `REVIEW_URL`     VARCHAR(500)   NOT NULL                COMMENT '리뷰 URL',
+    `IMAGE_URL`      VARCHAR(255)   NULL                    COMMENT '후기 사진(대표) URL',
+    `REG_DATE`       DATETIME       NOT NULL                COMMENT '등록일',
+    `MOD_DATE`       DATETIME       NULL                    COMMENT '수정일',
+    /* 제약 */
+    PRIMARY KEY (`REVIEW_IDX`),
+    UNIQUE KEY `UK_REVIEW__APP` (`APPLICATION_IDX`),   -- 신청 1건당 리뷰 1건만
+    KEY `IX_REVIEW__APP` (`APPLICATION_IDX`),
+    CONSTRAINT `FK_REVIEW__APP`
+    FOREIGN KEY (`APPLICATION_IDX`)
+    REFERENCES `TB_CAMPAIGN_APPLICATION`(`APPLICATION_IDX`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) COMMENT='체험단 리뷰 테이블';
+
+
 ######### 캠페인 찜(북마크) 테이블 ###########
 CREATE TABLE `tb_bookmark` (
     `BOOKMARK_IDX` INT AUTO_INCREMENT PRIMARY KEY NOT NULL COMMENT '찜 고유번호',

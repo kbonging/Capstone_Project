@@ -104,7 +104,10 @@ export default function AppRouter() {
         </PrivateRoute>
       }
       />
+      
       <Route path="/mypage/my-campaigns" element={<MyCampaigns />} />
+
+
       <Route path="/campaigns/:campaignId/review/submit" element={<ReviewSubmitPage />} />
       {/* <Route path="/search"     element={<SearchPage />} /> */}
       {/* <Route path="/support"    element={<Support    />} /> */}
