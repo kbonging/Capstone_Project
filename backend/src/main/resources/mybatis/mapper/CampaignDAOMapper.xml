@@ -58,6 +58,11 @@
             </choose>
         </if>
 
+        <!-- benefitDetail 검색 전용 -->
+        <if test="benefitSearch != null and benefitSearch != ''">
+            AND c.BENEFIT_DETAIL LIKE CONCAT('%', #{benefitSearch}, '%')
+        </if>
+
         <!-- 모집 상태 -->
         <if test="recruitStatus != null and recruitStatus != ''">
             AND c.RECRUIT_STATUS = #{recruitStatus}

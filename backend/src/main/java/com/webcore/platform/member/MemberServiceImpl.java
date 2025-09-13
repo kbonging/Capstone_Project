@@ -43,7 +43,6 @@ public class MemberServiceImpl implements MemberService {
         return memberDAO.selectAuthListByMemberIdx(memberIdx);
     }
 
-
     @Override
     public boolean checkDuplicateId(String memberId) {
         return memberDAO.countByMemberId(memberId) > 0;

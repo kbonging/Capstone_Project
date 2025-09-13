@@ -32,27 +32,17 @@ public class CampaignController {
    */
   @GetMapping("")
   public ResponseEntity<?> getCampaignList(
-      CampaignDTO campaignDTO,
-      @AuthenticationPrincipal CustomUser customUser) {
+          CampaignDTO campaignDTO,
+          @AuthenticationPrincipal CustomUser customUser) {
 
-    campaignDTO.setOnlyActive("true");
-    Map<String, Object> resultMap = campaignService.getCampaignList(campaignDTO);
+      campaignDTO.setOnlyActive("true");
 
-    log.info("게시글 조회 정보 => {}", resultMap);
+      Map<String, Object> resultMap = campaignService.getCampaignList(campaignDTO);
 
-    return new ResponseEntity<>(resultMap, HttpStatus.OK);
+      log.info("게시글 조회 정보 => {}", resultMap);
+
+      return new ResponseEntity<>(resultMap, HttpStatus.OK);
   }
-
-//  /**
-//   *  리뷰어 캠페인 목록 조회
-//   * */
-//  @GetMapping("/reviewer")
-//  @PreAuthorize("hasRole('USER')")
-//  public ResponseEntity<?> getReviewerCampaignList(
-//          CampaignDTO campaignDTO,
-//          @AuthenticationPrincipal CustomUser customUser) {
-//    return
-//  }
 
   /**
    * 소상공인 캠페인 목록 조회

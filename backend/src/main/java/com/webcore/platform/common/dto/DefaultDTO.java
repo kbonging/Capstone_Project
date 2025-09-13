@@ -12,6 +12,8 @@ public class DefaultDTO {
     private String searchCondition;
     /** 검색Keyword */
     private String searchKeyword;
+    /** benefitDetail 검색 전용 */
+    private String benefitSearch;
     /** 등록일 */
     private String regDate;
     /** 수정일 */

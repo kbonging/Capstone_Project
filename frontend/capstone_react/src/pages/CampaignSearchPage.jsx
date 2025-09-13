@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { FaRedoAlt } from "react-icons/fa";
 import CampaignCardV2 from "../components/campaign/CampaignCardV2";
 import Pagination from "../components/community/Pagination";
 import { getCampaignsList } from "../api/campaigns/api";
 
+// regions
 const regions = [
   { name: "재택", guguns: ["재택"] },
   { name: "서울", guguns: ["강남구","강동구","강북구","강서구","관악구","광진구","구로구","금천구","노원구","도봉구","동대문구","동작구","마포구","서대문구","서초구","성동구","성북구","송파구","양천구","영등포구","용산구","은평구","종로구","중구","중랑구"] },
@@ -24,6 +27,7 @@ const regions = [
   { name: "제주", guguns: ["서귀포시","제주시"] }
 ];
 
+// 캠페인 유형
 const campaignTypes = [
   { value: "", label: "유형" },
   { value: "CAMP001", label: "방문형" },
@@ -31,6 +35,8 @@ const campaignTypes = [
   { value: "CAMP003", label: "배송형" },
   { value: "CAMP004", label: "구매형" },
 ];
+
+// 카테고리
 const categories = [
   { value: "", label: "카테고리" },
   { value: "CAMT001", label: "맛집" },
@@ -41,6 +47,8 @@ const categories = [
   { value: "CAMT006", label: "반려동물" },
   { value: "CAMT007", label: "기타" },
 ];
+
+// 채널
 const channels = [
   { value: "", label: "채널" },
   { value: "CAMC001", label: "블로그" },
@@ -52,6 +60,8 @@ const channels = [
   { value: "CAMC007", label: "쇼츠" },
   { value: "CAMC008", label: "틱톡" },
 ];
+
+// 정렬
 const sorts = [
   { value: "latest", label: "최신순" },
   { value: "deadline", label: "마감임박순" },
@@ -59,6 +69,11 @@ const sorts = [
 ];
 
 export default function CampaignSearchPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const query = new URLSearchParams(location.search);
+  const initialBenefitSearch = query.get("benefitSearch") || "";
+
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState(null);
@@ -69,32 +84,41 @@ export default function CampaignSearchPage() {
     channelCode: "",
     sort: "latest",
     page: 1,
+    benefitSearch: initialBenefitSearch,
   });
+
   const [selectedRegion, setSelectedRegion] = useState(null);
 
   const updateParams = (updates) => {
     setParams((prev) => ({ ...prev, ...updates }));
   };
 
+  // 🔹 URL query와 params 동기화 (검색 등)
+  useEffect(() => {
+    const keyword = query.get("benefitSearch") || "";
+    setParams((prev) => ({ ...prev, benefitSearch: keyword, page: 1 }));
+  }, [location.search]);
+
+  // 🔹 캠페인 리스트 fetch
   useEffect(() => {
     const fetchCampaigns = async () => {
       setLoading(true);
       try {
         const queryString = new URLSearchParams(params).toString();
         const data = await getCampaignsList("", queryString);
+
         setCampaigns(data.campaignList || []);
+
         if (data.paginationInfo) {
           setPagination({
             currentPage: data.paginationInfo.currentPage,
             totalPage: Math.ceil(
-              data.paginationInfo.totalRecord /
-                data.paginationInfo.recordCountPerPage
+              data.paginationInfo.totalRecord / data.paginationInfo.recordCountPerPage
             ),
             firstPage: Math.max(1, data.paginationInfo.currentPage - 5),
             lastPage: Math.min(
               Math.ceil(
-                data.paginationInfo.totalRecord /
-                  data.paginationInfo.recordCountPerPage
+                data.paginationInfo.totalRecord / data.paginationInfo.recordCountPerPage
               ),
               data.paginationInfo.currentPage + 4
             ),
@@ -113,56 +137,49 @@ export default function CampaignSearchPage() {
     fetchCampaigns();
   }, [params]);
 
+  // 🔹 초기화 버튼 클릭 시 모든 필터 + 검색어 + URL 초기화
+  const handleReset = () => {
+    setSelectedRegion(null);
+    setParams({
+      region: "",
+      campaignType: "",
+      categoryCode: "",
+      channelCode: "",
+      sort: "latest",
+      page: 1,
+      benefitSearch: "",
+    });
+    navigate("/campaigns", { replace: true }); // URL 초기화
+  };
+
   return (
     <div className="w-full flex justify-center mb-48">
       <div className="w-full max-w-screen-xl px-4 flex flex-col gap-6">
+
         {/* 지역 */}
         <div className="flex mt-4 gap-4 w-full">
-          {/* 초기화 버튼 */}
           <div>
-          <h1 className="pl-2 mt-4 text-2xl font-semibold">지역</h1>
+            <h1 className="pl-2 mt-4 text-2xl font-semibold">지역</h1>
             <button
-              onClick={() => {
-                setSelectedRegion(null); // 상위/하위 지역 초기화
-                setParams({
-                  region: "",
-                  campaignType: "",
-                  categoryCode: "",
-                  channelCode: "",
-                  sort: "latest",
-                  page: 1,
-                }); // 셀렉트 박스 초기화 + 페이지 초기화
-              }}
-              className="mt-2 px-3 py-1.5 text-sm font-medium rounded-full bg-red-500 text-white hover:bg-red-600 transition"
+              onClick={handleReset}
+              className="mt-2 ml-3 px-3 py-1.5 text-sm font-medium rounded-full bg-red-500 text-white hover:bg-red-600 transition"
             >
-              초기화
+              <FaRedoAlt className="w-4 h-4" />
             </button>
           </div>
 
           <div className="flex-1 border p-4">
-            {/* 상위 지역 버튼 (2행 9열) */}
             <div className="grid grid-cols-9 gap-2">
               {regions.map((region) => (
                 <button
                   key={region.name}
                   onClick={() => {
-                    if (region.name === "재택") {
-                      if (selectedRegion === region) {
-                        setSelectedRegion(null);
-                        updateParams({region: "", page: 1});
-                      } else {
-                        setSelectedRegion(region);
-                        updateParams({region: "재택", page: 1});
-                      }
+                    if (selectedRegion === region) {
+                      setSelectedRegion(null);
+                      updateParams({ region: "", page: 1 });
                     } else {
-                      // 일반 지역 클릭 시
-                      if (selectedRegion === region) {
-                        setSelectedRegion(null);
-                        updateParams({ region: "", page: 1 });
-                      } else {
-                        setSelectedRegion(region);
-                        updateParams({ region: region.name, page: 1 }); // 상위 지역 전체
-                      }
+                      setSelectedRegion(region);
+                      updateParams({ region: region.name, page: 1 });
                     }
                   }}
                   className={`flex items-center justify-center py-1.5 px-2.5 text-xs rounded-lg cursor-pointer font-semibold ${
@@ -176,7 +193,6 @@ export default function CampaignSearchPage() {
               ))}
             </div>
 
-            {/* 하위 구/군 버튼 */}
             {selectedRegion && selectedRegion.name !== "재택" && (
               <div className="mt-3 border-t pt-2 grid grid-cols-6 gap-2">
                 {selectedRegion.guguns.map((gugun) => {
@@ -200,90 +216,40 @@ export default function CampaignSearchPage() {
           </div>
         </div>
 
-        {/* 셀렉트 박스 */}
+        {/* 셀렉트박스 */}
         <div className="flex justify-end flex-wrap gap-4 items-center">
-          <select
-            value={params.campaignType}
-            onChange={(e) =>
-              updateParams({ campaignType: e.target.value, page: 1 })
-            }
-            className="border rounded-full px-2 py-1 text-sm pr-6"
-          >
-            {campaignTypes.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
-              </option>
-            ))}
+          <select value={params.campaignType} onChange={(e) => updateParams({ campaignType: e.target.value, page: 1 })} className="border rounded-full px-2 py-1 text-sm pr-6">
+            {campaignTypes.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
 
-          <select
-            value={params.categoryCode}
-            onChange={(e) =>
-              updateParams({ categoryCode: e.target.value, page: 1 })
-            }
-            className="border rounded-full px-2 py-1 text-sm pr-6"
-          >
-            {categories.map((c) => (
-              <option key={c.value} value={c.value}>
-                {c.label}
-              </option>
-            ))}
+          <select value={params.categoryCode} onChange={(e) => updateParams({ categoryCode: e.target.value, page: 1 })} className="border rounded-full px-2 py-1 text-sm pr-6">
+            {categories.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
 
-          <select
-            value={params.channelCode}
-            onChange={(e) =>
-              updateParams({ channelCode: e.target.value, page: 1 })
-            }
-            className="border rounded-full px-2 py-1 text-sm pr-6"
-          >
-            {channels.map((ch) => (
-              <option key={ch.value} value={ch.value}>
-                {ch.label}
-              </option>
-            ))}
+          <select value={params.channelCode} onChange={(e) => updateParams({ channelCode: e.target.value, page: 1 })} className="border rounded-full px-2 py-1 text-sm pr-6">
+            {channels.map((ch) => <option key={ch.value} value={ch.value}>{ch.label}</option>)}
           </select>
 
-          <select
-            value={params.sort}
-            onChange={(e) => updateParams({ sort: e.target.value, page: 1 })}
-            className="border rounded-full px-2 py-1 text-sm pr-6"
-          >
-            {sorts.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
+          <select value={params.sort} onChange={(e) => updateParams({ sort: e.target.value, page: 1 })} className="border rounded-full px-2 py-1 text-sm pr-6">
+            {sorts.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
         </div>
 
         {/* 캠페인 카드 */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-60 bg-stone-200 dark:bg-zinc-700 animate-pulse rounded-xl"
-              />
-            ))}
+            {Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-60 bg-stone-200 dark:bg-zinc-700 animate-pulse rounded-xl" />)}
           </div>
         ) : campaigns.length === 0 ? (
-          <div className="p-4 text-center text-stone-500">
-            캠페인이 없습니다.
-          </div>
+          <div className="p-4 text-center text-stone-500">캠페인이 없습니다.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {campaigns.map((c) => (
-              <CampaignCardV2 key={c.campaignIdx} campaign={c} />
-            ))}
+            {campaigns.map((c) => <CampaignCardV2 key={c.campaignIdx} campaign={c} />)}
           </div>
         )}
 
         {/* 페이지네이션 */}
-        <Pagination
-          pagination={pagination}
-          onPageChange={(newPage) => updateParams({ page: newPage })}
-        />
+        <Pagination pagination={pagination} onPageChange={(newPage) => updateParams({ page: newPage })} />
       </div>
     </div>
   );
