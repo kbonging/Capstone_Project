@@ -3,7 +3,27 @@ import CampaignCardV2 from "../components/campaign/CampaignCardV2";
 import Pagination from "../components/community/Pagination";
 import { getCampaignsList } from "../api/campaigns/api";
 
-const regions = ["온라인", "서울", "경기", "인천", "강원", "대전", "세종", "충남", "충북", "부산", "울산", "경남", "경북", "대구", "광주", "전남", "전북", "제주"];
+const regions = [
+  { name: "재택", guguns: ["재택"] },
+  { name: "서울", guguns: ["강남구","강동구","강북구","강서구","관악구","광진구","구로구","금천구","노원구","도봉구","동대문구","동작구","마포구","서대문구","서초구","성동구","성북구","송파구","양천구","영등포구","용산구","은평구","종로구","중구","중랑구"] },
+  { name: "경기", guguns: ["가평군","고양시","과천시","광명시","광주시","구리시","군포시","김포시","남양주시","동두천시","부천시","성남시","수원시","시흥시","안산시","안성시","안양시","양주시","양평군","여주시","연천군","오산시","용인시","의왕시","의정부시","이천시","파주시","평택시","포천시","하남시","화성시"] },
+  { name: "인천", guguns: ["강화군","계양구","남구","남동구","동구","미추홀구","부평구","서구","연수구","옹진군","중구"] },
+  { name: "강원", guguns: ["강릉시","고성군","동해시","삼척시","속초시","양구군","양양군","영월군","원주시","인제군","정선군","철원군","춘천시","태백시","평창군","홍천군","화천군","횡성군"] },
+  { name: "대전", guguns: ["대덕구","동구","서구","유성구","중구"] },
+  { name: "세종", guguns: ["세종"] },
+  { name: "충남", guguns: ["계룡시","공주시","금산군","논산시","당진시","보령시","부여군","서산시","서천군","아산시","연기군","예산군","천안시","청양군","태안군","홍성군"] },
+  { name: "충북", guguns: ["괴산군","단양군","보은군","영동군","옥천군","음성군","제천시","증평군","진천군","청원군","청주시","충주시"] },
+  { name: "부산", guguns: ["강서구","금정구","기장군","남구","동구","동래구","부산진구","북구","사상구","사하구","서구","수영구","연제구","영도구","중구","해운대구"] },
+  { name: "울산", guguns: ["남구","동구","북구","울주군","중구"] },
+  { name: "경남", guguns: ["거제시","거창군","고성군","김해시","남해군","마산시","밀양시","사천시","산청군","양산시","의령군","진주시","진해시","창녕군","창원시","통영시","하동군","함안군","합천군"] },
+  { name: "경북", guguns: ["경산시","경주시","고령군","구미시","군위군","김천시","문경시","봉화군","상주시","성주군","안동시","영덕군","영양군","영주시","영천시","예천군","울릉군","울진군","의성군","청도군","청송군","칠곡군","포항시"] },
+  { name: "대구", guguns: ["남구","달서구","달성군","동구","북구","서구","수성구","중구"] },
+  { name: "광주", guguns: ["광산구","남구","동구","북구","서구"] },
+  { name: "전남", guguns: ["강진군","고흥군","곡성군","광양시","구례군","나주시","담양군","목포시","무안군","보성군","순천시","신안군","여수시","영광군","영암군","완도군","장성군","장흥군","진도군","함평군","해남군","화순군"] },
+  { name: "전북", guguns: ["고창군","군산시","김제시","남원시","무주군","부안군","순창군","완주군","익산시","임실군","장수군","전주시","정읍시","진안군"] },
+  { name: "제주", guguns: ["서귀포시","제주시"] }
+];
+
 const campaignTypes = [
   { value: "", label: "유형" },
   { value: "CAMP001", label: "방문형" },
@@ -42,8 +62,6 @@ export default function CampaignSearchPage() {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState(null);
-
-  //  상태를 객체 하나로 통합
   const [params, setParams] = useState({
     region: "",
     campaignType: "",
@@ -52,13 +70,12 @@ export default function CampaignSearchPage() {
     sort: "latest",
     page: 1,
   });
+  const [selectedRegion, setSelectedRegion] = useState(null);
 
-  //  params 업데이트 함수
   const updateParams = (updates) => {
     setParams((prev) => ({ ...prev, ...updates }));
   };
 
-  //  캠페인 목록 가져오기
   useEffect(() => {
     const fetchCampaigns = async () => {
       setLoading(true);
@@ -66,7 +83,6 @@ export default function CampaignSearchPage() {
         const queryString = new URLSearchParams(params).toString();
         const data = await getCampaignsList("", queryString);
         setCampaigns(data.campaignList || []);
-
         if (data.paginationInfo) {
           setPagination({
             currentPage: data.paginationInfo.currentPage,
@@ -94,7 +110,6 @@ export default function CampaignSearchPage() {
         setLoading(false);
       }
     };
-
     fetchCampaigns();
   }, [params]);
 
@@ -103,26 +118,85 @@ export default function CampaignSearchPage() {
       <div className="w-full max-w-screen-xl px-4 flex flex-col gap-6">
         {/* 지역 */}
         <div className="flex mt-4 gap-4 w-full">
+          {/* 초기화 버튼 */}
+          <div>
           <h1 className="pl-2 mt-4 text-2xl font-semibold">지역</h1>
-          <div className="flex-1 border p-4 grid grid-cols-9 gap-2">
-            {regions.map((r) => (
-              <button
-                key={r}
-                onClick={() =>
-                  updateParams({
-                    region: params.region === r ? "" : r,
-                    page: 1,
-                  })
-                }
-                className={`px-3 py-2 rounded-lg border text-sm font-semibold ${
-                  params.region === r
-                    ? "bg-sky-500 text-white border-sky-500"
-                    : "bg-white dark:bg-zinc-700 text-stone-600 dark:text-zinc-300 border-stone-300 dark:border-zinc-600"
-                }`}
-              >
-                {r}
-              </button>
-            ))}
+            <button
+              onClick={() => {
+                setSelectedRegion(null); // 상위/하위 지역 초기화
+                setParams({
+                  region: "",
+                  campaignType: "",
+                  categoryCode: "",
+                  channelCode: "",
+                  sort: "latest",
+                  page: 1,
+                }); // 셀렉트 박스 초기화 + 페이지 초기화
+              }}
+              className="mt-2 px-3 py-1.5 text-sm font-medium rounded-full bg-red-500 text-white hover:bg-red-600 transition"
+            >
+              초기화
+            </button>
+          </div>
+
+          <div className="flex-1 border p-4">
+            {/* 상위 지역 버튼 (2행 9열) */}
+            <div className="grid grid-cols-9 gap-2">
+              {regions.map((region) => (
+                <button
+                  key={region.name}
+                  onClick={() => {
+                    if (region.name === "재택") {
+                      if (selectedRegion === region) {
+                        setSelectedRegion(null);
+                        updateParams({region: "", page: 1});
+                      } else {
+                        setSelectedRegion(region);
+                        updateParams({region: "재택", page: 1});
+                      }
+                    } else {
+                      // 일반 지역 클릭 시
+                      if (selectedRegion === region) {
+                        setSelectedRegion(null);
+                        updateParams({ region: "", page: 1 });
+                      } else {
+                        setSelectedRegion(region);
+                        updateParams({ region: region.name, page: 1 }); // 상위 지역 전체
+                      }
+                    }
+                  }}
+                  className={`flex items-center justify-center py-1.5 px-2.5 text-xs rounded-lg cursor-pointer font-semibold ${
+                    selectedRegion === region
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-gray-200 text-gray-700 dark:bg-zinc-700 dark:text-zinc-300 border border-gray-300 dark:border-zinc-600"
+                  }`}
+                >
+                  {region.name}
+                </button>
+              ))}
+            </div>
+
+            {/* 하위 구/군 버튼 */}
+            {selectedRegion && selectedRegion.name !== "재택" && (
+              <div className="mt-3 border-t pt-2 grid grid-cols-6 gap-2">
+                {selectedRegion.guguns.map((gugun) => {
+                  const fullRegion = `${selectedRegion.name} ${gugun}`;
+                  return (
+                    <button
+                      key={gugun}
+                      onClick={() => updateParams({ region: fullRegion, page: 1 })}
+                      className={`flex items-center justify-center py-1.5 px-2 text-xs rounded-lg cursor-pointer font-medium ${
+                        params.region === fullRegion
+                          ? "bg-blue-600 text-white border-blue-600"
+                          : "bg-gray-200 text-gray-700 dark:bg-zinc-700 dark:text-zinc-300 border border-gray-300 dark:border-zinc-600"
+                      }`}
+                    >
+                      {gugun}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 

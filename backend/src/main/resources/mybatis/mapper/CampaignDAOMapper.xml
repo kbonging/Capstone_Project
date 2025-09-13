@@ -77,7 +77,7 @@
         <!-- 지역 필터 -->
         <if test="region != null and region != ''">
             <choose>
-                <when test="region == '온라인'">
+                <when test="region == '재택'">
                     AND (c.CAMPAIGN_TYPE IN ('CAMP003', 'CAMP004'))
                 </when>
                 <otherwise>

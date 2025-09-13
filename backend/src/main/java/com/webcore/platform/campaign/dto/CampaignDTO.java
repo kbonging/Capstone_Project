@@ -69,7 +69,7 @@ public class CampaignDTO extends DefaultDTO {
     /** 신청 마감 기한 지난글 제거 */
     private String onlyActive;
 
-    /** 지역 필터 (서울, 경기, 온라인 등) */
+    /** 지역 필터 (서울, 경기, 재택 등) */
     private String region;
     /** 정렬 기준 : latest, deadline, popular */
     private String sort;
