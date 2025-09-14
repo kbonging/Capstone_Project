@@ -65,7 +65,7 @@ public interface CampaignService {
    * 3. 당첨자에게 알림 발송
    *
    * @param campaignIdx 캠페인 고유번호
-   * @param ownerIdx 로그인한 소상공인 회원번호
+   * @param memberIdx 로그인한 소상공인 회원번호
    */
   void completeCampaignSelection(int campaignIdx, int memberIdx);
 }
