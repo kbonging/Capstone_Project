@@ -1,13 +1,26 @@
 // src/components/layout/Header.jsx
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext"; // 경로는 프로젝트 구조에 맞게 유지
 import LogoImage from "../images/main_logo.png";
 // import LogoImageDark from "../images/Logo-dark.png"; // 다크 전용 로고 있으면 사용
+import axios from "axios";
 
 export default function Header() {
   const { user, logout } = useContext(AppContext);
   const [menuOpen, setMenuOpen] = useState(false);
+  const[hasNotification, setHasNotification] = useState(false);
+
+  // 알림 체크
+  useEffect(() => {
+    if (user) {
+      axios.get(`/api/notifications/${user.memberId}`)
+        .then(res => {
+          setHasNotification(res.data && res.data.length > 0);
+        })
+        .catch(err => console.error(err));
+    }
+  }, [user]);
 
   return (
     <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/70 backdrop-blur">
@@ -66,6 +79,19 @@ export default function Header() {
               </Link>
             </>
           )}
+
+          {/* 알림 아이콘 */}
+          <Link to = "/mypage/alarm" className="relative p-1 hover:text-zinc-600 dark:hover:text-zinc-300"
+          aria-label="알림" title="알림">
+            <i className="fa-regular fa-bell text-xl"></i>
+            {hasNotification && (
+              <span className="absolute top-1 right-1 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white"></span>
+              )}
+          </Link>
+          
+
+
+          
 
           {/* 아이콘들은 상위 텍스트 색을 상속받음 */}
           <Link
