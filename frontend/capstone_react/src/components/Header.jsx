@@ -5,9 +5,10 @@ import { AppContext } from "../contexts/AppContext";
 import LogoImage from "../images/main_logo.png";
 
 export default function Header() {
-  const { user, logout } = useContext(AppContext);
+  const { user, logout, token } = useContext(AppContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [unreadCount, setUnreadCount] = useState(0); // 🔹 알림 갯수 상태
   const navigate = useNavigate();
   const location = useLocation(); // 🔹 URL 쿼리 읽기용
 
@@ -16,6 +17,20 @@ export default function Header() {
     const keyword = query.get("benefitSearch") || ""; // URL에 없으면 ""
     setSearchKeyword(keyword);
   }, [location.search]);
+
+  // 알림 개수 가져오기
+  useEffect(() => {
+    if (!token) {
+      setUnreadCount(0);
+      return; // 로그인 안 한 경우 스킵
+    }
+    fetch("/api/notifications/count", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => setUnreadCount(data.unreadCount))
+      .catch((err) => console.error("알림 카운트 에러:", err));
+  }, [token]);
 
   const handleSearch = () => {
     const trimmed = searchKeyword.trim();
@@ -78,24 +93,47 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center space-x-4">
-            <button onClick={() => console.log("알람 클릭")} className="relative p-1 hover:text-zinc-600 dark:hover:text-zinc-300" aria-label="알람">
-              <i className="fa-regular fa-bell text-xl"></i>
-              <span className="absolute -top-1 -right-1 w-4 h-4 text-[10px] bg-red-500 text-white rounded-full flex items-center justify-center">
-                3
-              </span>
-            </button>
+            {/* 🔹 로그인된 경우에만 알림 버튼 표시 */}
+            {user && (
+              <button
+                onClick={() => console.log("알람 클릭")}
+                className="relative p-1 hover:text-zinc-600 dark:hover:text-zinc-300"
+                aria-label="알람"
+              >
+                <i className="fa-regular fa-bell text-xl"></i>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 text-[10px] bg-red-500 text-white rounded-full flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+            )}
 
-            <Link to={user ? "/mypage" : "/login"} className="flex items-center gap-2 hover:text-zinc-600 dark:hover:text-zinc-300">
+            <Link
+              to={user ? "/mypage" : "/login"}
+              className="flex items-center gap-2 hover:text-zinc-600 dark:hover:text-zinc-300"
+            >
               <i className="fa-regular fa-circle-user text-xl"></i>
               <span>{getDisplayName(user)}</span>
             </Link>
 
             {user ? (
-              <button onClick={logout} className="hover:text-zinc-600 dark:hover:text-zinc-300">로그아웃</button>
+              <button
+                onClick={logout}
+                className="hover:text-zinc-600 dark:hover:text-zinc-300"
+              >
+                로그아웃
+              </button>
             ) : (
-              <Link to="/signup" className="hover:text-zinc-600 dark:hover:text-zinc-300">회원가입</Link>
+              <Link
+                to="/signup"
+                className="hover:text-zinc-600 dark:hover:text-zinc-300"
+              >
+                회원가입
+              </Link>
             )}
           </div>
+
         </div>
 
         <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 hover:text-zinc-600 dark:hover:text-zinc-300" aria-label="메뉴 열기/닫기">

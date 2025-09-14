@@ -97,6 +97,42 @@ export default function OwnerCampaignApply({ campaignIdx, recruitCount, onClose 
     fetchApplicants(newPage);
   };
 
+const handleCompleteSelection = () => {
+  console.log("=== 선정 완료 버튼 클릭 ===");
+  console.log("approvedCount:", approvedCount, "recruitCount:", recruitCount);
+
+  if (approvedCount < recruitCount) {
+    alert(`모집 인원이 아직 ${recruitCount}명까지 당첨되지 않았습니다.`);
+    return;
+  }
+
+  const url = `/api/campaigns/${campaignIdx}/complete-selection`;
+  console.log("POST URL:", url);
+
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    }
+  })
+    .then(async (res) => {
+      const text = await res.text(); // 서버 메시지 읽기
+      if (!res.ok) throw new Error(text || "선정 완료 처리 실패");
+      return text;
+    })
+    .then((data) => {
+      alert("선정 완료 처리되었습니다.");
+      onClose();
+    })
+    .catch((err) => {
+      console.error("선정 완료 처리 중 오류:", err);
+      alert(err.message); // 서버 메시지 그대로 표시
+    });
+
+};
+
+
   return (
     <div
       className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
@@ -227,7 +263,24 @@ export default function OwnerCampaignApply({ campaignIdx, recruitCount, onClose 
           <Pagination pagination={paginationInfo} onPageChange={handlePageChange} />
         )}
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            onClick={() => {
+              if (approvedCount < recruitCount) {
+                alert(`당첨 인원이 ${recruitCount}명이 되어야 선정 완료가 가능합니다.`);
+                return;
+              }
+              handleCompleteSelection();
+            }}
+            className={`px-5 py-2 rounded-lg font-medium transition ${
+              approvedCount < recruitCount
+                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                : "bg-blue-500 text-white hover:bg-blue-600"
+            }`}
+          >
+            선정 완료
+          </button>
+
           <button
             onClick={onClose}
             className="px-5 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 font-medium transition"

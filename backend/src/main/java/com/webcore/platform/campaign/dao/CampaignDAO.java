@@ -51,31 +51,31 @@ public interface CampaignDAO {
   /** 캠페인 지원등록한 아이디 찾기  */
   Integer lastInsertId();
 
-    /** 캠페인 신청자 총 개수 조회 */
-    int countApplicantsByCampaign(int campaignIdx, String searchCondition, String searchKeyword, String applyStatus);
+  /** 캠페인 신청자 총 개수 조회 */
+  int countApplicantsByCampaign(int campaignIdx, String searchCondition, String searchKeyword, String applyStatus);
 
-    /** 캠페인 신청자 목록 조회 */
-    List<OwnerCampaignApplicantResponseDTO> selectApplicantsByCampaign(
-            int campaignIdx,
-            int firstIndex,
-            int recordCount,
-            String searchCondition,
-            String searchKeyword,
-            String applyStatus
-    );
+  /** 캠페인 신청자 목록 조회 */
+  List<OwnerCampaignApplicantResponseDTO> selectApplicantsByCampaign(
+          int campaignIdx,
+          int firstIndex,
+          int recordCount,
+          String searchCondition,
+          String searchKeyword,
+          String applyStatus
+  );
 
-    /** 모집 인원 조회 */
-    int getRecruitCountByCampaign(int campaignIdx);
+  /** 모집 인원 조회 */
+  int getRecruitCountByCampaign(int campaignIdx);
 
-    /** 현재 당첨된 인원 조회 */
-    int getApprovedCountByCampaignForUpdate(int campaignIdx);
+  /** 현재 당첨된 인원 조회 */
+  int getApprovedCountByCampaignForUpdate(int campaignIdx);
 
-    /** 실제 신청이 존재하는지 체크 */
-    OwnerCampaignApplicantResponseDTO getApplicantByIdx(int applicationIdx);
+  /** 실제 신청이 존재하는지 체크 */
+  OwnerCampaignApplicantResponseDTO getApplicantByIdx(int applicationIdx);
 
-    /** 캠페인 신청자 상태 변경 */
+  /** 캠페인 신청자 상태 변경 */
   int updateApplicantStatus(@Param("applicationIdx") int applicationIdx,
-                            @Param("newStatus") String newStatus);
+                          @Param("newStatus") String newStatus);
 
   /** 배송형일때 프로필정보에 주소 없으면 등록  */
   int updateReviewerAddress(@Param("memberIdx") int memberIdx,
@@ -83,32 +83,37 @@ public interface CampaignDAO {
       @Param("address") String address,
       @Param("detailAddress") String detailAddress);
 
-    /** 북마크 추가 */
-    int insertBookmark(@Param("memberIdx") int memberIdx,
-                       @Param("campaignIdx") int campaignIdx);
+  /** 북마크 추가 */
+  int insertBookmark(@Param("memberIdx") int memberIdx,
+                     @Param("campaignIdx") int campaignIdx);
 
-    /** 북마크 제거 */
-    int deleteBookmark(@Param("memberIdx") int memberIdx,
-                       @Param("campaignIdx") int campaignIdx);
+  /** 북마크 제거 */
+  int deleteBookmark(@Param("memberIdx") int memberIdx,
+                     @Param("campaignIdx") int campaignIdx);
 
-    /** 관리자 캠페인 상태(승인, 반려) 변경 */
-    int updateCampaignStatus(@Param("campaignIdx") int campaignIdx, @Param("status") String status);
+  /** 관리자 캠페인 상태(승인, 반려) 변경 */
+  int updateCampaignStatus(@Param("campaignIdx") int campaignIdx, @Param("status") String status);
 
-    /** 마감 기한 지난 캠페인 종료 */
-    int updateExpiredCampaignsToClosed();
+  /** 마감 기한 지난 캠페인 종료 */
+  int updateExpiredCampaignsToClosed();
 
+  /** 단일 캠페인 상태 CLOSED 처리 (선정 완료 버튼용) */
+  int updateCampaignStatusToClosed(@Param("campaignIdx") int campaignIdx);
 
-  // 로그인 유저의 신청(application_idx) 조회
+  /** 캠페인별 선정된 당첨자 조회 */
+  List<Integer> selectWinnersByCampaignId(@Param("campaignIdx") int campaignIdx);
+
+  /** 로그인 유저의 신청(application_idx) 조회 */
   Integer findApplicationIdx(@Param("campaignId") int campaignId,
       @Param("memberIdx") int memberIdx);
 
-  // 동일 신청에 리뷰 존재 여부
+  /** 동일 신청에 리뷰 존재 여부 */
   int countReviewByApplication(@Param("applicationIdx") int applicationIdx);
 
-  // 리뷰 저장
+  /** 리뷰 저장 */
   int insertCampaignReview(CampaignReviewDTO dto);
 
-  // 리뷰등록 페이지 갈수있는 승인상태 체크
+  /** 리뷰등록 페이지 갈수있는 승인상태 체크 */
   String selectApplicationStatus(@Param("campaignId") int campaignId,
       @Param("memberIdx") int memberIdx);
-}
+  }

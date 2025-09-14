@@ -427,5 +427,31 @@ public class CampaignController {
         .body(Map.of("allowed", false, "status", status, "message", msg));
   }
 
+  /**
+   * 소상공인 캠페인 선정 완료 버튼 클릭
+   */
+  @PostMapping("/{campaignIdx}/complete-selection")
+  public ResponseEntity<?> completeSelection(
+          @PathVariable int campaignIdx,
+          @AuthenticationPrincipal CustomUser customUser
+  ) {
+    try {
+      log.info("소상공인 캠페인 선정 완료 버튼 클릭");
+      MemberDTO loginMember = customUser.getMemberDTO();
+      int loginMemberIdx = loginMember.getMemberIdx();
+
+      campaignService.completeCampaignSelection(campaignIdx, loginMemberIdx);
+      return ResponseEntity.ok().body("선정 완료 처리되었습니다.");
+    } catch (IllegalStateException e) {
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage()); // ❌ 예외 메시지를 그대로 내려줌
+    } catch (Exception e) {
+      log.error("선정 완료 처리 중 오류", e);
+      return ResponseEntity
+              .status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body("선정 완료 처리 중 오류가 발생했습니다.");
+    }
+  }
 
 }

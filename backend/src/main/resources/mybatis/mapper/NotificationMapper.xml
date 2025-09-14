@@ -44,6 +44,18 @@
         )
     </insert>
 
+    <!-- 4. 읽지 않은 알림 카운트 -->
+    <select id="countUnreadNotifications" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_NOTIFICATION n
+        LEFT JOIN TB_NOTIFICATION_READ r
+        ON n.NOTIFICATION_IDX = r.NOTIFICATION_IDX
+        AND r.MEMBER_IDX = #{memberIdx}
+        WHERE n.DEL_YN = 'N'
+        AND (n.MEMBER_IDX IS NULL OR n.MEMBER_IDX = #{memberIdx})
+        AND r.NOTIFICATION_IDX IS NULL
+    </select>
+
 
 </mapper>
 

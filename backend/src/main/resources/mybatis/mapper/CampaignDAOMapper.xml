@@ -582,6 +582,14 @@
         WHERE MEMBER_IDX = #{memberIdx} AND CAMPAIGN_IDX = #{campaignIdx}
     </delete>
 
+    <!-- 모집 마감된 캠페인 조회 -->
+    <select id="selectExpiredCampaigns" resultType="com.webcore.platform.campaign.dto.CampaignDTO">
+        SELECT campaign_idx, campaign_title
+        FROM tb_campaign
+        WHERE recruit_status = 'OPEN'
+        AND apply_end_date &lt; NOW()
+    </select>
+
     <!-- 마감 기한 지난 캠페인 종료 -->
     <update id="updateExpiredCampaignsToClosed">
         UPDATE tb_campaign
@@ -589,6 +597,24 @@
         WHERE recruit_status = 'OPEN'
             AND apply_end_date &lt; NOW()
     </update>
+
+    <!-- 단일 캠페인 상태 CLOSED 처리 (선정 완료 버튼용) -->
+    <update id="updateCampaignStatusToClosed">
+        UPDATE tb_campaign
+        SET recruit_status = 'CLOSED',
+        mod_date = NOW()
+        WHERE campaign_idx = #{campaignIdx}
+        AND recruit_status = 'OPEN'
+    </update>
+
+    <!-- 캠페인별 선정된 당첨자 조회 -->
+    <select id="selectWinnersByCampaignId" parameterType="int" resultType="int">
+        SELECT MEMBER_IDX
+        FROM tb_campaign_application
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+        AND APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+        AND DEL_YN = 'N'
+    </select>
 
 
   <!-- 필요시 승인 조건 추가: AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED' -->
