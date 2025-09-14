@@ -80,4 +80,47 @@
     AND DEL_YN = 'N'  <!-- 이미 삭제(취소)된 건 제외 -->
   </update>
 
+    <!-- 리뷰어 북마크 캠페인 전체 조회 -->
+    <select
+            id="selectMyBookmark"
+            parameterType="com.webcore.platform.mypage.dto.BookmarkDTO"
+            resultType="com.webcore.platform.mypage.dto.BookmarkDTO">
+        SELECT
+            c.CAMPAIGN_IDX          AS campaignIdx,
+            c.RECRUIT_STATUS        AS recruitStatus,
+            c.THUMBNAIL_URL         AS thumbnailUrl,
+            c.TITLE                 AS title,
+            FN_GET_CODE_NM(c.CAMPAIGN_TYPE)     AS campaignTypeName,
+            FN_GET_CODE_NM(c.CAM_CATE_CODE)     AS categoryName,
+            FN_GET_CODE_NM(c.CHANNEL_CODE)      AS channelName,
+            c.BENEFIT_DETAIL        AS benefitDetail,
+            c.RECRUIT_COUNT         AS recruitCount,
+            c.APPLY_END_DATE        AS applyEndDate,
+            c.ANNOUNCE_DATE         AS announceDate,
+            (
+                SELECT COUNT(*)
+                FROM TB_CAMPAIGN_APPLICATION a
+                WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+                AND a.DEL_YN = 'N'
+            ) AS applicationCount
+            FROM TB_BOOKMARK b
+            INNER JOIN TB_CAMPAIGN c
+                ON b.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+            WHERE b.MEMBER_IDX = #{memberIdx}
+                AND c.DEL_YN = 'N'
+            ORDER BY c.REG_DATE DESC
+            LIMIT #{firstIndex}, #{recordCount}
+    </select>
+
+    <!-- 북마크 개수 카운트 -->
+    <select id="selectBookmarkCount"
+            parameterType="com.webcore.platform.mypage.dto.BookmarkDTO"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM TB_BOOKMARK b
+        INNER JOIN TB_CAMPAIGN c
+            ON b.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        WHERE b.MEMBER_IDX = #{memberIdx}
+            AND c.DEL_YN = 'N'
+    </select>
 </mapper>

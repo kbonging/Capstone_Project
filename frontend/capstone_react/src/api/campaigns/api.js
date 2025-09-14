@@ -328,6 +328,27 @@ export async function getBookmarkStatus(campaignIdx, token) {
   }
 }
 
+/** 북마크 리스트 조회 */
+export async function getBookmarkList(token, page = 1) {
+  if (!token) throw new Error("로그인이 필요합니다.");
+
+  try {
+    const response = await axios.get(`/api/mypage/my-campaigns/bookmarks`, {
+      params: { page },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("북마크 조회 실패:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.message || "북마크 리스트를 가져오는 데 실패했습니다."
+    );
+  }
+}
+
 /**
  * 북마크 추가
  * @param {number} campaignIdx

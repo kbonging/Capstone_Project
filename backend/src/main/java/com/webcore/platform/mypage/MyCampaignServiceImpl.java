@@ -3,6 +3,7 @@ package com.webcore.platform.mypage;
 import com.webcore.platform.common.PaginationInfo;
 import com.webcore.platform.constants.Paging;
 import com.webcore.platform.mypage.dao.MyCampaignDAO;
+import com.webcore.platform.mypage.dto.BookmarkDTO;
 import com.webcore.platform.mypage.dto.MyCampaignDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -125,5 +126,28 @@ public class MyCampaignServiceImpl implements MyCampaignService {
     if (updated == 0) {
       throw new IllegalStateException("취소 불가하거나 이미 취소됨");
     }
+  }
+
+  /** 멤버 북마크 전체 조회 */
+  public Map<String, Object> getBookmarkList(BookmarkDTO bookmarkDTO) {
+    int totalRecord = myCampaignDAO.selectBookmarkCount(bookmarkDTO);
+
+    PaginationInfo paginationInfo = new PaginationInfo();
+    paginationInfo.setCurrentPage(bookmarkDTO.getPage() <= 0 ? 1 : bookmarkDTO.getPage());
+    paginationInfo.setRecordCountPerPage(Paging.RECORDS_PER_PAGE);
+    paginationInfo.setBlockSize(Paging.RECORDS_PER_PAGE);
+    paginationInfo.setTotalRecord(totalRecord);
+
+    bookmarkDTO.setFirstIndex(paginationInfo.getFirstRecordIndex());
+    bookmarkDTO.setRecordCount(paginationInfo.getRecordCountPerPage());
+
+    List<BookmarkDTO> bookmarkList = myCampaignDAO.selectMyBookmark(bookmarkDTO);
+
+    Map<String, Object> result = new HashMap<>();
+    result.put("bookmarkList", bookmarkList);
+    result.put("paginationInfo", paginationInfo);
+
+    return result;
+
   }
 }

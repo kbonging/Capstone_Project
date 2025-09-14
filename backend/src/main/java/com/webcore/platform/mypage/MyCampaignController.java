@@ -1,8 +1,10 @@
 package com.webcore.platform.mypage;
 
+import com.webcore.platform.mypage.dto.BookmarkDTO;
 import com.webcore.platform.mypage.dto.MyCampaignDTO;
 import com.webcore.platform.security.custom.CustomUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +41,7 @@ public class MyCampaignController {
    */
 
 
-  @GetMapping
+  @GetMapping("")
   public Map<String, Object> list(
       @AuthenticationPrincipal CustomUser user,
       @ModelAttribute MyCampaignDTO myCampaignDTO
@@ -72,4 +74,18 @@ public class MyCampaignController {
   ) {
     myCampaignService.cancel(user.getMemberDTO().getMemberIdx(), applicationIdx);
   }
+
+  /** 리뷰어 북마크 캠페인 목록 조회 */
+  @GetMapping("/bookmarks")
+  public ResponseEntity<?> getMyBookmarks(
+          BookmarkDTO bookmarkDTO,
+          @AuthenticationPrincipal CustomUser customUser
+  ) {
+      bookmarkDTO.setMemberIdx(customUser.getMemberDTO().getMemberIdx());
+
+      Map<String, Object> resultMap = myCampaignService.getBookmarkList(bookmarkDTO);
+
+      return ResponseEntity.ok(resultMap);
+  }
+
 }
