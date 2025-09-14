@@ -23,6 +23,9 @@ import RequireReviewer from "./RequireReviewer";
 import MyCampaigns from "../pages/MyCampaigns";
 import AdminCampaignTime from "../pages/AdminCampaignTime";
 import CampaignSearchPage from "../pages/CampaignSearchPage";
+import AlarmPage from "../components/mypage/AlarmPage";
+
+
 import ReviewSubmitPage from "../pages/ReviewSubmitPage";
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
@@ -125,6 +128,15 @@ export default function AppRouter() {
           </PrivateRoute>
         }
       />
+
+
+      {/* 알람 페이지 */}
+      <Route path="/mypage/alarm" element={
+        <PrivateRoute>
+            <AlarmPage />
+        </PrivateRoute>
+      } />
+
 
       <Route path="/mypage/my-campaigns" element={<MyCampaigns />} />
 

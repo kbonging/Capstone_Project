@@ -18,7 +18,8 @@ export default function Sidebar({ userRole }) {
         "내 정보 관리": [
           { name: "프로필", path: "/mypage" },
           { name: "포인트", path: "/mypage/points" },
-          { name: "쿠폰 사용", path: "/mypage/coupons" }
+          { name: "쿠폰 사용", path: "/mypage/coupons" },
+          { name: "알람", path: "/mypage/alarm" }
         ],
         고객센터: [
           { name: "자주 묻는 질문", path: "/mypage/faq" },
@@ -39,7 +40,8 @@ export default function Sidebar({ userRole }) {
         "내 정보 관리": [
           { name: "프로필", path: "/mypage" }, 
           { name: "찜목록", path: "/mypage/wishlist" }, 
-          { name: "포인트", path: "/mypage/points" }
+          { name: "포인트", path: "/mypage/points" },
+          { name: "알람", path: "/mypage/alarm" }
         ],
         고객센터: [
           { name: "자주 묻는 질문", path: "/mypage/faq" }, 

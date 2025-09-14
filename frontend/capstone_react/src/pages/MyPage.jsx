@@ -6,6 +6,8 @@ import Profile from "../components/mypage/Profile";
 import { AppContext } from '../contexts/AppContext';
 import AdminAllow from '../components/mypage/AdminAllow';
 import { getUserByIdx } from "../api/memberApi";
+import AlarmPage from "../components/mypage/AlarmPage";
+
 
 export default function MyPage() {
   const { user: loggedInUser, token } = useContext(AppContext);
