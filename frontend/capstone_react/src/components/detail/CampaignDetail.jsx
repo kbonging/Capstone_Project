@@ -564,7 +564,7 @@ export default function CampaignDetail() {
                 <CampaignCalendar
                   initialMonth={initialMonth}
                   ranges={calendarRanges}
-                  bottomLabel={`${data.keyword3 ?? ""}${data.keyword2 ?? ""}`}
+                  
                 />
 
                 <button

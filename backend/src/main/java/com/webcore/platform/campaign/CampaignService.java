@@ -55,6 +55,18 @@ public interface CampaignService {
   /** 리뷰 URL + 파일 URL 저장 */
   void submitCampaignReview(int campaignId, int memberIdx, String reviewUrl, MultipartFile imageUrl) throws Exception;
 
+  /** 리뷰를 등록할수 있는지 상태  */
+  String findApplicationStatus(int campaignId, int memberIdx);
 
+  /**
+   * 소상공인 캠페인 선정 완료 처리
+   * 1. 캠페인 상태 CLOSED로 변경
+   * 2. 당첨자 조회
+   * 3. 당첨자에게 알림 발송
+   *
+   * @param campaignIdx 캠페인 고유번호
+   * @param memberIdx 로그인한 소상공인 회원번호
+   */
+  void completeCampaignSelection(int campaignIdx, int memberIdx);
 }
 

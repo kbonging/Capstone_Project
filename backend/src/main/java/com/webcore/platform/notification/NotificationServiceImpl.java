@@ -21,14 +21,18 @@ public class NotificationServiceImpl implements NotificationService{
 
     @Override
     public boolean createNotification(NotificationDTO notificationDTO) {
-
-        return true;
+        int result = notificationDAO.insertNotification(notificationDTO);
+        return result > 0;
     }
 
     @Override
     public boolean markAsRead(NotificationReadDTO notificationReadDTO) {
+        int result = notificationDAO.insertNotificationRead(notificationReadDTO);
+        return result > 0;
+    }
 
-        return true;
-
+    @Override
+    public int getUnreadCount(Integer memberIdx) {
+        return notificationDAO.countUnreadNotifications(memberIdx);
     }
 }

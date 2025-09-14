@@ -25,4 +25,9 @@ public interface NotificationService {
      * @param notificationReadDTO 읽음 정보
      */
     boolean markAsRead(NotificationReadDTO notificationReadDTO);
+
+    /**
+     * 읽지 않은 알림 개수 조회
+     */
+    int getUnreadCount(Integer memberIdx);
 }

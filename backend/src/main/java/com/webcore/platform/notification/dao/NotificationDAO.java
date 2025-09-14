@@ -26,4 +26,11 @@ public interface NotificationDAO {
      * @param notificationReadDTO 읽음 정보
      */
     int insertNotificationRead(NotificationReadDTO notificationReadDTO);
+
+    /**
+     * 읽지 않은 알림 개수 조회
+     * @param memberIdx 회원 고유번호
+     * @return 읽지 않은 알림 개수
+     */
+    int countUnreadNotifications(Integer memberIdx);
 }

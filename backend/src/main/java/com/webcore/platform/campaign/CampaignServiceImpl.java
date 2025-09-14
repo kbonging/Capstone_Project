@@ -8,11 +8,15 @@ import com.webcore.platform.common.CommonService;
 import com.webcore.platform.common.PaginationInfo;
 import com.webcore.platform.constants.Paging;
 import com.webcore.platform.file.FileStorageService;
+import com.webcore.platform.notification.NotificationService;
+import com.webcore.platform.notification.dto.NotificationDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +31,7 @@ public class CampaignServiceImpl implements CampaignService {
   private final CampaignDAO campaignDAO;
   private final CommonService commonService;
   private final FileStorageService fileStorageService;
+  private final NotificationService notificationService;
 
   @Override
   public Map<String, Object> getCampaignList(CampaignDTO campaignDTO) {
@@ -376,8 +381,57 @@ public class CampaignServiceImpl implements CampaignService {
     if (ins != 1) throw new IllegalStateException("리뷰 저장 실패");
   }
 
+  @Override
+  public String findApplicationStatus(int campaignId, int memberIdx) {
+    // 없으면 null 반환 가능 → 컨트롤러에서 기본 문구로 처리
+    return campaignDAO.selectApplicationStatus(campaignId, memberIdx);
+  }
 
+    @Override
+    @Transactional
+    public void completeCampaignSelection(int campaignIdx, int memberIdx) {
 
+        // 1. 캠페인 상세 조회 (작성자 정보 포함)
+        CampaignDetailResponseDTO campaign = campaignDAO.selectDetailCampaign(campaignIdx, memberIdx);
+
+        if (campaign == null) {
+            throw new IllegalArgumentException("캠페인이 존재하지 않습니다.");
+        }
+
+        // 2. 소유권 체크 (로그인한 소상공인과 캠페인 작성자 비교)
+        if (campaign.getMemberIdx() != memberIdx) {
+            throw new IllegalStateException("권한이 없습니다.");
+        }
+
+         // 3. 모집 종료일 체크 (필요하면 활성화)
+        // 현재 시간
+        LocalDate now = LocalDate.now();
+        LocalDate unlockDate = campaign.getApplyEndDate().isAfter(campaign.getAnnounceDate())
+                ? campaign.getApplyEndDate()
+                : campaign.getAnnounceDate();
+        if (unlockDate.isAfter(now)) {
+            throw new IllegalStateException("모집 종료 및 발표일 이후에만 선정 완료가 가능합니다.");
+        }
+
+        // 4. 단일 캠페인 상태 CLOSED로 업데이트 (전체 마감용 쿼리 아님)
+        campaignDAO.updateCampaignStatusToClosed(campaignIdx);
+
+        // 5. 당첨자 조회
+        List<Integer> winnerMemberIds = campaignDAO.selectWinnersByCampaignId(campaignIdx);
+
+        // 6. 당첨자 알림 발송
+        for (Integer winnerId : winnerMemberIds) {
+            NotificationDTO notification = NotificationDTO.builder()
+                    .memberIdx(winnerId)
+                    .notiTypeCd("CAMPAIGN_RESULT")
+                    .notiTitle("[" + campaign.getTitle() + "] 캠페인에 선정완료")
+                    .notiMessage("[" + campaign.getTitle() + "] 캠페인에 선정되었습니다.")
+                    .notiLinkUrl("/campaign/" + campaignIdx)
+                    .build();
+
+            notificationService.createNotification(notification);
+        }
+    }
 
 
 }

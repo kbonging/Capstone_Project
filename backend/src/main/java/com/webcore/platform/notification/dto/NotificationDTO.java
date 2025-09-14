@@ -1,6 +1,7 @@
 package com.webcore.platform.notification.dto;
 
 import com.webcore.platform.common.dto.DefaultDTO;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -8,6 +9,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
+@Builder
 public class NotificationDTO extends DefaultDTO {
     /** 알림 고유번호 (PK, AUTO_INCREMENT) */
     private Long notificationIdx;

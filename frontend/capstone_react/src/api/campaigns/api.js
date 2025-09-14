@@ -427,3 +427,19 @@ export async function cancelMyApplication({ token, applicationIdx }) {
   return res.data;
 }
 //---------------------------------------------------//
+
+
+
+
+// ------------------- 리뷰 작성 권한 확인 ---------------------
+export async function getReviewAccess(campaignId, token) {
+  const res = await fetch(`/api/campaigns/${campaignId}/reviews/access`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new HttpError(res.status, body?.message || "권한 확인 실패", body);
+  }
+  return body; // { allowed: true, status: "CAMAPP_APPROVED" }
+}

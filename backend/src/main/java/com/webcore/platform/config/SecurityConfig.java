@@ -126,6 +126,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/community") // 커뮤니티 불러오기 권한 필요 X
                         .permitAll()
 
+                        // 알림 관련
+                        .requestMatchers("/api/notifications", "/api/notifications/**").permitAll()
+
                         .requestMatchers("/api/comments", "/api/comments/**")// 댓글 경로는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")
 
