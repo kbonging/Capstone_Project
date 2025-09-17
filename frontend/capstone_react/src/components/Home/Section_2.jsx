@@ -1,6 +1,7 @@
 // components/campaign/PremiumSection.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FiMoreHorizontal } from "react-icons/fi";
+import mainLogo from "../../images/main_logo.png";
 import CampaignCard from "../campaign/CampaignCard";
 import { PlusButton } from "../PlusButton";
 import {
@@ -22,7 +23,7 @@ function CenterWrap({ max = 880, className = "", children }) {
   );
 }
 
-/* ===== 화면 열 수 (병풍 Row 전용) ===== */
+/* ===== 화면 열 수 ( Row 전용) ===== */
 function useColumns() {
   const [cols, setCols] = useState(1);
   useEffect(() => {
@@ -56,17 +57,21 @@ const chunk = (arr, size) => {
 
 /* ===== Ribbon Header ===== */
 function RibbonHeader({
-  title = "Revory",
   subtitle = "체험하고 리뷰 쓰면 혜택이 팡팡!",
-  logoUrl = "/assets/revory-logo.png",
+  logoUrl = mainLogo,
 }) {
   return (
-    <CenterWrap max={880}>
+    <CenterWrap max={1150}>
       <div className="flex items-center justify-between px-1 py-1">
         <div className="flex items-center gap-3 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-2xl font-extrabold tracking-tight text-gray-700 dark:text-zinc-100 whitespace-nowrap">
-              {title}
+              <img
+                src={logoUrl}
+                alt="Revory logo"
+                className="h-8"
+                loading="lazy"
+              />
             </span>
           </div>
           <span className="text-gray-400 select-none">|</span>
@@ -74,18 +79,13 @@ function RibbonHeader({
             {subtitle}
           </p>
         </div>
-        <img
-          src={logoUrl}
-          alt="Revory logo"
-          className="h-7 w-auto shrink-0"
-          loading="lazy"
-        />
       </div>
     </CenterWrap>
   );
 }
 
-/* ===== 병풍 Row ===== */
+/* ===== Row ===== */
+/* ===== Row ===== */
 function Row({ items, gapPx = 24 }) {
   const ref = useRef(null);
   const [rowW, setRowW] = useState(0);
@@ -99,47 +99,76 @@ function Row({ items, gapPx = 24 }) {
     return () => ro.disconnect();
   }, []);
 
-  const gaps = Math.max(0, (Math.min(items.length, cols) - 1) * gapPx);
-  const BASE = Math.floor((rowW - gaps) / Math.max(1, cols));
+  // 항상 cols 기준으로 셀 폭 고정
+  const cellWidth = Math.floor(
+    (rowW - Math.max(0, (cols - 1) * gapPx)) / Math.max(1, cols)
+  );
   const MIN = 200;
-  const WANT_EXPAND = 120;
+  const BASE = Math.max(MIN, cellWidth);
 
-  const others = Math.max(1, cols - 1);
-  const maxExpandFromOthers = Math.max(0, (Math.max(BASE, MIN) - MIN) * others);
-  const EXPAND = Math.min(WANT_EXPAND, maxExpandFromOthers);
+  // slots: 실제 아이템 + placeholder = 항상 cols개
+  const placeholders = Math.max(0, cols - items.length);
+  const slots = [...items, ...Array(placeholders).fill(null)];
+
+  const others = Math.max(0, cols - 1);
+  const WANT_EXPAND = 120;
+  const maxExpandFromOthers = others > 0 ? Math.max(0, (BASE - MIN) * others) : 0;
+  const EXPAND = others > 0 ? Math.min(WANT_EXPAND, maxExpandFromOthers) : 0;
 
   return (
     <div
       ref={ref}
       className="flex flex-nowrap gap-x-6 w-full overflow-x-hidden"
+      onMouseLeave={() => setActiveIdx(null)}
+      onTouchEnd={() => setActiveIdx(null)}
     >
-      {items.map((it, i) => {
-        const isActive = activeIdx === i;
+      {slots.map((maybeItem, i) => {
+        const isPlaceholder = maybeItem == null;
+        const isActive = !isPlaceholder && activeIdx === i;
         let w = BASE;
 
-        if (activeIdx !== null) {
-          if (isActive) w = BASE + EXPAND;
-          else w = BASE - Math.floor(EXPAND / others);
+        if (activeIdx !== null && others > 0) {
+          if (isActive) {
+            w = BASE + EXPAND; // 활성 카드 확장
+          } else {
+            w = BASE - Math.floor(EXPAND / others); // 나머지(실제+플레이스홀더) 카드 축소
+          }
         }
 
         return (
           <div
-            key={it.campaignIdx ?? i}
-            onMouseEnter={() => setActiveIdx(i)}
-             className="flex-none min-w-0 transition-all duration-300 ease-out h-[360px] overflow-hidden"
-            style={{ width: `${Math.max(MIN, Math.round(w))}px` }}
+            key={isPlaceholder ? `ph-${i}` : (maybeItem.campaignIdx ?? i)}
+            onMouseEnter={() => {
+              if (!isPlaceholder) setActiveIdx(i);
+            }}
+            onFocus={() => {
+              if (!isPlaceholder) setActiveIdx(i);
+            }}
+            onBlur={() => setActiveIdx(null)}
+            className={[
+              "flex-none min-w-0 transition-all duration-300 ease-out h-[360px] overflow-hidden",
+              // placeholder는 자리만 차지(투명/클릭불가)
+              isPlaceholder ? "opacity-0 pointer-events-none" : ""
+            ].join(" ")}
+            style={{ width: `${Math.round(w)}px` }}
+            aria-hidden={isPlaceholder ? true : undefined}
           >
-            <CampaignCard
-              data={it}
-              isActive={isActive}
-              cropped={activeIdx === null ? true : !isActive}
-            />
+            {!isPlaceholder && (
+              <CampaignCard
+                data={maybeItem}
+                isActive={isActive}
+                cropped={activeIdx === null ? true : !isActive}
+              />
+            )}
           </div>
         );
       })}
     </div>
   );
 }
+
+
+
 
 /* ===== 탭 바 ===== */
 function TopTabBar({ tabs, active, onChange, layout = "spread" }) {
@@ -151,8 +180,8 @@ function TopTabBar({ tabs, active, onChange, layout = "spread" }) {
       : "justify-center";
 
   return (
-    <CenterWrap max={1080}>
-      <div className={`flex ${alignCls} w-full border-t-2 border-b-2`}>
+    <CenterWrap max={1150}>
+      <div className={`flex ${alignCls} w-full border-t-2 border-b-2 `}>
         <div
           className={
             layout === "spread"
@@ -172,8 +201,8 @@ function TopTabBar({ tabs, active, onChange, layout = "spread" }) {
                   layout === "spread" ? "flex-1" : "flex-none",
                   "relative px-3 py-2.5 text-sm font-semibold text-center transition-colors",
                   isActive
-                    ? "text-black dark:text-zinc-100"
-                    : "text-stone-500 hover:text-stone-900 dark:text-zinc-400 dark:hover:text-zinc-100",
+                    ? "text-blue-500 dark:text-zinc-100"
+                    : "text-stone-500 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-zinc-100",
                 ].join(" ")}
               >
                 <span className="inline-block">{t.label}</span>
@@ -181,7 +210,7 @@ function TopTabBar({ tabs, active, onChange, layout = "spread" }) {
                   className={[
                     "pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-0 h-10 rounded-md transition-all duration-200",
                     isActive
-                      ? "w-full bg-blue-100 dark:bg-zinc-100 opacity-60"
+                      ? "w-full dark:bg-zinc-100 opacity-60"
                       : "w-0 bg-transparent",
                   ].join(" ")}
                   aria-hidden
@@ -192,10 +221,7 @@ function TopTabBar({ tabs, active, onChange, layout = "spread" }) {
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-center gap-2 text-sm text-stone-600 dark:text-zinc-400">
-        <FiMoreHorizontal className="text-stone-400" />
-        <p className="text-center">리뷰 쓰고 혜택 받는 체험단을 만나보세요.</p>
-      </div>
+      
     </CenterWrap>
   );
 }
@@ -485,7 +511,7 @@ export default function Section_2() {
 
   return (
     <section className="mt-8 space-y-3">
-      <RibbonHeader title="Revory" logoUrl="/assets/revory-logo.png" />
+      <RibbonHeader title="Revory"  />
       <TopTabBar tabs={tabs} active={tab} onChange={setTab} layout="spread" />
       {content}
     </section>

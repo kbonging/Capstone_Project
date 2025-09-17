@@ -1,0 +1,35 @@
+// src/pages/MyCampaigns.jsx
+import React, { useContext, useEffect, useState } from "react";
+import MyPageLayout from "../MyPageLayout";
+import { AppContext } from "../../../contexts/AppContext";
+import MyCancelList from "./MyCancelList";
+import CancelForm from "./CancelForm";
+// 내 체험단 리스트 컴포넌트
+
+
+export default function Cancellation_in_progress() {
+  const { user } = useContext(AppContext);
+  const [loading, setLoading] = useState(true);
+
+  // 유저 권한 추출
+  const getUserRole = (user) => {
+    if (user?.authDTOList?.length > 0) {
+      return user.authDTOList[0].auth;
+    }
+    return null;
+  };
+
+  const userRole = getUserRole(user);
+
+  useEffect(() => {
+    if (userRole) setLoading(false);
+  }, [userRole]);
+
+  if (loading) return <div>Loading...</div>;
+
+  return (
+    <MyPageLayout userRole={userRole}>
+      <MyCancelList />
+    </MyPageLayout>
+  );
+}

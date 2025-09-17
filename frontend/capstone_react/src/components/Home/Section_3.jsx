@@ -17,8 +17,8 @@ export default function Section_3() {
         //  1) 서버 필터: 공지 카테고리만 요청 (COMMU004)
         const res = await getCommunities({
           page: 1,
-          recordCount: 6,          // 최대 6개만
-          categoryId: "COMMU004",  // 공지
+          recordCount: 6, // 최대 6개만
+          categoryId: "COMMU004", // 공지
           showMycommunitiesParam: "", // 공개
         });
 
@@ -44,7 +44,7 @@ export default function Section_3() {
       {/* 왼쪽 배너 */}
       <div className="relative rounded-2xl overflow-hidden aspect-[16/9] lg:aspect-auto">
         <img
-          src="/assets/section3/banner_revory.jpg"
+          src="../../images/MainLogo.png"
           alt="Revory 구독 배너"
           className="w-full h-full object-cover"
         />
@@ -73,11 +73,17 @@ export default function Section_3() {
 
         {/* 리스트 */}
         {loading ? (
-          <div className="px-5 py-10 text-center text-gray-500">불러오는 중…</div>
+          <div className="px-5 py-10 text-center text-gray-500">
+            불러오는 중…
+          </div>
         ) : err ? (
-          <div className="px-5 py-10 text-center text-rose-500">에러: {err}</div>
+          <div className="px-5 py-10 text-center text-rose-500">
+            에러: {err}
+          </div>
         ) : items.length === 0 ? (
-          <div className="px-5 py-10 text-center text-gray-500">공지 글이 아직 없어요.</div>
+          <div className="px-5 py-10 text-center text-gray-500">
+            공지 글이 아직 없어요.
+          </div>
         ) : (
           <ul className="divide-y divide-gray-200">
             {items.map((item) => (
