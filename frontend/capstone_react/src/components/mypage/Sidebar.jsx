@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { AppContext } from "../../contexts/AppContext"; // AppContext 가져오기
 
 export default function Sidebar({ userRole }) { 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
   const location = useLocation(); 
   const { logout, user } = useContext(AppContext); // logout 함수 사용
 
