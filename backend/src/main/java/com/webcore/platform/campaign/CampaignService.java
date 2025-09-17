@@ -68,5 +68,11 @@ public interface CampaignService {
    * @param memberIdx 로그인한 소상공인 회원번호
    */
   void completeCampaignSelection(int campaignIdx, int memberIdx);
+
+  /** 리뷰어 진행 완료 캠페인 */
+  Map<String, Object> getCompletedCampaigns(CampaignDTO campaignDTO);
+
+  /** 리뷰어 진행중 캠페인 */
+  Map<String, Object> getOngoingCampaigns(CampaignDTO campaignDTO);
 }
 

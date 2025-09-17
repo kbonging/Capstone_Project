@@ -454,4 +454,17 @@ public class CampaignController {
     }
   }
 
+    /** 리뷰어 진행 완료 캠페인 */
+    @GetMapping("/reviewer/completed")
+    public Map<String, Object> getCompletedCampaigns(CampaignDTO campaignDTO) {
+        log.info("CampaignDTO: {}", campaignDTO);
+        return campaignService.getCompletedCampaigns(campaignDTO);
+    }
+
+    /** 리뷰어 진행중 캠페인 */
+    @GetMapping("/reviewer/ongoing")
+    public Map<String, Object> getOngoingCampaigns(CampaignDTO campaignDTO) {
+        log.info("CampaignDTO: {}", campaignDTO);
+        return campaignService.getOngoingCampaigns(campaignDTO);
+    }
 }

@@ -1,120 +1,123 @@
 // src/components/mypage/Profile.jsx
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import ProfileStats from "./ProfileStats";
+import { getOngoingCampaigns, getCompletedCampaigns } from "../../api/campaigns/api";
+import { AppContext } from "../../contexts/AppContext";
+import { toAbsoluteUrl } from "../../utils/url";
 
 export default function Profile({ user }) {
+  const { token } = useContext(AppContext);
+  const userRole = user?.authDTOList?.[0]?.auth;
 
   const [activeTab, setActiveTab] = useState("진행중");
+  const [ongoingCampaigns, setOngoingCampaigns] = useState([]);
+  const [completedCampaigns, setCompletedCampaigns] = useState([]);
+  const [ongoingPage, setOngoingPage] = useState(1);
+  const [completedPage, setCompletedPage] = useState(1);
+  const [ongoingHasMore, setOngoingHasMore] = useState(true);
+  const [completedHasMore, setCompletedHasMore] = useState(true);
 
-  const getUserRole = (user) => {
-    if (user && user.authDTOList && user.authDTOList.length > 0) {
-      return user.authDTOList[0].auth;
-    }
-    return null;
+  const nameToDisplay = userRole === "ROLE_OWNER" ? (user.businessName || "미등록") : (user.nickname || "미등록");
+  const profileImg = user.profileImgUrl ? toAbsoluteUrl(user.profileImgUrl) : null;
+
+  // 캠페인 호출 (리뷰어만)
+  const fetchOngoingCampaigns = async (page = 1) => {
+    if (!user.memberIdx) return;
+    const data = await getOngoingCampaigns(user.memberIdx, token, page);
+    setOngoingCampaigns(prev => [...prev, ...data.campaignList]);
+    setOngoingPage(page);
+    setOngoingHasMore(page < data.paginationInfo.totalPage);
   };
 
-  const userRole = getUserRole(user);
+  const fetchCompletedCampaigns = async (page = 1) => {
+    if (!user.memberIdx) return;
+    const data = await getCompletedCampaigns(user.memberIdx, token, page);
+    setCompletedCampaigns(prev => [...prev, ...data.campaignList]);
+    setCompletedPage(page);
+    setCompletedHasMore(page < data.paginationInfo.totalPage);
+  };
 
-  let statsData = [];
-  let role = "";
-  let userStats1 = [];
-  let userStats2 = [];
-  let nameToDisplay = "";
+  useEffect(() => {
+    if (userRole === "ROLE_USER") {
+      fetchOngoingCampaigns(1);
+      fetchCompletedCampaigns(1);
+    }
+  }, [userRole, token]);
 
-  if (userRole === "ROLE_OWNER") {
-    role = "소상공인";
-    statsData = [
-      { label: "상세페이지", value: "미등록", status: true },
-      { label: "완료된 체험단 수", value: "0건" },
-      { label: "리뷰노트 방문수", value: "4회" },
-      { label: "패널티", value: "0회" },
-      { label: "하트수", value: "0명" },
-      { label: "평가", value: "0명" },
-    ];
-    nameToDisplay = user ? user.businessName : "사용자";
-  } else if (userRole === "ROLE_USER") {
-    role = "체험단";
-    userStats1 = [
-      { label: "방문수", value: "0회" },
-      { label: "패널티", value: "0회" },
-      { label: "취소 횟수", value: "0회" },
-      { label: "활동 지역", value: "서울" },
-      { label: "활동 주제", value: "맛집" },
-      { label: "하트수", value: "0개" },
-    ];
-    userStats2 = [
-      { label: "네이버", value: "블로그" },
-      { label: "인스타그램", value: "사진" },
-      { label: "유튜브", value: "영상" },
-      { label: "틱톡", value: "쇼츠" },
-      { label: "협찬 경력", value: "5회" },
-      { label: "평가", value: "우수" },
-    ];
-    nameToDisplay = user ? user.nickname : "사용자";
-  }
-
-  if (!userRole) {
-    return <div>Loading...</div>;
-  }
+  if (!userRole) return <div>Loading...</div>;
 
   return (
     <>
-      <div className="flex w-full gap-6 ">
+      {/* 프로필 영역 */}
+      <div className="flex w-full gap-6">
         <div className="w-1/2 flex justify-center items-center">
-          <div className="w-40 h-40 rounded-full bg-gray-200 flex items-center justify-center text-4xl text-gray-400">
-            <i className="fas fa-user"></i>
+          <div className="w-40 h-40 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden text-4xl text-gray-400">
+            {profileImg ? <img src={profileImg} alt={nameToDisplay} className="w-full h-full object-cover"/> : <i className="fas fa-user"></i>}
           </div>
         </div>
         <div className="w-1/2 space-y-3">
           <div className="flex items-baseline space-x-2">
             <div className="text-sm text-blue-400 bg-blue-100 font-bold rounded-md p-2">
-              {role}
+              {userRole === "ROLE_OWNER" ? "소상공인" : "체험단"}
             </div>
             <h2 className="text-2xl font-bold">{nameToDisplay}</h2>
           </div>
-          {userRole === "ROLE_OWNER" ? (
-            <div className="space-y-2">
-              <ProfileStats stats={statsData} />
-            </div>
-          ) : (
-            // gap-4를 gap-y-6으로 변경하여 세로 간격만 늘림
-            <div className="grid grid-cols-2 gap-x-4 gap-y-6">
-              <ProfileStats stats={userStats1} />
-              <ProfileStats stats={userStats2} />
-            </div>
-          )}
+          <ProfileStats user={user} userRole={userRole} />
         </div>
       </div>
-      
-      {/* 탭 영역 */}
-      <div className="mt-10">
-        <div className="flex justify-center w-full">
-          <div className="flex w-full justify-center">
-            <div className="flex w-full space-x-8 text-sm pb-2 mb-4 justify-center border-b border-gray-300"> 
-              <div
-                className={`relative cursor-pointer px-2 py-1 font-medium ${activeTab === '진행중' ? 'text-black' : 'text-gray-400 hover:text-gray-600'}`}
-                onClick={() => setActiveTab('진행중')}
-              >
-                진행중 체험단
-                {activeTab === '진행중' && (
-                  <span className="absolute left-1/2 -translate-x-1/2 bottom-0 h-0.5 bg-[rgb(26,176,246)]" style={{ width: 'calc(100% - 16px)' }}></span>
-                )}
-              </div>
-              
-              <div
-                className={`relative cursor-pointer px-2 py-1 font-medium ${activeTab === '완료' ? 'text-black' : 'text-gray-400 hover:text-gray-600'}`}
-                onClick={() => setActiveTab('완료')}
-              >
-                진행 완료 체험단
-                {activeTab === '완료' && (
-                  <span className="absolute left-1/2 -translate-x-1/2 bottom-0 h-0.5 bg-[rgb(26,176,246)]" style={{ width: 'calc(100% - 16px)' }}></span>
-                )}
-              </div>
+
+      {/* 캠페인 탭 영역 (리뷰어만) */}
+      {userRole === "ROLE_USER" && (
+        <div className="mt-10">
+          {/* 탭 */}
+          <div className="flex justify-center w-full mb-4">
+            <div className="flex space-x-8 text-sm pb-2 border-b border-gray-300">
+              {["진행중", "완료"].map(tab => (
+                <div
+                  key={tab}
+                  className={`relative cursor-pointer px-2 py-1 font-medium ${activeTab === tab ? 'text-black' : 'text-gray-400 hover:text-gray-600'}`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab} 체험단
+                  {activeTab === tab && <span className="absolute left-1/2 -translate-x-1/2 bottom-0 h-0.5 bg-blue-500 w-[calc(100%-16px)]"></span>}
+                </div>
+              ))}
             </div>
           </div>
+
+          {/* 캠페인 리스트 */}
+          <div className="grid grid-cols-4 gap-4">
+            {(activeTab === "진행중" ? ongoingCampaigns : completedCampaigns).length > 0 ? 
+              (activeTab === "진행중" ? ongoingCampaigns : completedCampaigns).map(c => (
+                <div key={c.campaignIdx} className="border rounded-xl overflow-hidden shadow-sm">
+                  <img src={toAbsoluteUrl(c.thumbnailUrl)} alt={c.title} className="w-full h-32 object-cover"/>
+                  <div className="p-2">
+                    <h3 className="font-bold text-sm truncate">{c.title}</h3>
+                  </div>
+                </div>
+              ))
+              :
+              <p className="text-gray-500 text-center col-span-4">
+                {activeTab === "진행중" ? "진행중 체험단 내역이 없습니다." : "완료된 체험단 내역이 없습니다."}
+              </p>
+            }
+          </div>
+
+          {/* 더보기 버튼 */}
+          <div className="mt-4 text-center">
+            {activeTab === "진행중" && ongoingHasMore && (
+              <button onClick={() => fetchOngoingCampaigns(ongoingPage + 1)} className="px-4 py-2 bg-blue-500 text-white rounded">
+                더보기
+              </button>
+            )}
+            {activeTab === "완료" && completedHasMore && (
+              <button onClick={() => fetchCompletedCampaigns(completedPage + 1)} className="px-4 py-2 bg-blue-500 text-white rounded">
+                더보기
+              </button>
+            )}
+          </div>
         </div>
-        <p className="text-gray-500 text-center">내역이 없습니다.</p>
-      </div>
+      )}
     </>
   );
 }

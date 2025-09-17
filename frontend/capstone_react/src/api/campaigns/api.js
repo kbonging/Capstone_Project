@@ -443,3 +443,64 @@ export async function getReviewAccess(campaignId, token) {
   }
   return body; // { allowed: true, status: "CAMAPP_APPROVED" }
 }
+
+// -------------------------진행중 캠페인----------------------------
+export const getOngoingCampaigns = async (memberIdx, token, page = 1) => {
+  try {
+    const response = await axios.get(`/api/campaigns/reviewer/ongoing`, {
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      params: { memberIdx, page },
+    });
+
+    // paginationInfo 없을 때 기본값 설정
+    const { campaignList = [], paginationInfo = {} } = response.data;
+    return {
+      campaignList,
+      paginationInfo: {
+        totalPage: paginationInfo.totalPage || 1,
+        recordCount: paginationInfo.recordCount || campaignList.length,
+        firstPage: paginationInfo.firstPage || 1,
+        lastPage: paginationInfo.lastPage || campaignList.length,
+      },
+    };
+  } catch (error) {
+    console.error("진행중 캠페인 조회 실패:", error);
+    return {
+      campaignList: [],
+      paginationInfo: { totalPage: 1, recordCount: 0, firstPage: 1, lastPage: 1 },
+    };
+  }
+};
+
+// 진행 완료 캠페인
+export const getCompletedCampaigns = async (memberIdx, token, page = 1) => {
+  try {
+    const response = await axios.get(`/api/campaigns/reviewer/completed`, {
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      params: { memberIdx, page },
+    });
+
+    const { campaignList = [], paginationInfo = {} } = response.data;
+    return {
+      campaignList,
+      paginationInfo: {
+        totalPage: paginationInfo.totalPage || 1,
+        recordCount: paginationInfo.recordCount || campaignList.length,
+        firstPage: paginationInfo.firstPage || 1,
+        lastPage: paginationInfo.lastPage || campaignList.length,
+      },
+    };
+  } catch (error) {
+    console.error("진행 완료 캠페인 조회 실패:", error);
+    return {
+      campaignList: [],
+      paginationInfo: { totalPage: 1, recordCount: 0, firstPage: 1, lastPage: 1 },
+    };
+  }
+};
