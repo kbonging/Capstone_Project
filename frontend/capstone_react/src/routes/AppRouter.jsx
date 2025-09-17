@@ -23,7 +23,7 @@ import RequireReviewer from "./RequireReviewer";
 import MyCampaigns from "../pages/MyCampaigns";
 import AdminCampaignTime from "../pages/AdminCampaignTime";
 import CampaignSearchPage from "../pages/CampaignSearchPage";
-import AlarmPage from "../components/mypage/AlarmPage";
+import AlarmPage from "../pages/AlarmPage";
 
 
 import ReviewSubmitPage from "../pages/ReviewSubmitPage";
