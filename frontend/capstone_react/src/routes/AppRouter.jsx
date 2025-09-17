@@ -27,6 +27,8 @@ import AlarmPage from "../components/mypage/AlarmPage";
 
 
 import ReviewSubmitPage from "../pages/ReviewSubmitPage";
+import Cancellation_in_progress from "../components/mypage/cancle/Cancellation_in_progress";
+import CancelRequestPage from "../components/mypage/cancle/CancelRequestPage";
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
@@ -139,6 +141,9 @@ export default function AppRouter() {
 
 
       <Route path="/mypage/my-campaigns" element={<MyCampaigns />} />
+
+      <Route path="/mypage/cancel-campaigns" element={<Cancellation_in_progress />} />
+       <Route path="/cancel/request" element={<CancelRequestPage />} />
 
       {/* 리뷰 제출 페이지 승인 검사 해야함*/}
       <Route
