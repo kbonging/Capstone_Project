@@ -445,7 +445,7 @@ public class CampaignController {
     } catch (IllegalStateException e) {
       return ResponseEntity
               .badRequest()
-              .body(e.getMessage()); // ❌ 예외 메시지를 그대로 내려줌
+              .body(e.getMessage()); //예외 메시지를 그대로 내려줌
     } catch (Exception e) {
       log.error("선정 완료 처리 중 오류", e);
       return ResponseEntity

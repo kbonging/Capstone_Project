@@ -136,7 +136,7 @@ export default function ShowcaseHero() {
         style={{ backgroundColor: current.bgLeft }}
       />
 
-      <div className="mx-auto px-8 md:px-16">
+      <div className="mx-auto px-36 h-screen">
         <div className="relative rounded-3xl ring-black/5 overflow-visible bg-white">
           <div className="grid grid-cols-12 gap-0 items-stretch">
             {/* LEFT */}
