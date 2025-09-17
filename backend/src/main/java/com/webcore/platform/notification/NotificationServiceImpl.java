@@ -6,7 +6,9 @@ import com.webcore.platform.notification.dto.NotificationReadDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -15,8 +17,15 @@ public class NotificationServiceImpl implements NotificationService{
     private final NotificationDAO notificationDAO;
 
     @Override
-    public List<NotificationDTO> getNotifications(Integer memberIdx) {
-        return notificationDAO.selectNotifications(memberIdx);
+    public Map<String, Object> getNotifications(Integer memberIdx) {
+        List<NotificationDTO> alarmList = notificationDAO.selectNotifications(memberIdx);
+        int unReadCount = notificationDAO.countUnreadNotifications(memberIdx);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("alarmList", alarmList);
+        result.put("unReadCount", unReadCount);
+
+        return result;
     }
 
     @Override

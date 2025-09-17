@@ -6,7 +6,7 @@ import Profile from "../components/mypage/Profile";
 import { AppContext } from '../contexts/AppContext';
 import AdminAllow from '../components/mypage/AdminAllow';
 import { getUserByIdx } from "../api/memberApi";
-import AlarmPage from "../components/mypage/AlarmPage";
+import AlarmPage from "../components/mypage/Alarm";
 
 
 export default function MyPage() {

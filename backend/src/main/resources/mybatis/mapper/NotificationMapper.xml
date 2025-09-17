@@ -6,16 +6,16 @@
     <!-- 1. 전체/개인 알림 조회 -->
     <select id="selectNotifications" parameterType="int" resultType="com.webcore.platform.notification.dto.NotificationDTO">
         SELECT
-        n.NOTIFICATION_IDX,
-        n.MEMBER_IDX,
-        n.NOTI_TYPE_CD,
-        n.NOTI_TITLE,
-        n.NOTI_MESSAGE,
-        n.NOTI_LINK_URL,
-        n.DEL_YN,
-        n.REG_DATE,
-        n.MOD_DATE,
-        CASE WHEN r.NOTIFICATION_IDX IS NULL THEN FALSE ELSE TRUE END AS isRead
+            n.NOTIFICATION_IDX,
+            n.MEMBER_IDX,
+            n.NOTI_TYPE_CD,
+            n.NOTI_TITLE,
+            n.NOTI_MESSAGE,
+            n.NOTI_LINK_URL,
+            n.DEL_YN,
+            n.REG_DATE,
+            n.MOD_DATE,
+            CASE WHEN r.NOTIFICATION_IDX IS NULL THEN FALSE ELSE TRUE END AS isRead
         FROM TB_NOTIFICATION n
         LEFT JOIN TB_NOTIFICATION_READ r
         ON n.NOTIFICATION_IDX = r.NOTIFICATION_IDX

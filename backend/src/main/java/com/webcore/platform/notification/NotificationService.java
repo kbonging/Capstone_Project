@@ -4,6 +4,7 @@ import com.webcore.platform.notification.dto.NotificationDTO;
 import com.webcore.platform.notification.dto.NotificationReadDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface NotificationService {
 
@@ -12,7 +13,7 @@ public interface NotificationService {
      * @param memberIdx 회원 고유번호
      * @return 알림 리스트
      */
-    List<NotificationDTO> getNotifications(Integer memberIdx);
+    Map<String, Object> getNotifications(Integer memberIdx);
 
     /**
      * 알림 등록 (전체 공지 또는 개인 알림)
