@@ -95,8 +95,8 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             {/* 🔹 로그인된 경우에만 알림 버튼 표시 */}
             {user && (
-              <button
-                onClick={() => console.log("알람 클릭")}
+              <Link
+                to="/mypage/alarm"
                 className="relative p-1 hover:text-zinc-600 dark:hover:text-zinc-300"
                 aria-label="알람"
               >
@@ -106,7 +106,7 @@ export default function Header() {
                     {unreadCount}
                   </span>
                 )}
-              </button>
+              </Link>
             )}
 
             <Link
