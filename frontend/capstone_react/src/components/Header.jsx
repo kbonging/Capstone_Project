@@ -5,10 +5,9 @@ import { AppContext } from "../contexts/AppContext";
 import LogoImage from "../images/main_logo.png";
 
 export default function Header() {
-  const { user, logout, token } = useContext(AppContext);
+  const { user, logout, unreadCount } = useContext(AppContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [unreadCount, setUnreadCount] = useState(0); // 🔹 알림 갯수 상태
   const navigate = useNavigate();
   const location = useLocation(); // 🔹 URL 쿼리 읽기용
 
@@ -19,18 +18,18 @@ export default function Header() {
   }, [location.search]);
 
   // 알림 개수 가져오기
-  useEffect(() => {
-    if (!token) {
-      setUnreadCount(0);
-      return; // 로그인 안 한 경우 스킵
-    }
-    fetch("/api/notifications/count", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => setUnreadCount(data.unreadCount))
-      .catch((err) => console.error("알림 카운트 에러:", err));
-  }, [token]);
+  // useEffect(() => {
+  //   if (!token) {
+  //     setUnreadCount(0);
+  //     return; // 로그인 안 한 경우 스킵
+  //   }
+  //   fetch("/api/notifications/count", {
+  //     headers: { Authorization: `Bearer ${token}` },
+  //   })
+  //     .then((res) => res.json())
+  //     .then((data) => setUnreadCount(data.unreadCount))
+  //     .catch((err) => console.error("알림 카운트 에러:", err));
+  // }, [token]);
 
   const handleSearch = () => {
     const trimmed = searchKeyword.trim();

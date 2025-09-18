@@ -6,7 +6,7 @@ import Profile from "../components/mypage/Profile";
 import { AppContext } from '../contexts/AppContext';
 import AdminAllow from '../components/mypage/AdminAllow';
 import { getUserByIdx } from "../api/memberApi";
-import AlarmPage from "../components/mypage/AlarmPage";
+import AlarmPage from "../components/mypage/Alarm";
 
 
 export default function MyPage() {
@@ -15,11 +15,15 @@ export default function MyPage() {
   const [ targetUser, setTargetUser ] = useState(null);
 
   useEffect(() => {
-    if (memberIdx) {
+    if (!loggedInUser) return; // loggedInUser가 없으면 아무 것도 안 함
+
+    if (memberIdx && memberIdx !== loggedInUser.memberIdx.toString()) {
+      // 타회원 프로필
       getUserByIdx(memberIdx, token)
         .then((data) => setTargetUser(data))
         .catch((err) => console.error(err));
     } else {
+      // 자기 프로필
       setTargetUser(loggedInUser);
     }
   }, [memberIdx, loggedInUser, token]);
@@ -40,7 +44,7 @@ export default function MyPage() {
   return (
     <MyPageLayout userRole={loggedInRole}>
       {!memberIdx && <ProfileTabs userRole={targetRole} />}
-      <Profile user={targetUser} />
+      {targetUser && <Profile user={targetUser} />}
     </MyPageLayout>
   );
 }

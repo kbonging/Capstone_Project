@@ -116,4 +116,18 @@ public interface CampaignDAO {
   /** 리뷰등록 페이지 갈수있는 승인상태 체크 */
   String selectApplicationStatus(@Param("campaignId") int campaignId,
       @Param("memberIdx") int memberIdx);
+
+  /** 리뷰어 진행 완료 캠페인 */
+  List<CampaignDetailResponseDTO> getCompletedCampaigns(CampaignDTO campaignDTO);
+
+  /** 리뷰어 진행 완료 캠페인 전체 레코드 수 조회 */
+  int getCompletedCampaignCount(CampaignDTO campaignDTO);
+
+  /** 리뷰어 진행중 캠페인 */
+  List<CampaignDetailResponseDTO> getOngoingCampaigns(CampaignDTO campaignDTO);
+
+  /** 리뷰어 진행중 캠페인 전체 레코드 수 조회 */
+  int getOngoingCampaignCount(CampaignDTO campaignDTO);
+
+
   }

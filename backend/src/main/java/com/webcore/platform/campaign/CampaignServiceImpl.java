@@ -433,5 +433,51 @@ public class CampaignServiceImpl implements CampaignService {
         }
     }
 
+    /** 리뷰어 진행 완료 캠페인 */
+    @Override
+    public Map<String, Object> getCompletedCampaigns(CampaignDTO campaignDTO) {
 
+        int totalRecord = campaignDAO.getCompletedCampaignCount(campaignDTO);
+
+        PaginationInfo paginationInfo = new PaginationInfo();
+        paginationInfo.setCurrentPage(campaignDTO.getPage() <= 0 ? 1 : campaignDTO.getPage());
+        paginationInfo.setBlockSize(Paging.PAGE_BLOCK_SIZE);
+        paginationInfo.setRecordCountPerPage(Paging.RECORDS_PER_PAGE);
+        paginationInfo.setTotalRecord(totalRecord);
+
+        campaignDTO.setFirstIndex(paginationInfo.getFirstRecordIndex());
+        campaignDTO.setRecordCount(paginationInfo.getRecordCountPerPage());
+
+        List<CampaignDetailResponseDTO> completedCampaignList = campaignDAO.getCompletedCampaigns(campaignDTO);
+        log.info("조회된 캠페인 수: {}", completedCampaignList.size());
+        Map<String, Object> result = new HashMap<>();
+        result.put("campaignList", completedCampaignList);
+        result.put("paginationInfo", paginationInfo);
+
+        return result;
+    }
+
+    /** 리뷰어 진행중 캠페인 */
+    @Override
+    public Map<String, Object> getOngoingCampaigns(CampaignDTO campaignDTO) {
+
+        int totalRecord = campaignDAO.getOngoingCampaignCount(campaignDTO);
+
+        PaginationInfo paginationInfo = new PaginationInfo();
+        paginationInfo.setCurrentPage(campaignDTO.getPage() <= 0 ? 1 : campaignDTO.getPage());
+        paginationInfo.setBlockSize(Paging.PAGE_BLOCK_SIZE);
+        paginationInfo.setRecordCountPerPage(Paging.RECORDS_PER_PAGE);
+        paginationInfo.setTotalRecord(totalRecord);
+
+        campaignDTO.setFirstIndex(paginationInfo.getFirstRecordIndex());
+        campaignDTO.setRecordCount(paginationInfo.getRecordCountPerPage());
+
+        List<CampaignDetailResponseDTO> onGoingCampaignList = campaignDAO.getOngoingCampaigns(campaignDTO);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("campaignList", onGoingCampaignList);
+        result.put("paginationInfo", paginationInfo);
+
+        return result;
+    }
 }
