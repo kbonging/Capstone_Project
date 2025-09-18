@@ -14,7 +14,7 @@ select * from tb_common_code where del_yn='n' order by group_sort, sort asc;
 -- 그룹으로 조회
 SELECT code_id, group_code, code_nm, image_url, group_sort, sort, code_dc, del_yn 
 FROM tb_common_code
-WHERE group_code='COMMU_CATE' AND del_yn='N'
+WHERE group_code='CAM_APP_STA' AND del_yn='N'
 ORDER BY group_sort, sort;
 ################ 로그인 요청 시 정보 조회 ################
 SELECT  M.member_idx, M.member_id, M.member_pwd, M.member_name, M.del_yn, A.auth_idx, A.auth
@@ -215,3 +215,76 @@ LEFT JOIN tb_owner_profile op ON m.member_idx = op.member_idx
 WHERE c.community_idx = 2
 AND c.del_yn = 'N'
 ORDER BY c.group_id ASC, c.sort_order ASC;
+
+######################## 캠페인 관련 ############################
+-- 캠페인 전체 목록 조회
+SELECT
+	c.CAMPAIGN_IDX        AS campaignIdx,
+	c.MEMBER_IDX          AS memberIdx,
+	c.TITLE               AS title,
+	c.SHOP_NAME           AS shopName,
+	c.THUMBNAIL_URL       AS thumbnailUrl,
+	c.CONTACT_PHONE       AS contactPhone,
+	c.CAMPAIGN_TYPE       AS campaignType,
+	FN_GET_CODE_NM(c.CAMPAIGN_TYPE)  AS campaignTypeName,
+	c.CAM_CATE_CODE       AS categoryCode,
+	FN_GET_CODE_NM(c.CAM_CATE_CODE)  AS categoryName,
+	c.CHANNEL_CODE        AS channelCode,
+	FN_GET_CODE_NM(c.CHANNEL_CODE)   AS channelName,
+	c.MISSION             AS mission,
+	c.KEYWORD_1           AS keyword1,
+	c.KEYWORD_2           AS keyword2,
+	c.KEYWORD_3           AS keyword3,
+	c.BENEFIT_DETAIL      AS benefitDetail,
+	c.RECRUIT_COUNT       AS recruitCount,
+	c.APPLY_START_DATE    AS applyStartDate,
+	c.APPLY_END_DATE      AS applyEndDate,
+	c.ANNOUNCE_DATE       AS announceDate,
+	c.EXP_START_DATE      AS expStartDate,
+	c.EXP_END_DATE        AS expEndDate,
+	c.DEADLINE_DATE       AS deadlineDate,
+	c.RECRUIT_STATUS      AS recruitStatus,
+	c.CAMPAIGN_STATUS     AS campaignStatus,
+	v.ADDRESS             AS address,
+	v.ADDRESS_DETAIL      AS addressDetail,
+	v.EXP_DAY             AS expDay,
+	v.START_TIME          AS startTime,
+	v.END_TIME            AS endTime,
+	v.RESERVATION_NOTICE  AS reservationNotice,
+	CONCAT('https://map.naver.com/v5/search/',
+	REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20')) AS mapUrl,
+	d.PURCHASE_URL        AS purchaseUrl,
+	(
+		SELECT COUNT(*)
+		FROM TB_CAMPAIGN_APPLICATION a
+		WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX AND del_yn='N'
+	) AS applicantsCount
+FROM TB_CAMPAIGN c
+LEFT JOIN TB_CAMPAIGN_VISIT v ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+WHERE c.DEL_YN = 'N'
+ORDER BY c.REG_DATE DESC;
+
+## 캠페인 전체 목록 카운트 수 ##
+SELECT COUNT(*)
+FROM TB_CAMPAIGN c
+LEFT JOIN TB_CAMPAIGN_VISIT v ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+WHERE c.DEL_YN = 'N';
+
+## 캠페인 신청자 목록 조회 ##
+SELECT
+a.APPLICATION_IDX AS applicationIdx,
+a.MEMBER_IDX AS memberIdx,
+r.NICKNAME AS nickname,
+a.APPLY_REASON AS applyReason,
+cc.CODE_NM AS applyStatusName,
+cc.CODE_ID AS applyStatusCode,
+a.REG_DATE AS regDate,
+a.MOD_DATE AS modDate
+FROM tb_campaign_application a
+LEFT JOIN tb_reviewer_profile r ON a.MEMBER_IDX = r.MEMBER_IDX
+LEFT JOIN tb_common_code cc ON a.APPLY_STATUS_CODE = cc.CODE_ID
+WHERE a.DEL_YN = 'N';
+
+

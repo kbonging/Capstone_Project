@@ -4,6 +4,8 @@ import com.webcore.platform.member.dto.MemberAuthDTO;
 import com.webcore.platform.member.dto.MemberDTO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface MemberDAO {
     /** 로그인 시 정보 조회*/
@@ -14,6 +16,8 @@ public interface MemberDAO {
     int insertMemberAuth(MemberAuthDTO memberAuthDTO);
     /** 회원 고유번호로 정보 조회 */
     MemberDTO selectMemberByIdx(int memberIdx);
+    /** 회원 고유번호로 권한 조회 */
+    List<MemberAuthDTO> selectAuthListByMemberIdx(int memberIdx);
     /** 아이디 중복 체크 */
     int countByMemberId(String memberId);
     /** 이메일 중복 체크*/

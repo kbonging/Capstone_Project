@@ -12,4 +12,14 @@
         ORDER BY group_sort, sort;
     </select>
 
+    <!-- 특정 그룹코드의 기본값 조회 (SORT ASC 기준 첫 번째 코드) -->
+    <select id="selectDefaultCodeByGroup" resultType="String" parameterType="String">
+        SELECT CODE_ID
+        FROM TB_COMMON_CODE
+        WHERE GROUP_CODE = #{groupCode}
+        AND del_yn = 'N'
+        ORDER BY sort ASC
+        LIMIT 1
+    </select>
+
 </mapper>

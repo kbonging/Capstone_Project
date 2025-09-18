@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // 필터 URL 경로 설정 : /login // 현재 GET방식도 통과하기 때문에 사용안함
 //        setFilterProcessesUrl(JwtConstants.AUTH_LOGIN_URL);
 
-        // ✅ POST 메서드로 제한된 /login 요청만 처리
+        //  POST 메서드로 제한된 /login 요청만 처리
         this.setRequiresAuthenticationRequestMatcher(
                 new AntPathRequestMatcher(JwtConstants.AUTH_LOGIN_URL, "POST")
         );
@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     /**
      * 🔐 인증 시도 메소드
      * : /login 경로로 (username, password) 를 요청하면 이 필터에서 걸려 인증을 시도합니다.
-     * ✅ Authentication 인증 시도한 사용자 인증 객체를 반환하여, 시큐리티가 인증 성공 여부를 판단하게 합니다.
+     *  Authentication 인증 시도한 사용자 인증 객체를 반환하여, 시큐리티가 인증 성공 여부를 판단하게 합니다.
      * @param request
      * @param response
      * @return

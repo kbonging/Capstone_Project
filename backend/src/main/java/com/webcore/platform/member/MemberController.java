@@ -55,6 +55,26 @@ public class MemberController {
         return new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
     }
 
+    /** MemberIdx로 회원 정보 조회 */
+    @GetMapping("/{memberIdx}")
+    public ResponseEntity<?> getUserInfoByIdx(@PathVariable int memberIdx) {
+        // memberIdx로 권한 가져오기
+        List<MemberAuthDTO> authList = memberService.getAuthListByMemberIdx(memberIdx);
+
+        // 권한이 없나?
+        if (authList == null || authList.isEmpty()) {
+            return new ResponseEntity<>("NOT_FOUND", HttpStatus.NOT_FOUND);
+        }
+
+        Object userInfo = memberService.loadUserInfoByMemberIdx(memberIdx, authList);
+
+        if (userInfo != null) {
+            return ResponseEntity.ok(userInfo);
+        }
+
+        return new ResponseEntity<>("NOT_FOUND", HttpStatus.NOT_FOUND);
+    }
+
     /** 아이디 중복 채크 */
     @GetMapping("/check-id/{memberId}")
     public ResponseEntity<?> checkDuplicateId(@PathVariable String memberId){

@@ -10,8 +10,25 @@ import ReviewerFormPage from "../pages/ReviewerFormPage";
 import OwnerFormPage from "../pages/OwnerFormPage";
 import FindPwd from "../pages/FindPwdPage";
 import FindId from "../pages/FindIdPage";
-import MyPage     from '../pages/MyPage';
-import ProfileManagePage from '../pages/ProfileManagePage';
+import MyPage from "../pages/MyPage";
+import ProfileManagePage from "../pages/ProfileManagePage";
+import ImageUploadTest from "../components/mypage/ImageUploadTest";
+import CampaignCreate from "../pages/CampaignCreate";
+import CampaignEdit from "../pages/CampaignEdit";
+import CampaignManage from "../pages/CampaignManage";
+import CampaignDetail from "../components/detail/CampaignDetail";
+import CampaignApply from "../pages/CampaignApply";
+import CampaignBookmark from "../pages/CampaignBookmark";
+import RequireReviewer from "./RequireReviewer";
+import MyCampaigns from "../pages/MyCampaigns";
+import AdminCampaignTime from "../pages/AdminCampaignTime";
+import CampaignSearchPage from "../pages/CampaignSearchPage";
+import AlarmPage from "../pages/AlarmPage";
+
+
+import ReviewSubmitPage from "../pages/ReviewSubmitPage";
+import Cancellation_in_progress from "../components/mypage/cancle/Cancellation_in_progress";
+import CancelRequestPage from "../components/mypage/cancle/CancelRequestPage";
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
@@ -20,7 +37,6 @@ import ProfileManagePage from '../pages/ProfileManagePage';
 // import Events     from '../pages/Events';
 // import SignupPage from '../pages/SignupPage';
 
-
 export default function AppRouter() {
   return (
     <Routes>
@@ -28,41 +44,146 @@ export default function AppRouter() {
       <Route path="/login" element={<LoginPage />} />
 
       {/* 비로그인시 접근을 막기 위해 PrivateRoute로 감쌉니다. */}
-      <Route path="/community" element={
-        <PrivateRoute>
-          <CommunityPage/>
-        </PrivateRoute>} 
+      <Route
+        path="/community"
+        element={
+          <PrivateRoute>
+            <CommunityPage />
+          </PrivateRoute>
+        }
       />
       {/* 게시글 등록 */}
-      <Route path="/community/write" element={
-        <PrivateRoute>
-          <CommunityForm mode="create"/>
-        </PrivateRoute>} 
+      <Route
+        path="/community/write"
+        element={
+          <PrivateRoute>
+            <CommunityForm mode="create" />
+          </PrivateRoute>
+        }
       />
       {/* 게시글 수정 */}
-      <Route path="/community/edit/:communityIdx" element={
-        <PrivateRoute>
-          <CommunityForm mode="edit" />
-        </PrivateRoute>
-      } />
+      <Route
+        path="/community/edit/:communityIdx"
+        element={
+          <PrivateRoute>
+            <CommunityForm mode="edit" />
+          </PrivateRoute>
+        }
+      />
       {/* 게시글 상세 페이지 */}
-      <Route path="/community/:communityIdx" element={
-        <PrivateRoute>
-          <CommunityDetailPage />
-        </PrivateRoute>} 
+      <Route
+        path="/community/:communityIdx"
+        element={
+          <PrivateRoute>
+            <CommunityDetailPage />
+          </PrivateRoute>
+        }
       />
 
-      
+      {/* 켐페인 상세 페이지 */}
+      <Route
+        path="/campaign/:id"
+        element={
+          <PrivateRoute>
+            <CampaignDetail />
+          </PrivateRoute>
+        }
+      />
+
+      {/* 켐페인 신청  페이지 */}
+
+      <Route
+        path="/campaigns/:id/apply"
+        element={
+          <RequireReviewer>
+            <CampaignApply />
+          </RequireReviewer>
+        }
+      />
+
+      {/* 체험단 모집 등록 페이지 */}
+      <Route
+        path="/campaign/create"
+        element={
+          <PrivateRoute>
+            <CampaignCreate />
+          </PrivateRoute>
+        }
+      />
+
+      {/* 체험단 모집 수정 페이지 */}
+      <Route
+        path="/campaign/edit/:campaignIdx"
+        element={
+          <PrivateRoute>
+            <CampaignEdit mode="edit" />
+          </PrivateRoute>
+        }
+      />
+
+      {/* 체함단 관리 페이지 */}
+      <Route
+        path="/campaign/manage"
+        element={
+          <PrivateRoute>
+            <CampaignManage />
+          </PrivateRoute>
+        }
+      />
+
+
+      {/* 알람 페이지 */}
+      <Route path="/mypage/alarm" element={
+        <PrivateRoute>
+            <AlarmPage />
+        </PrivateRoute>
+      } />
+
+
+      <Route path="/mypage/my-campaigns" element={<MyCampaigns />} />
+
+      <Route path="/mypage/cancel-campaigns" element={<Cancellation_in_progress />} />
+       <Route path="/cancel/request" element={<CancelRequestPage />} />
+
+      {/* 리뷰 제출 페이지 승인 검사 해야함*/}
+      <Route
+        path="/campaigns/:id/reviews/submit"
+        element={
+          <RequireReviewer requireApproved>
+            <ReviewSubmitPage />
+          </RequireReviewer>
+        }
+      />
+
       {/* <Route path="/search"     element={<SearchPage />} /> */}
       {/* <Route path="/support"    element={<Support    />} /> */}
       {/* <Route path="/events"     element={<Events     />} /> */}
-      <Route path="/signup"     element={<SignUpPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
       <Route path="/signup/Owner" element={<OwnerFormPage />} />
       <Route path="/signup/reviewer" element={<ReviewerFormPage />} />
       <Route path="/FindPwd" element={<FindPwd />} />
       <Route path="/FindId" element={<FindId />} />
-      <Route path="/mypage"     element={<MyPage />} />
+
+      {/* 프로필 */}
+      <Route path="/mypage" element={<MyPage />} />
+
+      {/* 타회원 프로필 */}
+      <Route path="/mypage/:memberIdx" element={<MyPage />} />
+
+      {/* 프로필 관리 */}
       <Route path="/mypage/manage" element={<ProfileManagePage />} />
+
+      {/* 캠페인 마감 관리 */}
+      <Route path="/mypage/admin" element={<AdminCampaignTime />} />
+
+      {/* 찜목록 */}
+      <Route path="/mypage/wishlist" element={<CampaignBookmark />} />
+
+      {/* 체함단 검색 페이지 */}
+      <Route path="/campaigns" element={<CampaignSearchPage />} />
+
+      <Route path="/test/image-upload" element={<ImageUploadTest />} />
+
       {/* 404 페이지도 추가 가능  나중에 할거임*/}
     </Routes>
   );

@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Ignore backend sensitive configuration file
+backend/src/main/resources/application-secret.properties
+frontend/capstone_react/.env

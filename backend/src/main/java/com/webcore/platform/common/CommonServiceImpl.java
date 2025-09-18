@@ -19,4 +19,9 @@ public class CommonServiceImpl implements CommonService {
         return commonDAO.selectCmmCodeByGroupCode(groupCode);
     }
 
+    @Override
+    public String getDefaultCode(String groupCode) {
+        return commonDAO.selectDefaultCodeByGroup(groupCode);
+    }
+
 }

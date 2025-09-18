@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webcore.platform.test.MemberMapper">
+
+  <update id="updateProfileImageUrl">
+    UPDATE tb_member
+    SET profile_img_url = #{url}
+    WHERE member_idx = #{memberIdx}
+  </update>
+
+  <insert id="insertProfileImage">
+    INSERT INTO tb_member_profile_image_test
+      (member_idx, url, original_name, size, content_type)
+    VALUES
+      (#{memberIdx}, #{url}, #{originalName}, #{size}, #{contentType})
+  </insert>
+
+</mapper>

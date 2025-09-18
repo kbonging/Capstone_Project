@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -35,6 +36,7 @@ public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailService customUserDetailService;
+
 
     // PasswordEncoder 빈 등록
     // 암호화 알고리즘 방식 : Bcrypt
@@ -79,6 +81,10 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 이게 없으면 OPTIONS가 막힙니다 (필요없을 수도)
                         //.requestMatchers(HttpMethod.GET, "/login").permitAll()
+                        //테스트 이미지 업로드 때문에 허용
+                        .requestMatchers("/img/**", "/uploads/**").permitAll()
+                        //인증된 사용자만 사진등록 가능 api풀어줘야함
+                        .requestMatchers(HttpMethod.POST, "/api/members/*/profile-image").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers("/index.html").permitAll()
 
@@ -90,6 +96,8 @@ public class SecurityConfig {
 
                         // 회원(members)
                         .requestMatchers("/api/members/check-id/**").permitAll() // 아이디 중복 체크
+                        .requestMatchers(HttpMethod.GET, "/api/members/*")
+                        .hasAnyRole("USER", "OWNER", "ADMIN")
 
                         // 이메일(emails)
                         .requestMatchers( "/api/emails/**").permitAll()
@@ -102,9 +110,24 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/owner").permitAll() // 소상공인 회원가입은 누구나 가능 (POST)
                         .requestMatchers("/api/owner", "/api/owner/**").hasRole("OWNER") // 회원 가입 제외 모든 경로는 권한 필요
 
+                        // 관리자
+                        .requestMatchers( "/api/admin/**").hasRole("ADMIN")
+
+                        // 캠페인 관련
+                        .requestMatchers(HttpMethod.GET, "/api/campaigns", "/api/campaigns/**").permitAll() // 캠페인 전체 목록 조회는 모두 접근 가능
+                        .requestMatchers(HttpMethod.GET, "/api/campaigns/*/apply-page").hasRole("USER") // 신청페이지는 리뷰어만 들어갈수있음
+                        .requestMatchers("/api/campaigns/**") // 상세 조회, 수정, 삭제는 권한 필요
+                        .hasAnyRole("USER", "OWNER", "ADMIN")// 캠페인 모든 경로는 권한 필요
+
                         // 커뮤니티
-                        .requestMatchers("/api/community", "/api/community/**") // 커뮤니티 모든 경로는 권한 필요
+                        .requestMatchers(HttpMethod.POST,"/api/community", "/api/community/**") // 커뮤니티 POST 경로는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")
+
+                        .requestMatchers(HttpMethod.GET,"/api/community") // 커뮤니티 불러오기 권한 필요 X
+                        .permitAll()
+
+                        // 알림 관련
+                        .requestMatchers("/api/notifications", "/api/notifications/**").permitAll()
 
                         .requestMatchers("/api/comments", "/api/comments/**")// 댓글 경로는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")
@@ -129,7 +152,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5173")); // React dev 서버 주소
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
         //config.setExposedHeaders(List.of("Authorization"));// (필요없을 수도)
         config.setAllowCredentials(true);

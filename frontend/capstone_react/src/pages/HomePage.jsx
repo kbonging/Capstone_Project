@@ -1,36 +1,103 @@
-// src/pages/HomePage.jsx
-import React from 'react';
-//import { useCards } from '../hooks/useCards';
-import CardSection from '../section/CardSection';
-
+import React, { useEffect, useState } from "react";
+import Carousel from "../components/common/Carousel";
+import QuickNav from "../components/common/QuickNav";
+import Section_2 from "../components/Home/Section_2";
+import { getPremiumCampaigns } from "../api/campaigns";
+import ShowcaseSlider from "../components/Home/ShowcaseSlider";
+import Section_3 from "../components/Home/Section_3";
+import Section4 from "../components/Home/Section_4";
+import Section_3_banner from "../components/Home/Section_3_banner";
 
 export default function HomePage() {
-    // ① useCards 훅 호출 → { data, loading, error } 객체 리턴
-    // ② 그 객체를 구조분해 할당(destructuring)하면서
-    //     - data           → premium
-    //     - loading        → lp
-    //     - error          → ep
-  // ① 훅을 호출해서 각 카테고리별 data, loading, error를 받아서 처리.
-  // const { data: premium,  loading: lp, error: ep } = useCards('premium');
-  // const { data: popular,  loading: lpo, error: epo } = useCards('popular');
-  // const { data: hot,      loading: lh,  error: eh  } = useCards('hot');
-  // const { data: fresh,    loading: lf,  error: ef  } = useCards('fresh');
-  // … 나머지도 동일하게 해주심 됩니다
+  const [premium, setPremium] = useState([]);
 
-  {/* ③ CardSection에
-             • title: "프리미엄 체험단"
-             • data: premium  (fetch 결과 배열)
-             • loading: lp    (불러오는 중인지 boolean)
-             • error: ep      (에러 객체 or null)
-         을 props로 넘김 */}
+  useEffect(() => {
+    (async () => {
+      const res = await getPremiumCampaigns();
+      setPremium(res || []);
+    })();
+  }, []);
+
+  const heroItems = [
+    {
+      badge: "시원한 바람이 반겨주는 곳",
+      title: "푸른 자연을 만나는\n경북 청송 추천 코스",
+      href: "#",
+      image:
+        "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop",
+      alt: "청송 협곡",
+      tint: "#eaf6d6", // 연녹 배경
+    },
+    {
+      badge: "그림처럼 투명한 물빛💓",
+      title: "나만 알고 싶은\n제주 스노클링 명소 3",
+      href: "#",
+      image:
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop",
+      alt: "제주 물빛",
+      tint: "#d8f5f7", // 파스텔 민트
+    },
+    {
+      badge: "물놀이 가고플 때,",
+      title: "재미에 낭만을 더한,\n전국 워터파크 추천 4",
+      href: "#",
+      image:
+        "https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=1600&auto=format&fit=crop",
+      alt: "워터파크",
+      tint: "#dfefff", // 연하늘
+    },
+  ];
+
+
 
   return (
-    <>
-      {/* ② 그 data 배열을 각각 CardSection의 data prop으로 넘깁니다. */}
-      {/* <CardSection title="프리미엄 체험단"   data={premium}  loading={lp}  error={ep} />
-      <CardSection title="인기 체험단"       data={popular}  loading={lpo} error={epo} />
-      <CardSection title="마감임박 체험단"   data={hot}      loading={lh}  error={eh}  />
-      <CardSection title="신규 체험단"       data={fresh}    loading={lf}  error={ef}  /> */}
-    </>
+    <div className=" w-full   ">
+      {/*  헤더 바로 아래 풀-블리드 히어로 */}
+      <div className="w-full">
+        <ShowcaseSlider />
+      </div>
+
+      {/* 퀵 내비 */}
+      <section
+        className="mt-6 sm:mt-8 flex justify-center"
+        aria-label="빠른 이동"
+      >
+        <div className="w-full sm:max-w-xl md:max-w-2xl">
+          <QuickNav />
+        </div>
+      </section>
+
+      {/* 프리미엄 섹션 */}
+      <section className="px-16 mx-auto mt-8 sm:mt-10 md:mt-12 mb-14">
+        <Section_2 items={premium} />
+      </section>
+
+      <section>
+        <Section_3 />
+      </section>
+      <section>
+        <Section_3_banner/>
+      </section>
+      <section>
+        <Section4
+          height={640}
+          speedSec={18}
+          radius={-420}
+          item={{ w: 240, h: 135, gap: 24 }}
+          images={[
+            "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80", // 🍜 음식 리뷰
+            "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80", // 🍰 카페 리뷰
+            "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80", // 👜 패션/뷰티
+            "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80", // ☕ 디저트/음료
+            "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80", // 🍜 음식 리뷰
+            "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80", // 🏨 숙소
+            "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80", // 🥗 샐러드
+            "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80", // 🍦 아이스크림
+            "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80", // 🍜 음식 리뷰
+            "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80", // 🍕 피자
+          ]}
+        />
+      </section>
+    </div>
   );
 }

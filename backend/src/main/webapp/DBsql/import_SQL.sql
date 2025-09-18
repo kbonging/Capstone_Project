@@ -204,3 +204,147 @@ CREATE TABLE tb_like (
 			on delete cascade
             on update cascade
 ) COMMENT = '좋아요 테이블';
+
+######################################################################
+############################# 체험단 관련 ###############################
+######################################################################
+
+############# 체험단 캠페인 #############
+CREATE TABLE `tb_campaign` (
+	`CAMPAIGN_IDX`		INT AUTO_INCREMENT PRIMARY KEY 	COMMENT '캠페인 고유번호',
+	`MEMBER_IDX`		INT NOT NULL 					COMMENT '소상공인 고유번호',
+	`TITLE`				VARCHAR(255) NOT NULL			COMMENT '체험단 제목',
+    `SHOP_NAME`			varchar(100) NOT NULL 			COMMENT '캠페인 상호명',
+	`THUMBNAIL_URL` 	VARCHAR(255) NOT NULL			COMMENT '썸네일 이미지 경로',
+	`CONTACT_PHONE`		VARCHAR(20) NOT NULL			COMMENT '담당자 연락처',
+	`CAMPAIGN_TYPE`		VARCHAR(20) NOT NULL 			COMMENT '캠페인 홍보 유형(CAM_PROM)',
+	`CAM_CATE_CODE`		VARCHAR(20) NOT NULL 			COMMENT '캠페인 카테고리코드(CAM_CATE)',
+	`CHANNEL_CODE`		VARCHAR(20) NOT NULL 			COMMENT '채널코드(CAM_CHANNEL)',
+	`MISSION`       	TEXT 		NOT NULL			COMMENT '체험 미션 내용',
+	`KEYWORD_1`			VARCHAR(100)	NOT NULL		COMMENT '키워드1',
+	`KEYWORD_2`			VARCHAR(100)	NULL			COMMENT '키워드2',
+	`KEYWORD_3`			VARCHAR(100)	NULL			COMMENT '키워드3',
+	`BENEFIT_DETAIL`	TEXT	NOT NULL				COMMENT '제공 금액',
+	`RECRUIT_COUNT`		INT			NULL				COMMENT '모집인원',
+	`APPLY_START_DATE`	DATE	NOT NULL				COMMENT '신청 시작일',
+	`APPLY_END_DATE`	DATE	NOT NULL				COMMENT '신청 마감일',
+	`ANNOUNCE_DATE`		DATE	NOT NULL				COMMENT '리뷰어 발표일',
+	`EXP_START_DATE`	DATE	NOT NULL				COMMENT '체험 시작일',
+	`EXP_END_DATE`		DATE	NOT NULL				COMMENT '체험 종료일',
+	`DEADLINE_DATE`		DATE	NOT NULL				COMMENT '리뷰 마감일',
+	`CAMPAIGN_STATUS`	VARCHAR(20)	NOT NULL			COMMENT '캠페인 게시상태(CAM_STA)',
+	`RECRUIT_STATUS`	VARCHAR(20)	NOT NULL			COMMENT '모집 상태(REC_STA)',
+	`DEL_YN`	CHAR(1)	NOT NULL	DEFAULT 'N',
+	`REG_DATE`	DATETIME	NOT NULL,
+	`MOD_DATE`	DATETIME	NULL
+);
+-- drop table TB_CAMPAIGN; 
+############ 방문형/포장형 테이블 ###############
+CREATE TABLE `tb_campaign_visit` (
+	`CAMPAIGN_IDX`		INT				PRIMARY KEY 		COMMENT '켐페인 고유번호',
+	`ADDRESS`			VARCHAR(255)	NOT NULL			COMMENT '체험주소',
+	`ADDRESS_DETAIL`	VARCHAR(255)	NOT NULL			COMMENT '상세주소',
+	`EXP_DAY`			VARCHAR(15)		NOT NULL			COMMENT '체험 가능 요일',
+	`START_TIME`		VARCHAR(15)		NOT NULL			COMMENT '체험 시작 시간',
+	`END_TIME`			VARCHAR(15)		NOT NULL			COMMENT '체험 종료 시간',
+	`RESERVATION_NOTICE`	TEXT		NULL				COMMENT '예약 시 주의사항',
+    FOREIGN KEY (`CAMPAIGN_IDX`) REFERENCES `TB_CAMPAIGN`(`CAMPAIGN_IDX`)
+		on delete cascade
+		on update cascade
+);
+-- drop table TB_CAMPAIGN_VISIT;
+########## 배송형/구매형 #############
+CREATE TABLE `tb_campaign_delivery` (
+	`CAMPAIGN_IDX`	INT	PRIMARY KEY	COMMENT '켐페인 고유번호',
+	`PURCHASE_URL`	VARCHAR(255)	NOT NULL COMMENT '구매링크',
+	FOREIGN KEY (`CAMPAIGN_IDX`) REFERENCES `TB_CAMPAIGN`(`CAMPAIGN_IDX`)
+		on delete cascade
+		on update cascade
+);
+-- drop table TB_CAMPAIGN_DELIVERY;
+
+############# 캠페인 신청 테이블 ##############
+CREATE TABLE `tb_campaign_application` (
+	`APPLICATION_IDX`	INT	AUTO_INCREMENT PRIMARY KEY NOT NULL COMMENT '캠페인 신청 고유번호',
+	`CAMPAIGN_IDX`	INT				NOT NULL					COMMENT '켐페인 고유번호',
+	`MEMBER_IDX`	INT				NOT NULL					COMMENT '회원 고유번호',
+	`APPLY_REASON`	TEXT			NOT NULL 					COMMENT '신청 사유',
+	`APPLY_STATUS_CODE`	VARCHAR(20)	NOT NULL 					COMMENT '신청 상태 코드',
+	`DEL_YN`	CHAR(1)				NOT NULL	DEFAULT 'N' 	COMMENT '삭제 여부',
+	`REG_DATE`	DATETIME			NOT NULL 					COMMENT '등록일',
+	`MOD_DATE`	DATETIME			NULL 						COMMENT '수정일',
+    FOREIGN KEY (`CAMPAIGN_IDX`) REFERENCES `TB_CAMPAIGN`(`CAMPAIGN_IDX`)
+		on delete cascade
+        on update cascade,
+	FOREIGN KEY (`MEMBER_IDX`) REFERENCES `TB_MEMBER`(`MEMBER_IDX`)
+		on delete cascade
+        on update cascade,
+	FOREIGN KEY (`APPLY_STATUS_CODE`) REFERENCES `TB_COMMON_CODE`(`CODE_ID`)
+        on delete cascade
+        on update cascade
+);
+
+/* ========================
+ * 체험단 리뷰 (단일 리뷰 증빙)
+ * 신청 1건당 리뷰 1건만 허용 (UNIQUE)
+ * ======================== */
+CREATE TABLE `TB_REVIEW` (
+    `REVIEW_IDX`     INT            NOT NULL AUTO_INCREMENT COMMENT '리뷰 고유 번호',
+    `APPLICATION_IDX` INT           NOT NULL                COMMENT '신청 고유번호 (TB_CAMPAIGN_APPLICATION)',
+    `REVIEW_URL`     VARCHAR(500)   NOT NULL                COMMENT '리뷰 URL',
+    `IMAGE_URL`      VARCHAR(255)   NULL                    COMMENT '후기 사진(대표) URL',
+    `REG_DATE`       DATETIME       NOT NULL                COMMENT '등록일',
+    `MOD_DATE`       DATETIME       NULL                    COMMENT '수정일',
+    /* 제약 */
+    PRIMARY KEY (`REVIEW_IDX`),
+    UNIQUE KEY `UK_REVIEW__APP` (`APPLICATION_IDX`),   -- 신청 1건당 리뷰 1건만
+    KEY `IX_REVIEW__APP` (`APPLICATION_IDX`),
+    CONSTRAINT `FK_REVIEW__APP`
+    FOREIGN KEY (`APPLICATION_IDX`)
+    REFERENCES `TB_CAMPAIGN_APPLICATION`(`APPLICATION_IDX`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) COMMENT='체험단 리뷰 테이블';
+
+
+######### 캠페인 찜(북마크) 테이블 ###########
+CREATE TABLE `tb_bookmark` (
+    `BOOKMARK_IDX` INT AUTO_INCREMENT PRIMARY KEY NOT NULL COMMENT '찜 고유번호',
+    `MEMBER_IDX` INT NOT NULL COMMENT '찜한 회원 고유번호',
+    `CAMPAIGN_IDX` INT NOT NULL COMMENT '찜한 캠페인 고유번호',
+    UNIQUE KEY uq_member_campaign (`MEMBER_IDX`, `CAMPAIGN_IDX`),
+    FOREIGN KEY (`MEMBER_IDX`) REFERENCES `TB_MEMBER`(`MEMBER_IDX`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (`CAMPAIGN_IDX`) REFERENCES `TB_CAMPAIGN`(`CAMPAIGN_IDX`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+############ 알림 테이블 ###############
+CREATE TABLE `TB_NOTIFICATION` (
+	`NOTIFICATION_IDX`	bigint			NOT NULL	AUTO_INCREMENT COMMENT '알림 고유 번호',
+	`MEMBER_IDX`		INT				NULL		COMMENT '회원 고유번호',
+	`NOTI_TYPE_CD`		VARCHAR(30)		NOT NULL	COMMENT '알림 유형 코드 (CAMPAIGN_RESULT, NOTICE 등)',
+	`NOTI_TITLE`		VARCHAR(100)	NOT NULL	COMMENT '알림 제목',
+	`NOTI_MESSAGE`		TEXT			NOT NULL	COMMENT '알림 내용',
+	`NOTI_LINK_URL`		VARCHAR(255)	NULL		COMMENT '알림 링크',
+	`DEL_YN`			CHAR(1)			NOT NULL	DEFAULT 'N',
+	`REG_DATE`			DATETIME		NOT NULL	COMMENT '등록일',
+	`MOD_DATE`			DATETIME		NULL		COMMENT '수정일',
+    PRIMARY KEY (`NOTIFICATION_IDX`)
+) comment '알림 테이블';
+
+########## 알림 읽음 이력 테이블 ############
+-- DROP TABLE TB_NOTIFICATION_READ;
+CREATE TABLE `TB_NOTIFICATION_READ` (
+	`NOTIFICATION_IDX`	bigint		NOT NULL	COMMENT '알림 고유 번호',
+	`MEMBER_IDX`		INT			NOT NULL	COMMENT '회원 고유 번호',
+	`READ_AT`			DATETIME	NOT NULL	COMMENT '읽은 일시',
+    PRIMARY KEY (NOTIFICATION_IDX, MEMBER_IDX),
+    FOREIGN KEY (`NOTIFICATION_IDX`) REFERENCES `TB_NOTIFICATION` (`NOTIFICATION_IDX`)
+	ON DELETE CASCADE
+    ON UPDATE CASCADE
+)comment '알림 읽음 이력 테이블';
+
+

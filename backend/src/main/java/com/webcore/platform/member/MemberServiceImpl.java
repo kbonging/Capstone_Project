@@ -37,6 +37,12 @@ public class MemberServiceImpl implements MemberService {
         return null;
     }
 
+    /** memberIdx로 권한 확인 */
+    @Override
+    public List<MemberAuthDTO> getAuthListByMemberIdx(int memberIdx) {
+        return memberDAO.selectAuthListByMemberIdx(memberIdx);
+    }
+
     @Override
     public boolean checkDuplicateId(String memberId) {
         return memberDAO.countByMemberId(memberId) > 0;

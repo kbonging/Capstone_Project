@@ -112,7 +112,7 @@ export default function CommentList({ refreshKey, onCommentAdded }) {
             memberIdx,
             delYn,
           } = comment;
-          const timeAgo = dayjs(regDate).fromNow();
+          // const timeAgo = dayjs(regDate).fromNow();
           const rootId = findRootCommentIdx(comment);
 
           if (depth > 0 && collapsedIds[rootId] === false) return null;
@@ -140,7 +140,7 @@ export default function CommentList({ refreshKey, onCommentAdded }) {
                   <div className="flex justify-between">
                     <span className="font-semibold">{writerName}</span>
                     <span className="text-xs text-gray-500 mr-[23px]">
-                      {timeAgo}
+                      {regDate.substring(0, 10)}
                     </span>
                   </div>
                   {delYn === "Y" ? (
@@ -201,10 +201,10 @@ export default function CommentList({ refreshKey, onCommentAdded }) {
                             답글 달기
                           </button>
                         )}
-                        <button className="flex items-center space-x-1 hover:text-gray-800">
+                        {/* <button className="flex items-center space-x-1 hover:text-gray-800">
                           <i className="fa-regular fa-thumbs-up w-4 h-4"></i>
                           <span>{likeCount}</span>
-                        </button>
+                        </button> */}
                         {(isCommentWriter || isAdmin) && (
                           <>
                             <button

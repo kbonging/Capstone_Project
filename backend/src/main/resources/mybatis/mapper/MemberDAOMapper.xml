@@ -55,6 +55,13 @@
         WHERE mb.member_idx=#{memberIdx} AND mb.del_yn='N';
     </select>
 
+    <!-- 회원 고유 번호로 권한 조회 -->
+    <select id="selectAuthListByMemberIdx" parameterType="int" resultType="com.webcore.platform.member.dto.MemberAuthDTO">
+        SELECT auth_idx, member_idx, auth
+        FROM tb_member_auth
+        WHERE member_idx = #{memberIdx}
+    </select>
+
     <!-- 공통 회원 정보 등록 -->
     <insert id="insertMember" parameterType="com.webcore.platform.member.dto.MemberDTO"
             useGeneratedKeys="true" keyProperty="memberIdx">

@@ -1,0 +1,724 @@
+<!-- src/main/resources/mappers/CampaignDetailMapper.xml -->
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webcore.platform.campaign.dao.CampaignDAO">
+
+  <resultMap id="CampaignDetailMap" type="com.webcore.platform.campaign.dto.CampaignDetailResponseDTO">
+    <id     property="campaignIdx"     column="campaignIdx"/>
+    <result property="memberIdx"       column="memberIdx"/>
+    <result property="title"           column="title"/>
+    <result property="shopName"        column="shopName"/>
+    <result property="thumbnailUrl"    column="thumbnailUrl"/>
+    <result property="contactPhone"    column="contactPhone"/>
+    <result property="campaignType"    column="campaignType"/>
+    <result property="campaignTypeName"    column="campaignTypeName"/>
+    <result property="categoryCode"    column="categoryCode"/>
+    <result property="categoryName"    column="categoryName"/>
+    <result property="channelCode"     column="channelCode"/>
+    <result property="channelName"     column="channelName"/>
+    <result property="mission"         column="mission"/>
+    <result property="keyword1"        column="keyword1"/>
+    <result property="keyword2"        column="keyword2"/>
+    <result property="keyword3"        column="keyword3"/>
+    <result property="benefitDetail"   column="benefitDetail"/>
+    <result property="recruitCount"    column="recruitCount"/>
+    <result property="applyStartDate"      column="applyStartDate"    jdbcType="DATE"/>
+    <result property="applyEndDate"        column="applyEndDate"      jdbcType="DATE"/>
+    <result property="announceDate"        column="announceDate"      jdbcType="DATE"/>
+    <result property="expStartDate"        column="expStartDate"      jdbcType="DATE"/>
+    <result property="expEndDate"          column="expEndDate"        jdbcType="DATE"/>
+    <result property="deadlineDate"        column="deadlineDate"      jdbcType="DATE"/>
+    <result property="recruitStatus"   column="recruitStatus"/>
+    <result property="campaignStatus"  column="campaignStatus"/>
+    <result property="address"         column="address"/>
+    <result property="addressDetail"   column="addressDetail"/>
+    <result property="expDay"          column="expDay"/>
+    <result property="startTime"       column="startTime"/>
+    <result property="endTime"         column="endTime"/>
+    <result property="reservationNotice" column="reservationNotice"/>
+    <result property="mapUrl"          column="mapUrl"/>
+    <result property="purchaseUrl"     column="purchaseUrl"/>
+    <result property="applicants"      column="applicants"    jdbcType="BIGINT"/>
+    <result property="approCount"      column="approCount"/>
+    <result property="bookmarkedByMe"  column="bookmarked_by_me"/>
+      <result property="bookmarkCount" column="bookmarkCount" />
+  </resultMap>
+
+    <!-- 검색키워드가 있을경우 -->
+    <sql id="searchWhere">
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchCondition != null and searchCondition != ''">
+                    AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <otherwise>
+                    AND title LIKE CONCAT('%', #{searchKeyword}, '%')
+                </otherwise>
+            </choose>
+        </if>
+
+        <!-- benefitDetail 검색 전용 -->
+        <if test="benefitSearch != null and benefitSearch != ''">
+            AND c.BENEFIT_DETAIL LIKE CONCAT('%', #{benefitSearch}, '%')
+        </if>
+
+        <!-- 모집 상태 -->
+        <if test="recruitStatus != null and recruitStatus != ''">
+            AND c.RECRUIT_STATUS = #{recruitStatus}
+        </if>
+
+        <!-- 소상공인 내 글만 보기 -->
+        <if test="showMyParam != null and showMyParam == 'true' and memberIdx != 0">
+            AND member_idx = #{memberIdx}
+        </if>
+
+        <if test="onlyActive != null and onlyActive eq 'true'">
+            AND c.APPLY_END_DATE >= CURDATE()          <!-- 마감 날짜 이하 조회 -->
+            AND c.APPLY_START_DATE &lt;= CURDATE()        <!-- 시작 날짜 이상 조회 -->
+            AND c.CAMPAIGN_STATUS = 'APPROVED'    <!-- 일반 사용자는 승인 글만 -->
+        </if>
+
+        <!-- 지역 필터 -->
+        <if test="region != null and region != ''">
+            <choose>
+                <when test="region == '재택'">
+                    AND (c.CAMPAIGN_TYPE IN ('CAMP003', 'CAMP004'))
+                </when>
+                <otherwise>
+                    AND v.ADDRESS LIKE CONCAT('%', #{region}, '%')
+                </otherwise>
+            </choose>
+        </if>
+
+        <!-- 캠페인 유형 -->
+        <if test="campaignType != null and campaignType != ''">
+            AND c.CAMPAIGN_TYPE = #{campaignType}
+        </if>
+
+        <!-- 카테고리 -->
+        <if test="categoryCode != null and categoryCode != ''">
+            AND c.CAM_CATE_CODE = #{categoryCode}
+        </if>
+
+        <!-- 채널 -->
+        <if test="channelCode != null and channelCode != ''">
+            AND c.CHANNEL_CODE = #{channelCode}
+        </if>
+    </sql>
+
+    <!-- 캠페인 전체 목록 조회 -->
+    <select id="selectCampaignList" parameterType="com.webcore.platform.campaign.dto.CampaignDTO" resultMap="CampaignDetailMap">
+        SELECT
+        c.CAMPAIGN_IDX        AS campaignIdx,
+        c.MEMBER_IDX          AS memberIdx,
+        c.TITLE               AS title,
+        c.SHOP_NAME           AS shopName,
+        c.THUMBNAIL_URL       AS thumbnailUrl,
+        c.CONTACT_PHONE       AS contactPhone,
+        c.CAMPAIGN_TYPE       AS campaignType,
+        FN_GET_CODE_NM(c.CAMPAIGN_TYPE)  AS campaignTypeName,
+        c.CAM_CATE_CODE       AS categoryCode,
+        FN_GET_CODE_NM(c.CAM_CATE_CODE)  AS categoryName,
+        c.CHANNEL_CODE        AS channelCode,
+        FN_GET_CODE_NM(c.CHANNEL_CODE)   AS channelName,
+        c.MISSION             AS mission,
+        c.KEYWORD_1           AS keyword1,
+        c.KEYWORD_2           AS keyword2,
+        c.KEYWORD_3           AS keyword3,
+        c.BENEFIT_DETAIL      AS benefitDetail,
+        c.RECRUIT_COUNT       AS recruitCount,
+        c.APPLY_START_DATE    AS applyStartDate,
+        c.APPLY_END_DATE      AS applyEndDate,
+        c.ANNOUNCE_DATE       AS announceDate,
+        c.EXP_START_DATE      AS expStartDate,
+        c.EXP_END_DATE        AS expEndDate,
+        c.DEADLINE_DATE       AS deadlineDate,
+        c.RECRUIT_STATUS      AS recruitStatus,
+        c.CAMPAIGN_STATUS     AS campaignStatus,
+        v.ADDRESS             AS address,
+        v.ADDRESS_DETAIL      AS addressDetail,
+        v.EXP_DAY             AS expDay,
+        v.START_TIME          AS startTime,
+        v.END_TIME            AS endTime,
+        v.RESERVATION_NOTICE  AS reservationNotice,
+        CONCAT('https://map.naver.com/v5/search/', REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20')) AS mapUrl,
+        d.PURCHASE_URL        AS purchaseUrl,
+        (
+        SELECT COUNT(*)
+        FROM TB_CAMPAIGN_APPLICATION a
+        WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX AND del_yn='N'
+        ) AS applicants,
+        (
+        SELECT COUNT(*)
+        FROM TB_CAMPAIGN_APPLICATION ca
+        WHERE ca.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        AND del_yn='N'
+        AND ca.apply_status_code='CAMAPP_APPROVED'
+        ) as approCount,
+        (
+        SELECT COUNT(*)
+        FROM TB_BOOKMARK b
+        WHERE b.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        ) as bookmarkCount
+        FROM TB_CAMPAIGN c
+        LEFT JOIN TB_CAMPAIGN_VISIT v ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        WHERE c.DEL_YN = 'N'
+        <include refid="searchWhere"></include>
+
+        <!-- 동적 정렬 -->
+        <choose>
+            <when test="sort != null and sort == 'latest'">
+                ORDER BY c.REG_DATE DESC
+            </when>
+            <when test="sort != null and sort == 'deadline'">
+                ORDER BY c.APPLY_END_DATE ASC
+            </when>
+            <when test="sort != null and sort == 'popular'">
+                ORDER BY approCount DESC
+            </when>
+            <otherwise>
+                ORDER BY c.REG_DATE DESC
+            </otherwise>
+        </choose>
+
+        LIMIT #{firstIndex}, #{recordCount}
+    </select>
+
+    <!-- 캠페인 개수 조회 -->
+    <select id="selectCampaignCount" parameterType="com.webcore.platform.campaign.dto.CampaignDTO" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_CAMPAIGN c
+        LEFT JOIN TB_CAMPAIGN_VISIT v ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        WHERE c.DEL_YN = 'N'
+        <include refid="searchWhere"></include>
+    </select>
+
+
+  <!-- 캠페인 상세: 공통코드(TB_COMMON_CODE)로 유형/카테고리/채널명 조인 -->
+  <select id="selectDetailCampaign" resultMap="CampaignDetailMap">
+    SELECT c.CAMPAIGN_IDX              AS campaignIdx,
+           c.MEMBER_IDX                AS memberIdx,
+           c.TITLE                     AS title,
+           c.SHOP_NAME                 AS shopName,
+           c.THUMBNAIL_URL             AS thumbnailUrl,
+           c.CONTACT_PHONE             AS contactPhone,
+           c.CAMPAIGN_TYPE             AS campaignType,
+           prom.code_nm                AS campaignTypeName,
+           c.CAM_CATE_CODE             AS categoryCode,
+           cate.code_nm                AS categoryName,
+           c.CHANNEL_CODE              AS channelCode,
+           ch.code_nm                  AS channelName,
+           c.MISSION                   AS mission,
+           c.KEYWORD_1                 AS keyword1,
+           c.KEYWORD_2                 AS keyword2,
+           c.KEYWORD_3                 AS keyword3,
+           c.BENEFIT_DETAIL            AS benefitDetail,
+           c.RECRUIT_COUNT             AS recruitCount,
+           c.APPLY_START_DATE          AS applyStartDate,
+           c.APPLY_END_DATE            AS applyEndDate,
+           c.ANNOUNCE_DATE             AS announceDate,
+           c.EXP_START_DATE            AS expStartDate,
+           c.EXP_END_DATE              AS expEndDate,
+           c.DEADLINE_DATE             AS deadlineDate,
+           c.RECRUIT_STATUS            AS recruitStatus,
+           c.CAMPAIGN_STATUS           AS campaignStatus,
+           v.ADDRESS                   AS address,
+           v.ADDRESS_DETAIL            AS addressDetail,
+           v.`EXP_DAY`                 AS expDay, -- 예약어 충돌 대비
+           v.START_TIME                AS startTime,
+           v.END_TIME                   AS endTime,
+           v.RESERVATION_NOTICE         AS reservationNotice,
+           CONCAT('https://map.naver.com/v5/search/',
+                  REPLACE(IFNULL(v.ADDRESS, ''), ' ', '%20'))       AS mapUrl,
+           d.PURCHASE_URL            AS purchaseUrl,
+          CASE
+                  WHEN #{memberIdx} IS NOT NULL
+                      AND EXISTS (
+                          SELECT 1
+                          FROM tb_bookmark b
+                          WHERE b.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+                          AND b.MEMBER_IDX = #{memberIdx}
+                  )
+              THEN 1
+              ELSE 0
+          END AS bookmarked_by_me
+    FROM TB_CAMPAIGN c
+           LEFT JOIN TB_CAMPAIGN_VISIT v
+                     ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+           LEFT JOIN TB_CAMPAIGN_DELIVERY d
+                     ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+           LEFT JOIN TB_COMMON_CODE prom
+                     ON prom.group_code = 'CAM_PROM'
+                       AND prom.code_id = c.CAMPAIGN_TYPE
+           LEFT JOIN TB_COMMON_CODE cate
+                     ON cate.group_code = 'CAM_CATE'
+                       AND cate.code_id = c.CAM_CATE_CODE
+           LEFT JOIN TB_COMMON_CODE ch
+                     ON ch.group_code = 'CAM_CHANNEL'
+                       AND ch.code_id = c.CHANNEL_CODE
+    WHERE c.CAMPAIGN_IDX = #{campaignIdx}
+      AND c.DEL_YN = 'N' LIMIT 1
+  </select>
+
+
+  <!-- 캠페인 기본 등록 -->
+  <insert id="insertCampaign" parameterType="com.webcore.platform.campaign.dto.CampaignDTO"
+    useGeneratedKeys="true" keyProperty="campaignIdx">
+    INSERT INTO TB_CAMPAIGN
+    (MEMBER_IDX, TITLE, SHOP_NAME, THUMBNAIL_URL,
+     CONTACT_PHONE, CAMPAIGN_TYPE, CAM_CATE_CODE,
+     CHANNEL_CODE, MISSION, KEYWORD_1, KEYWORD_2, KEYWORD_3,
+     BENEFIT_DETAIL, RECRUIT_COUNT,
+     APPLY_START_DATE, APPLY_END_DATE, ANNOUNCE_DATE,
+     EXP_START_DATE, EXP_END_DATE, DEADLINE_DATE,
+     CAMPAIGN_STATUS, RECRUIT_STATUS, DEL_YN, REG_DATE)
+    VALUES (#{memberIdx}, #{title}, #{shopName}, #{thumbnailUrl},
+            #{contactPhone}, #{campaignType}, #{categoryCode},
+            #{channelCode}, #{mission}, #{keyword1}, #{keyword2}, #{keyword3},
+            #{benefitDetail}, #{recruitCount},
+            #{applyStartDate}, #{applyEndDate}, #{announceDate},
+            #{expStartDate}, #{expEndDate}, #{deadlineDate},
+            #{campaignStatus}, #{recruitStatus}, 'N', NOW())
+  </insert>
+
+  <!-- 방문형/포장형 캠페인 등록 -->
+  <insert id="insertCampaignVisit"
+    parameterType="com.webcore.platform.campaign.dto.CampaignVisitDTO">
+    INSERT INTO TB_CAMPAIGN_VISIT
+    (CAMPAIGN_IDX, ADDRESS, ADDRESS_DETAIL, EXP_DAY, START_TIME, END_TIME, RESERVATION_NOTICE)
+    VALUES (#{campaignIdx}, #{address}, #{addressDetail}, #{expDay}, #{startTime}, #{endTime},
+            #{reservationNotice})
+  </insert>
+
+  <!-- 배송형/구매형 캠페인 등록 -->
+  <insert id="insertCampaignDelivery"
+    parameterType="com.webcore.platform.campaign.dto.CampaignDeliveryDTO">
+    INSERT INTO TB_CAMPAIGN_DELIVERY(CAMPAIGN_IDX, PURCHASE_URL)
+    VALUES (#{campaignIdx}, #{purchaseUrl})
+  </insert>
+
+    <!-- 캠페인 기본 수정 -->
+    <update id="updateCampaign" parameterType="com.webcore.platform.campaign.dto.CampaignDTO">
+        UPDATE TB_CAMPAIGN
+        SET
+        TITLE           = #{title},
+        SHOP_NAME       = #{shopName},
+        THUMBNAIL_URL   = #{thumbnailUrl},
+        CONTACT_PHONE   = #{contactPhone},
+        CAMPAIGN_TYPE   = #{campaignType},
+        CAM_CATE_CODE   = #{categoryCode},
+        CHANNEL_CODE    = #{channelCode},
+        MISSION         = #{mission},
+        KEYWORD_1       = #{keyword1},
+        KEYWORD_2       = #{keyword2},
+        KEYWORD_3       = #{keyword3},
+        BENEFIT_DETAIL  = #{benefitDetail},
+        RECRUIT_COUNT   = #{recruitCount},
+        APPLY_START_DATE = #{applyStartDate},
+        APPLY_END_DATE   = #{applyEndDate},
+        ANNOUNCE_DATE    = #{announceDate},
+        EXP_START_DATE   = #{expStartDate},
+        EXP_END_DATE     = #{expEndDate},
+        DEADLINE_DATE    = #{deadlineDate},
+        CAMPAIGN_STATUS  = #{campaignStatus},
+        RECRUIT_STATUS   = #{recruitStatus},
+        MOD_DATE         = NOW()
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+    </update>
+
+    <!-- 방문형/포장형 캠페인 수정 -->
+    <update id="updateCampaignVisit" parameterType="com.webcore.platform.campaign.dto.CampaignVisitDTO">
+        UPDATE TB_CAMPAIGN_VISIT
+        SET
+        ADDRESS            = #{address},
+        ADDRESS_DETAIL     = #{addressDetail},
+        EXP_DAY            = #{expDay},
+        START_TIME         = #{startTime},
+        END_TIME           = #{endTime},
+        RESERVATION_NOTICE = #{reservationNotice}
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+    </update>
+
+
+    <!-- 배송형/구매형 캠페인 수정 -->
+    <update id="updateCampaignDelivery" parameterType="com.webcore.platform.campaign.dto.CampaignDeliveryDTO">
+        UPDATE TB_CAMPAIGN_DELIVERY
+        SET
+        PURCHASE_URL = #{purchaseUrl}
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+    </update>
+
+    <!-- 캠페인 삭제 -->
+    <delete id="deleteCampaign" parameterType="int">
+        UPDATE TB_CAMPAIGN
+        SET DEL_YN = 'Y', MOD_DATE = NOW()
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+    </delete>
+
+    <!-- 캠페인 게시 상태 변경 -->
+  <update id="updateCampaignStatus">
+    UPDATE tb_campaign
+    SET campaign_status = #{status}
+    WHERE campaign_idx = #{campaignIdx}
+  </update>
+
+  <!-- 켐페인 신청 조회 -->
+  <select id="selectApply" resultType="com.webcore.platform.campaign.dto.CampaignApplyDTO">
+    SELECT
+    c.CAMPAIGN_IDX        AS campaignIdx,
+    c.TITLE               AS title,
+    c.SHOP_NAME           AS shopName,
+    c.THUMBNAIL_URL       AS thumbnailUrl,
+
+    c.CAMPAIGN_TYPE       AS campaignType,
+    prom.CODE_NM          AS campaignTypeName,
+    c.CAM_CATE_CODE       AS categoryCode,
+    cate.CODE_NM          AS categoryName,
+    c.CHANNEL_CODE        AS channelCode,
+    ch.CODE_NM            AS channelName,
+
+    c.BENEFIT_DETAIL      AS benefitDetail,
+    c.RECRUIT_COUNT       AS recruitCount,
+    d.PURCHASE_URL        AS productUrl,
+
+    /* 지원자 수(소프트삭제 제외) */
+    (SELECT COUNT(*) FROM TB_CAMPAIGN_APPLICATION a
+    WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX AND a.DEL_YN='N') AS applicants,
+
+    /* 신청 가능 여부: 모집중  신청기간 내 */
+    CASE
+    WHEN c.RECRUIT_STATUS = 'OPEN'
+    AND CURRENT_DATE() BETWEEN c.APPLY_START_DATE AND c.APPLY_END_DATE
+    THEN 1 ELSE 0
+    END AS allowApply,
+
+    /* 중복신청 여부 (memberIdx 없으면 0) */
+    CASE
+    WHEN #{memberIdx} IS NULL THEN 0
+    ELSE EXISTS (
+    SELECT 1 FROM TB_CAMPAIGN_APPLICATION a
+    WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+    AND a.MEMBER_IDX   = #{memberIdx}
+    AND a.DEL_YN='N'
+    )
+    END AS alreadyApplied,
+
+    /* 배송지 필요 여부(정책에 맞게 조정) */
+    CASE WHEN c.CAMPAIGN_TYPE IN ('CAMP003','CAMP004') THEN 1 ELSE 0 END AS requireAddress,
+
+    /* 주소 등록 유무: 로그인+배송형일 때만 의미 */
+    CASE
+    WHEN #{memberIdx} IS NULL THEN NULL
+    WHEN c.CAMPAIGN_TYPE IN ('CAMP003','CAMP004') THEN
+    CASE WHEN EXISTS (
+    SELECT 1 FROM TB_REVIEWER_PROFILE rp
+    WHERE rp.MEMBER_IDX = #{memberIdx}
+      AND COALESCE(rp.ADDRESS,'') &lt;&gt; ''
+      AND COALESCE(rp.ZIP_CODE,'') &lt;&gt; ''
+    ) THEN 1 ELSE 0 END
+    ELSE NULL
+    END AS hasAddress,
+
+    rp.ZIP_CODE       AS zipCode,
+    rp.ADDRESS        AS address,
+    rp.DETAIL_ADDRESS AS detailAddress
+
+    FROM TB_CAMPAIGN c
+    LEFT JOIN TB_COMMON_CODE prom ON prom.GROUP_CODE='CAM_PROM'   AND prom.CODE_ID=c.CAMPAIGN_TYPE
+    LEFT JOIN TB_COMMON_CODE cate ON cate.GROUP_CODE='CAM_CATE'   AND cate.CODE_ID=c.CAM_CATE_CODE
+    LEFT JOIN TB_COMMON_CODE ch   ON ch.GROUP_CODE='CAM_CHANNEL'  AND ch.CODE_ID=c.CHANNEL_CODE
+    LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX=c.CAMPAIGN_IDX
+    LEFT JOIN TB_REVIEWER_PROFILE rp ON rp.MEMBER_IDX=#{memberIdx}
+    WHERE c.CAMPAIGN_IDX=#{campaignIdx}
+    LIMIT 1
+  </select>
+
+
+  <!-- 신청 Insert -->
+  <insert id="insertApplication">
+    INSERT INTO TB_CAMPAIGN_APPLICATION
+    (CAMPAIGN_IDX, MEMBER_IDX, APPLY_REASON, APPLY_STATUS_CODE, DEL_YN, REG_DATE)
+    VALUES
+      (#{campaignIdx}, #{memberIdx}, #{applyReason}, #{applyStatusCode}, 'N', NOW())
+  </insert>
+
+  <select id="lastInsertId" resultType="int">
+    SELECT LAST_INSERT_ID()
+  </select>
+
+    <!-- 검색 조건 where절 -->
+    <sql id="applicantSearchWhere">
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchCondition == 'nickname'">
+                    AND r.NICKNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <when test="searchCondition == 'applyReason'">
+                    AND a.APPLY_REASON LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+            </choose>
+        </if>
+
+        <if test="applyStatusCode != null and applyStatusCode != ''">
+            AND a.APPLY_STATUS_CODE = #{applyStatusCode}
+        </if>
+    </sql>
+
+    <!-- 총 신청자 수 -->
+    <select id="countApplicantsByCampaign" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_campaign_application a
+        LEFT JOIN tb_reviewer_profile r ON a.MEMBER_IDX = r.MEMBER_IDX
+        LEFT JOIN tb_common_code cc ON a.APPLY_STATUS_CODE = cc.CODE_ID
+        WHERE a.CAMPAIGN_IDX = #{campaignIdx} AND a.DEL_YN = 'N'
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchCondition != null and searchCondition != ''">
+                    AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <otherwise>
+                    AND r.NICKNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                </otherwise>
+            </choose>
+        </if>
+        <if test="applyStatus != null and applyStatus != ''">
+            AND a.APPLY_STATUS_CODE = #{applyStatus}
+        </if>
+    </select>
+
+    <!-- 신청자 목록 조회 -->
+    <select id="selectApplicantsByCampaign" resultType="com.webcore.platform.campaign.dto.OwnerCampaignApplicantResponseDTO">
+        SELECT
+        a.APPLICATION_IDX AS applicationIdx,
+        a.MEMBER_IDX AS memberIdx,
+        r.NICKNAME AS nickname,
+        a.APPLY_REASON AS applyReason,
+        cc.CODE_NM AS applyStatusName,
+        cc.CODE_ID AS applyStatusCode,
+        a.REG_DATE AS regDate,
+        a.MOD_DATE AS modDate
+        FROM tb_campaign_application a
+        LEFT JOIN tb_reviewer_profile r ON a.MEMBER_IDX = r.MEMBER_IDX
+        LEFT JOIN tb_common_code cc ON a.APPLY_STATUS_CODE = cc.CODE_ID
+        WHERE a.CAMPAIGN_IDX = #{campaignIdx} AND a.DEL_YN = 'N'
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchCondition != null and searchCondition != ''">
+                    AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <otherwise>
+                    AND r.NICKNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                </otherwise>
+            </choose>
+        </if>
+        <if test="applyStatus != null and applyStatus != ''">
+            AND a.APPLY_STATUS_CODE = #{applyStatus}
+        </if>
+        ORDER BY a.REG_DATE DESC
+        LIMIT #{firstIndex}, #{recordCount}
+    </select>
+
+    <!-- 캠페인 모집인원 조회 -->
+    <select id="getRecruitCountByCampaign" resultType="int" parameterType="int">
+        SELECT RECRUIT_COUNT
+        FROM tb_campaign
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+    </select>
+
+    <!-- 캠페인 당첨자 수 조회 -->
+    <select id="getApprovedCountByCampaignForUpdate" resultType="int" parameterType="int">
+        SELECT COUNT(*)
+        FROM tb_campaign_application
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+            AND APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+            AND DEL_YN = 'N'
+        FOR UPDATE
+    </select>
+
+    <!-- 실제 신청이 있는지 체크 -->
+    <select id="getApplicantByIdx" resultType="com.webcore.platform.campaign.dto.OwnerCampaignApplicantResponseDTO" parameterType="int">
+        SELECT APPLICATION_IDX,
+        CAMPAIGN_IDX,
+        MEMBER_IDX,
+        APPLY_REASON,
+        APPLY_STATUS_CODE
+        FROM tb_campaign_application
+        WHERE APPLICATION_IDX = #{applicationIdx}
+        AND DEL_YN = 'N'
+    </select>
+
+    <!-- 캠페인 신청자 상태 변경 -->
+    <update id="updateApplicantStatus" parameterType="map">
+        UPDATE tb_campaign_application
+        SET APPLY_STATUS_CODE = #{newStatus},
+            MOD_DATE = NOW()
+        WHERE APPLICATION_IDX = #{applicationIdx}
+            AND DEL_YN = 'N'
+    </update>
+
+  <!-- 리뷰어 프로필 주소 업데이트 -->
+  <update id="updateReviewerAddress">
+    UPDATE TB_REVIEWER_PROFILE
+    SET
+      ZIP_CODE       = #{zipCode},
+      ADDRESS        = #{address},
+      DETAIL_ADDRESS = #{detailAddress}
+    WHERE MEMBER_IDX = #{memberIdx}
+  </update>
+
+
+    <!-- 북마크 추가 -->
+    <insert id="insertBookmark" parameterType="map">
+        INSERT INTO tb_bookmark (MEMBER_IDX, CAMPAIGN_IDX)
+        VALUES (#{memberIdx}, #{campaignIdx})
+    </insert>
+
+    <!-- 북마크 제거 -->
+    <delete id="deleteBookmark" parameterType="map">
+        DELETE FROM tb_bookmark
+        WHERE MEMBER_IDX = #{memberIdx} AND CAMPAIGN_IDX = #{campaignIdx}
+    </delete>
+
+    <!-- 모집 마감된 캠페인 조회 -->
+    <select id="selectExpiredCampaigns" resultType="com.webcore.platform.campaign.dto.CampaignDTO">
+        SELECT campaign_idx, campaign_title
+        FROM tb_campaign
+        WHERE recruit_status = 'OPEN'
+        AND apply_end_date &lt; NOW()
+    </select>
+
+    <!-- 마감 기한 지난 캠페인 종료 -->
+    <update id="updateExpiredCampaignsToClosed">
+        UPDATE tb_campaign
+        SET recruit_status = 'CLOSED'
+        WHERE recruit_status = 'OPEN'
+            AND apply_end_date &lt; NOW()
+    </update>
+
+    <!-- 단일 캠페인 상태 CLOSED 처리 (선정 완료 버튼용) -->
+    <update id="updateCampaignStatusToClosed">
+        UPDATE tb_campaign
+        SET recruit_status = 'CLOSED',
+        mod_date = NOW()
+        WHERE campaign_idx = #{campaignIdx}
+        AND recruit_status = 'OPEN'
+    </update>
+
+    <!-- 캠페인별 선정된 당첨자 조회 -->
+    <select id="selectWinnersByCampaignId" parameterType="int" resultType="int">
+        SELECT MEMBER_IDX
+        FROM tb_campaign_application
+        WHERE CAMPAIGN_IDX = #{campaignIdx}
+        AND APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+        AND DEL_YN = 'N'
+    </select>
+
+
+  <!-- 필요시 승인 조건 추가: AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED' -->
+  <select id="findApplicationIdx" resultType="int">
+    SELECT a.APPLICATION_IDX
+    FROM TB_CAMPAIGN_APPLICATION a
+    WHERE a.CAMPAIGN_IDX = #{campaignId}
+      AND a.MEMBER_IDX   = #{memberIdx}
+      AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+      LIMIT 1
+  </select>
+
+
+  <select id="countReviewByApplication" resultType="int">
+    SELECT COUNT(1)
+    FROM TB_REVIEW
+    WHERE APPLICATION_IDX = #{applicationIdx}
+  </select>
+
+  <insert id="insertCampaignReview"
+    parameterType="com.webcore.platform.campaign.dto.CampaignReviewDTO">
+    INSERT INTO TB_REVIEW (
+      APPLICATION_IDX, REVIEW_URL, IMAGE_URL, REG_DATE
+    ) VALUES (
+               #{applicationIdx}, #{reviewUrl}, #{imageUrl}, NOW()
+             )
+  </insert>
+
+  <select id="selectApplicationStatus" resultType="string">
+    SELECT a.APPLY_STATUS_CODE
+    FROM TB_CAMPAIGN_APPLICATION a
+    WHERE a.CAMPAIGN_IDX = #{campaignId}
+      AND a.MEMBER_IDX   = #{memberIdx}
+    ORDER BY a.APPLICATION_IDX DESC
+      LIMIT 1
+  </select>
+
+    <!-- 리뷰어 진행 완료 캠페인 -->
+    <select id="getCompletedCampaigns"  parameterType="com.webcore.platform.campaign.dto.CampaignDTO" resultMap="CampaignDetailMap">
+        SELECT
+        c.CAMPAIGN_IDX       AS campaignIdx,
+        c.TITLE              AS title,
+        c.THUMBNAIL_URL      AS thumbnailUrl,
+        c.EXP_START_DATE     AS expStartDate,
+        c.DEADLINE_DATE      AS deadlineDate
+        FROM tb_campaign_application a
+        JOIN tb_campaign c
+        ON a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        JOIN tb_review r
+        ON a.APPLICATION_IDX = r.APPLICATION_IDX
+        WHERE a.MEMBER_IDX = #{memberIdx}
+        AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+        AND c.DEADLINE_DATE &lt; NOW()
+        AND a.DEL_YN = 'N'
+        ORDER BY c.DEADLINE_DATE DESC
+        LIMIT #{recordCount} OFFSET #{firstIndex}
+    </select>
+
+    <!-- 리뷰어 진행 완료 캠페인 전체 레코드 수 조회  -->
+    <select id="getCompletedCampaignCount" parameterType="com.webcore.platform.campaign.dto.CampaignDTO" resultType="int">
+        SELECT COUNT(1)
+        FROM tb_campaign_application a
+        JOIN tb_campaign c
+        ON a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        JOIN tb_review r
+        ON a.APPLICATION_IDX = r.APPLICATION_IDX
+        WHERE a.MEMBER_IDX = #{memberIdx}
+        AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+        AND c.DEADLINE_DATE &lt; NOW()
+        AND a.DEL_YN = 'N'
+    </select>
+
+    <!-- 리뷰어 진행중 캠페인  -->
+    <select id="getOngoingCampaigns"  parameterType="com.webcore.platform.campaign.dto.CampaignDTO" resultMap="CampaignDetailMap">
+        SELECT
+        c.CAMPAIGN_IDX       AS campaignIdx,
+        c.TITLE              AS title,
+        c.THUMBNAIL_URL      AS thumbnailUrl,
+        c.EXP_START_DATE     AS expStartDate,
+        c.DEADLINE_DATE      AS deadlineDate
+        FROM tb_campaign_application a
+        JOIN tb_campaign c
+        ON a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        WHERE a.MEMBER_IDX = #{memberIdx}
+        AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+        AND NOW() BETWEEN c.EXP_START_DATE AND c.DEADLINE_DATE
+        AND a.DEL_YN = 'N'
+        ORDER BY c.EXP_START_DATE ASC
+        LIMIT #{recordCount} OFFSET #{firstIndex}
+    </select>
+
+    <!-- 리뷰어 진행중 캠페인 전체 레코드 수 조회  -->
+    <select id="getOngoingCampaignCount" parameterType="com.webcore.platform.campaign.dto.CampaignDTO" resultType="int">
+        SELECT COUNT(1)
+        FROM tb_campaign_application a
+        JOIN tb_campaign c
+        ON a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        WHERE a.MEMBER_IDX = #{memberIdx}
+        AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+        AND NOW() BETWEEN c.EXP_START_DATE AND c.DEADLINE_DATE
+        AND a.DEL_YN = 'N'
+    </select>
+</mapper>
+
+
+
+

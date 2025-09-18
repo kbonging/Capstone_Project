@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  내가 신청한 캠페인 Mapper
+  - 목록 조회
+  - 총 개수 조회
+  - 신청 취소 처리
+-->
+<mapper namespace="com.webcore.platform.mypage.dao.MyCampaignDAO">
+
+  <!-- 전체 레코드 수 -->
+  <select id="selectMyCampaignCount"
+    parameterType="com.webcore.platform.mypage.dto.MyCampaignDTO"
+    resultType="int">
+    SELECT COUNT(*)
+    FROM tb_campaign_application a
+           JOIN tb_campaign c ON c.CAMPAIGN_IDX = a.CAMPAIGN_IDX
+    WHERE a.DEL_YN = 'N'
+      AND a.MEMBER_IDX = #{memberIdx}
+  </select>
+
+  <!-- 내가 신청한 캠페인 목록 -->
+  <select id="selectMyCampaignList"
+    parameterType="com.webcore.platform.mypage.dto.MyCampaignDTO"
+    resultType="com.webcore.platform.mypage.dto.MyCampaignDTO">
+    SELECT
+      a.APPLICATION_IDX   AS applicationIdx,
+      a.APPLY_STATUS_CODE AS applyStatusCode,
+      s.CODE_NM           AS applyStatusName,
+      a.REG_DATE          AS regDate,
+
+      c.CAMPAIGN_IDX      AS campaignIdx,
+      c.TITLE             AS title,
+      c.SHOP_NAME         AS shopName,
+      c.THUMBNAIL_URL     AS thumbnailUrl,
+
+      c.CAMPAIGN_TYPE     AS campaignType,
+      prom.CODE_NM        AS campaignTypeName,
+      c.CAM_CATE_CODE     AS categoryCode,
+      cate.CODE_NM        AS categoryName,
+      c.CHANNEL_CODE      AS channelCode,
+      ch.CODE_NM          AS channelName,
+
+      c.BENEFIT_DETAIL    AS benefitText,
+      c.RECRUIT_COUNT     AS recruitCount,
+      c.APPLY_END_DATE    AS applyEndDate,
+      c.ANNOUNCE_DATE     AS announceDate,   --  발표일
+
+      (SELECT COUNT(1)
+       FROM tb_campaign_application aa
+       WHERE aa.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+         AND aa.DEL_YN = 'N') AS appliedCount,
+
+      DATEDIFF(c.APPLY_END_DATE, CURDATE()) AS remainDays,
+
+      NULL AS rewardPoint,
+      a.MOD_DATE AS modDate,
+      a.DEL_YN   AS delYn
+    FROM tb_campaign_application a
+           JOIN tb_campaign c ON c.CAMPAIGN_IDX = a.CAMPAIGN_IDX
+           LEFT JOIN tb_common_code prom ON prom.CODE_ID = c.CAMPAIGN_TYPE
+           LEFT JOIN tb_common_code cate ON cate.CODE_ID = c.CAM_CATE_CODE
+           LEFT JOIN tb_common_code ch   ON ch.CODE_ID   = c.CHANNEL_CODE
+           LEFT JOIN tb_common_code s    ON s.CODE_ID    = a.APPLY_STATUS_CODE
+    WHERE a.MEMBER_IDX = #{memberIdx}
+      AND a.DEL_YN = 'N'
+    ORDER BY a.REG_DATE DESC
+      LIMIT #{recordCount} OFFSET #{firstIndex}
+  </select>
+
+  <!-- 신청 취소 처리 -->
+  <update id="cancelMyApplication">
+    UPDATE tb_campaign_application
+    SET DEL_YN = 'Y',
+    MOD_DATE = NOW()
+    WHERE APPLICATION_IDX = #{applicationIdx}
+    AND MEMBER_IDX = #{memberIdx}
+    AND DEL_YN = 'N'  <!-- 이미 삭제(취소)된 건 제외 -->
+  </update>
+
+    <!-- 리뷰어 북마크 캠페인 전체 조회 -->
+    <select
+            id="selectMyBookmark"
+            parameterType="com.webcore.platform.mypage.dto.BookmarkDTO"
+            resultType="com.webcore.platform.mypage.dto.BookmarkDTO">
+        SELECT
+            c.CAMPAIGN_IDX          AS campaignIdx,
+            c.RECRUIT_STATUS        AS recruitStatus,
+            c.THUMBNAIL_URL         AS thumbnailUrl,
+            c.TITLE                 AS title,
+            FN_GET_CODE_NM(c.CAMPAIGN_TYPE)     AS campaignTypeName,
+            FN_GET_CODE_NM(c.CAM_CATE_CODE)     AS categoryName,
+            FN_GET_CODE_NM(c.CHANNEL_CODE)      AS channelName,
+            c.BENEFIT_DETAIL        AS benefitDetail,
+            c.RECRUIT_COUNT         AS recruitCount,
+            c.APPLY_END_DATE        AS applyEndDate,
+            c.ANNOUNCE_DATE         AS announceDate,
+            (
+                SELECT COUNT(*)
+                FROM TB_CAMPAIGN_APPLICATION a
+                WHERE a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+                AND a.DEL_YN = 'N'
+            ) AS applicationCount
+            FROM TB_BOOKMARK b
+            INNER JOIN TB_CAMPAIGN c
+                ON b.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+            WHERE b.MEMBER_IDX = #{memberIdx}
+                AND c.DEL_YN = 'N'
+            ORDER BY c.REG_DATE DESC
+            LIMIT #{firstIndex}, #{recordCount}
+    </select>
+
+    <!-- 북마크 개수 카운트 -->
+    <select id="selectBookmarkCount"
+            parameterType="com.webcore.platform.mypage.dto.BookmarkDTO"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM TB_BOOKMARK b
+        INNER JOIN TB_CAMPAIGN c
+            ON b.CAMPAIGN_IDX = c.CAMPAIGN_IDX
+        WHERE b.MEMBER_IDX = #{memberIdx}
+            AND c.DEL_YN = 'N'
+    </select>
+</mapper>

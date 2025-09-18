@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./frontend/capstone_react
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/capstone_react:/app
+      - /app/node_modules  # 로컬 node_modules 덮어쓰기 방지
+    working_dir: /app
+    command: npm run dev
+    environment:
+      - HOST=0.0.0.0
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+    working_dir: /app
+    command: ./gradlew bootRun
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true

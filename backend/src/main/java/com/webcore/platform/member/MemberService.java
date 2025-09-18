@@ -15,6 +15,9 @@ public interface MemberService {
      */
     Object loadUserInfoByMemberIdx(int memberIdx, List<MemberAuthDTO> authList);
 
+    /** memberIdx로 권한 확인 */
+    List<MemberAuthDTO> getAuthListByMemberIdx(int memberIdx);
+
     /** 아이디 중복 체크*/
     boolean checkDuplicateId(String memberId);
 
