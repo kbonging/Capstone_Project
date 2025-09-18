@@ -103,10 +103,12 @@ public class SecurityConfig {
                         .requestMatchers( "/api/emails/**").permitAll()
 
                         // 리뷰어
-                        .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 리뷰어 회원가입은 누구나 가능 (POST)
-                        .requestMatchers("/api/reviewer", "/api/reviewer/**").hasRole("USER") // 회원 가입 제외 모든 경로는 권한 필요
+                        .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 회원가입만 전체 허용
+                        .requestMatchers(HttpMethod.GET, "/api/reviewer/running-campaigns").hasRole("USER") // 진행중 캠페인 조회는 로그인 유저만
+                        .requestMatchers("/api/reviewer/**").hasRole("USER") // 나머지 리뷰어 API는 USER 권한 필요
 
-                        // 소상공인
+
+                    // 소상공인
                         .requestMatchers(HttpMethod.POST, "/api/owner").permitAll() // 소상공인 회원가입은 누구나 가능 (POST)
                         .requestMatchers("/api/owner", "/api/owner/**").hasRole("OWNER") // 회원 가입 제외 모든 경로는 권한 필요
 
