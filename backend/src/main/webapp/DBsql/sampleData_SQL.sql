@@ -42,8 +42,11 @@ VALUES
 ('ACT_TOPIC', '', '활동주제', '', 1, 0, '활동주제 카테고리 그룹', NOW()),
 ('ACT001', 'ACT_TOPIC', '맛집', '', 1, 1, '활동주제 카테고리', NOW()),
 ('ACT002', 'ACT_TOPIC', '식품', '', 1, 2, '활동주제 카테고리', NOW()),
-('ACT003', 'ACT_TOPIC', '뷰티', '', 1, 3, '활동주제 카테고리', NOW());
-
+('ACT003', 'ACT_TOPIC', '뷰티', '', 1, 3, '활동주제 카테고리', NOW()),
+('ACT004', 'ACT_TOPIC', '여행', '', 1, 4, '활동주제 카테고리', NOW()),
+('ACT005', 'ACT_TOPIC', '디지털', '', 1, 5, '활동주제 카테고리', NOW()),
+('ACT006', 'ACT_TOPIC', '반려동물', '', 1, 6, '활동주제 카테고리', NOW()),
+('ACT007', 'ACT_TOPIC', '기타', '', 1, 7, '활동주제 카테고리', NOW());
 ## 커뮤니티_카테고리 (COMMU_CATE)
 INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)
 VALUES
