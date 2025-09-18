@@ -126,7 +126,8 @@ VALUES
 ('CAM_APP_STA', '', '신청상태', 10, 0, '체험단 신청 상태 그룹', NOW()),
 ('CAMAPP_PENDING', 'CAM_APP_STA', '대기', 10, 1, '체험단 신청 상태', NOW()),
 ('CAMAPP_REJECTED', 'CAM_APP_STA', '탈락', 10, 2, '체험단 신청 상태', NOW()),
-('CAMAPP_APPROVED', 'CAM_APP_STA', '당첨', 10, 3, '체험단 신청 상태', NOW());
+('CAMAPP_APPROVED', 'CAM_APP_STA', '당첨', 10, 3, '체험단 신청 상태', NOW()),
+('CAMAPP_CANCEL', 'CAM_APP_STA', '당첨취소', 10, 4, '체험단 신청 상태', NOW());
 
 ## 댓글_타입_코드(COMMENT_TYPE)
 INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)

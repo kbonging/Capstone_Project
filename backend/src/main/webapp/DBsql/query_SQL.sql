@@ -14,7 +14,7 @@ select * from tb_common_code where del_yn='n' order by group_sort, sort asc;
 -- 그룹으로 조회
 SELECT code_id, group_code, code_nm, image_url, group_sort, sort, code_dc, del_yn 
 FROM tb_common_code
-WHERE group_code='COMMU_CATE' AND del_yn='N'
+WHERE group_code='CAM_APP_STA' AND del_yn='N'
 ORDER BY group_sort, sort;
 ################ 로그인 요청 시 정보 조회 ################
 SELECT  M.member_idx, M.member_id, M.member_pwd, M.member_name, M.del_yn, A.auth_idx, A.auth
