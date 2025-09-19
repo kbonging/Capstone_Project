@@ -8,9 +8,9 @@ import com.webcore.platform.reviewer.dao.ReviewerDAO;
 import com.webcore.platform.reviewer.dto.ReviewerCancelDTO;
 import com.webcore.platform.reviewer.dto.ReviewerChannelDTO;
 import com.webcore.platform.reviewer.dto.ReviewerDTO;
+import com.webcore.platform.reviewer.dto.ReviewerRunningCampaignDTO;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -69,9 +69,10 @@ public class ReviewerServiceImpl implements ReviewerService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Map<String, Object>> findRunningCampaignsForReviewer(Integer memberIdx) {
+    public List<ReviewerRunningCampaignDTO> findRunningCampaignsForReviewer(Integer memberIdx) {
         return reviewerDAO.selectRunningCampaignsForReviewer(memberIdx);
     }
+
 
 
     @Override

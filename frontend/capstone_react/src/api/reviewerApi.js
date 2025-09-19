@@ -55,29 +55,35 @@ export async function fetchRunningCampaigns({ token = getToken(), withCredential
 }
 
 /** 취소 생성 (multipart/form-data) */
+/** 취소 생성 (multipart/form-data) */
 export async function createCancel(
   { type, campaignId, reason, files = [] },
   { token = getToken(), withCredentials = true } = {}
 ) {
   if (!token) throw new Error("로그인이 필요합니다.");
 
-  const fd = new FormData();
-  fd.append("type", type);
-  fd.append("campaignId", String(campaignId));
-  if (reason) fd.append("reason", reason);
-  files.forEach((f) => fd.append("images", f)); // @RequestPart("images")와 일치
+  const body = new FormData();
+body.append("type", type);
+body.append("campaignId", String(campaignId));
+if (reason) body.append("reason", reason);
+(files || []).forEach(f => body.append("images", f));
 
-  const res = await fetch(buildUrl("/api/reviewer/cancels"), {
-    method: "POST",
-    headers: {
-      Authorization: token.startsWith("Bearer ") ? token : `Bearer ${token}`,
-      // ⚠️ Content-Type 절대 지정하지 말 것! (boundary 자동)
-    },
-  // ✅ 진짜 FormData를 그대로 보냄
-    body: fd,
-    credentials: withCredentials ? "include" : "same-origin",
-  });
+// 마지막 안전로그
+for (const [k, v] of body.entries()) {
+  console.log("SEND", k, v instanceof File ? `${v.name} (${v.type})` : v);
+}
+
+const res = await fetch(buildUrl("/api/reviewer/cancels"), {
+  method: "POST",
+  headers: {
+    Authorization: token.startsWith("Bearer ") ? token : `Bearer ${token}`,
+    // 절대 Content-Type 넣지 말 것!
+  },
+  body,
+  credentials: withCredentials ? "include" : "same-origin",
+});
 
   return handleResponse(res);
 }
+
 
