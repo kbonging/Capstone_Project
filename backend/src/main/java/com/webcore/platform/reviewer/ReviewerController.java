@@ -2,9 +2,11 @@ package com.webcore.platform.reviewer;
 
 import com.webcore.platform.reviewer.dto.ReviewerCancelDTO;
 import com.webcore.platform.reviewer.dto.ReviewerDTO;
+import com.webcore.platform.reviewer.dto.ReviewerRunningCampaignDTO;
 import com.webcore.platform.security.custom.CustomUser;
 import jakarta.servlet.http.HttpSession;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +18,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -68,44 +70,49 @@ public class ReviewerController {
         }
     }
 
-    // 리뷰어 진행중(취소가능) 캠페인: 발표일 ~ 마감일 사이 + 당첨자
+    // 리뷰어 진행중(취소가능) 캠페인: 발표일 ~ 마감일 사이 + 당첨자  목록조회
     @GetMapping("/running-campaigns")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getReviewerRunningCampaigns(@AuthenticationPrincipal CustomUser user) {
         Integer memberIdx = user.getMemberDTO().getMemberIdx();
-        var list = reviewerService.findRunningCampaignsForReviewer(memberIdx);
+        List<ReviewerRunningCampaignDTO> list = reviewerService.findRunningCampaignsForReviewer(memberIdx);
 
-        // 셀렉트 박스에 딱 맞는 슬림 포맷으로 응답
-        var slim = list.stream().map(row -> Map.of(
-            "id", row.get("campaignId"),
-            "title", row.get("title"),
-            "applicationIdx", row.get("applicationIdx") // 필요하면 프론트에서 숨김 사용
-        )).toList();
+        // 셀렉트박스 전용 slim 데이터로 변환
+        var slim = list.stream()
+            .map(dto -> Map.of(
+                "id", dto.getCampaignId(),
+                "title", dto.getTitle(),
+                "applicationIdx", dto.getApplicationIdx()
+            ))
+            .toList();
 
         return ResponseEntity.ok(slim);
     }
 
+    //리뷰어 진행중 취소요청
     @PostMapping(value = "/cancels", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createCancel(
         @AuthenticationPrincipal CustomUser user,
-        @RequestHeader("Content-Type") String contentType,//
-        @RequestPart("type") String type,
-        @RequestPart("campaignId") Integer campaignId,
-        @RequestPart(value = "reason", required = false) String reason,
+        @RequestParam("type") String type,
+        @RequestParam("campaignId") Integer campaignId,
+        @RequestParam(value = "reason", required = false) String reason,
         @RequestPart(value = "images", required = false) MultipartFile[] images
     ) {
-        log.info(">>> Content-Type: {}", contentType);
         Integer memberIdx = user.getMemberDTO().getMemberIdx();
 
         ReviewerCancelDTO dto = new ReviewerCancelDTO();
         dto.setType(type);
         dto.setCampaignId(campaignId);
         dto.setReason(reason);
-        if (images != null) dto.setImages(Arrays.asList(images));
+        if (images != null && images.length > 0) {
+            dto.setImages(Arrays.asList(images));
+        }
 
         reviewerService.cancelMyApproved(memberIdx, dto);
         return ResponseEntity.ok("취소가 접수되었습니다.");
     }
+
 
 
 }

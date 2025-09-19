@@ -73,7 +73,18 @@
 
 
     <!-- 리뷰어 기준: '내가 당첨(CAMAPP_APPROVED)' && '발표일 지난 시점부터 노출' -->
-    <select id="selectRunningCampaignsForReviewer" resultType="java.util.Map">
+    <resultMap id="runningCampaignResultMap" type="com.webcore.platform.reviewer.dto.ReviewerRunningCampaignDTO">
+        <id property="applicationIdx" column="applicationIdx"/>
+        <result property="campaignId" column="campaignId"/>
+        <result property="title" column="title"/>
+        <result property="thumbnailUrl" column="thumbnailUrl"/>
+        <result property="announceDate" column="announceDate"/>
+        <result property="deadlineDate" column="deadlineDate"/>
+    </resultMap>
+
+    <select id="selectRunningCampaignsForReviewer"
+      parameterType="java.lang.Integer"
+      resultMap="runningCampaignResultMap">
         SELECT
         a.APPLICATION_IDX   AS applicationIdx,
         c.CAMPAIGN_IDX      AS campaignId,
@@ -88,7 +99,7 @@
         AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
         AND a.DEL_YN = 'N'
         AND c.DEL_YN = 'N'
-        AND DATE(c.ANNOUNCE_DATE) &lt;= CURDATE()
+        AND DATE(c.ANNOUNCE_DATE) <![CDATA[<=]]> CURDATE()
         ORDER BY c.ANNOUNCE_DATE DESC, c.DEADLINE_DATE ASC
     </select>
 

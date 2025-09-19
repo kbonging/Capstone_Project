@@ -32,7 +32,10 @@ export default function CancelForm() {
           return;
         }
 
-        const data = await fetchRunningCampaigns({ token, withCredentials: true });
+        const data = await fetchRunningCampaigns({
+          token,
+          withCredentials: true,
+        });
         if (!alive) return;
 
         const normalized = Array.isArray(data)
@@ -80,6 +83,10 @@ export default function CancelForm() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+
+    console.log("native fetch?", /\[native code\]/.test(fetch.toString()));
+    console.log("sw controlled?", !!navigator.serviceWorker?.controller);
+
     setErrorMsg("");
     setOkMsg("");
 
@@ -181,7 +188,9 @@ export default function CancelForm() {
               placeholder="체험단을 선택해 주세요."
               className="w-full rounded border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-400"
             />
-            <p className="mt-2 text-sm text-gray-500">진행중인 체험단이 없습니다</p>
+            <p className="mt-2 text-sm text-gray-500">
+              진행중인 체험단이 없습니다
+            </p>
           </>
         )}
       </div>
@@ -200,7 +209,9 @@ export default function CancelForm() {
       {type === "NEGOTIATED" && (
         <>
           <div className="mt-8">
-            <label className="block text-sm font-medium mb-2">취소 사유 작성</label>
+            <label className="block text-sm font-medium mb-2">
+              취소 사유 작성
+            </label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
@@ -216,7 +227,9 @@ export default function CancelForm() {
 
           {/* 이미지 업로드 */}
           <div className="mt-8">
-            <label className="block text-sm font-medium mb-2">협의 내용 이미지 첨부</label>
+            <label className="block text-sm font-medium mb-2">
+              협의 내용 이미지 첨부
+            </label>
 
             <div
               onDragOver={(e) => e.preventDefault()}
