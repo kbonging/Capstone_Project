@@ -1,3 +1,4 @@
+// src/components/mypage/ProfileManageForm.jsx
 import React, { useState, useEffect, useContext } from "react";
 import { updateMember } from "../../api/memberApi";
 import { AppContext } from "../../contexts/AppContext";
@@ -15,46 +16,80 @@ export default function ProfileManageForm({ user }) {
     { infTypeCodeId: "INF004", channelUrl: "" },
   ]);
 
-  // 동의 체크 상태
   const [agree, setAgree] = useState({
     commentNotificationAgree: false,
     pushNotificationAgree: false,
     marketingAgree: false,
   });
 
+  const [originalFormData, setOriginalFormData] = useState(null);
+  const [isModified, setIsModified] = useState(false);
+
+  const role = user?.authDTOList?.[0]?.auth;
+
+  // 초기 데이터 세팅
   useEffect(() => {
     if (user) {
       setFormData(user);
 
       if (user.reviewerChannelList?.length) {
-        setReviewerChannelList(prev =>
-          prev.map(ch => ({
-            ...ch,
-            channelUrl:
-              user.reviewerChannelList.find(c => c.infTypeCodeId === ch.infTypeCodeId)
-                ?.channelUrl || "",
-          }))
-        );
+        const updatedReviewerList = reviewerChannelList.map(ch => ({
+          ...ch,
+          channelUrl:
+            user.reviewerChannelList.find(c => c.infTypeCodeId === ch.infTypeCodeId)
+              ?.channelUrl || "",
+        }));
+        setReviewerChannelList(updatedReviewerList);
+
+        setOriginalFormData({
+          ...user,
+          reviewerChannelList: updatedReviewerList,
+          agree: { ...agree },
+        });
+      } else {
+        setOriginalFormData({
+          ...user,
+          reviewerChannelList: reviewerChannelList,
+          agree: { ...agree },
+        });
       }
     }
   }, [user]);
 
+  const checkModified = (newFormData, newReviewerList, newAgree) => {
+    if (!originalFormData) return false;
+    if (JSON.stringify(newFormData) !== JSON.stringify(originalFormData)) return true;
+    if (JSON.stringify(newReviewerList) !== JSON.stringify(originalFormData.reviewerChannelList)) return true;
+    if (JSON.stringify(newAgree) !== JSON.stringify(originalFormData.agree)) return true;
+    return false;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => {
+      const updated = { ...prev, [name]: value };
+      setIsModified(checkModified(updated, reviewerChannelList, agree));
+      return updated;
+    });
   };
 
   const handleChannelChange = (codeId, url) => {
-    setReviewerChannelList(prev =>
-      prev.map(ch =>
+    setReviewerChannelList(prev => {
+      const updated = prev.map(ch =>
         ch.infTypeCodeId === codeId ? { ...ch, channelUrl: url } : ch
-      )
-    );
+      );
+      setIsModified(checkModified(formData, updated, agree));
+      return updated;
+    });
   };
 
   const handleAgreeChange = (e) => {
     const { name, checked } = e.target;
-    setAgree(prev => ({ ...prev, [name]: checked }));
+    setAgree(prev => {
+      const updated = { ...prev, [name]: checked };
+      setIsModified(checkModified(formData, reviewerChannelList, updated));
+      return updated;
+    });
   };
 
   const handleSubmit = async () => {
@@ -62,18 +97,15 @@ export default function ProfileManageForm({ user }) {
       const payload = {
         ...formData,
         reviewerChannelList,
-        ...agree, // 동의 상태도 함께 전송 가능
       };
       await updateMember(payload, token);
       alert("회원 정보 수정 완료!");
+      window.location.reload();
     } catch (err) {
       alert("회원 정보 수정 실패");
     }
   };
 
-  const role = user?.authDTOList?.[0]?.auth;
-
-  // 동의 스위치
   const Switch = ({ name, checked, label }) => (
     <label className="flex items-center gap-3 cursor-pointer">
       <div className="relative">
@@ -99,6 +131,19 @@ export default function ProfileManageForm({ user }) {
     </label>
   );
 
+  function loadDaumPostcode() {
+    return new Promise((resolve, reject) => {
+      if (window.daum?.Postcode) return resolve();
+      const script = document.createElement("script");
+      script.src =
+        "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("Daum Postcode script load 실패"));
+      document.head.appendChild(script);
+    });
+  }
+
   return (
     <div className="max-w-2xl ml-6 space-y-10 text-base text-gray-600 font-medium font-['Noto_Sans_KR',sans-serif]">
       {/* 이메일 */}
@@ -121,7 +166,6 @@ export default function ProfileManageForm({ user }) {
           name="memberName"
           className="w-full border rounded px-4 py-2"
           value={formData.memberName || ""}
-          onChange={handleChange}
           disabled
         />
       </div>
@@ -180,60 +224,82 @@ export default function ProfileManageForm({ user }) {
       </div>
 
       {/* 생년월일 + 성별 */}
-      <div className="mb-4 flex gap-4">
-        <div className="flex-1">
-          <label className="block mb-3">생년월일</label>
-          <input
-            type="date"
-            name="birthDate"
-            className="w-full border rounded px-4 py-2"
-            value={formData.birthDate || ""}
-            onChange={handleChange}
-          />
+      {role === "ROLE_USER" && (
+        <div className="mb-4 flex gap-4">
+          <div className="flex-1">
+            <label className="block mb-3">생년월일</label>
+            <input
+              type="date"
+              name="birthDate"
+              className="w-full border rounded px-4 py-2"
+              value={formData.birthDate || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block mb-3">성별</label>
+            <select
+              name="gender"
+              className="w-full border rounded px-4 py-2"
+              value={formData.gender || "M"}
+              onChange={handleChange}
+            >
+              <option value="M">남</option>
+              <option value="F">여</option>
+            </select>
+          </div>
         </div>
-        <div className="flex-1">
-          <label className="block mb-3">성별</label>
-          <select
-            name="gender"
-            className="w-full border rounded px-4 py-2"
-            value={formData.gender || "M"}
-            onChange={handleChange}
-          >
-            <option value="M">남</option>
-            <option value="F">여</option>
-          </select>
-        </div>
-      </div>
+      )}
 
       {/* 활동지역 + 활동주제 (리뷰어만) */}
       {role === "ROLE_USER" && (
         <div className="mb-4 flex gap-4">
           <div className="flex-1">
             <label className="block mb-3">활동지역</label>
-            <input
-              type="text"
+            <select
               name="activityArea"
               className="w-full border rounded px-4 py-2"
               value={formData.activityArea || ""}
               onChange={handleChange}
-            />
+            >
+              <option value="">선택</option>
+              {[
+                "서울","경기","인천","강원","대전","세종","충남","충북",
+                "부산","울산","경남","경북","대구","광주","전남","전북","제주"
+              ].map(area => <option key={area} value={area}>{area}</option>)}
+            </select>
           </div>
           <div className="flex-1">
             <label className="block mb-3">활동주제</label>
-            <input
-              type="text"
+            <select
               name="activityTopic"
               className="w-full border rounded px-4 py-2"
               value={formData.activityTopic || ""}
               onChange={handleChange}
-            />
+            >
+              <option value="">선택</option>
+              {["맛집","식품","뷰티","여행","디지털","반려동물","기타"].map(topic => (
+                <option key={topic} value={topic}>{topic}</option>
+              ))}
+            </select>
           </div>
         </div>
       )}
 
+      <div className="mb-4">
+        <label className="block mb-3">소개글</label>
+        <textarea
+          name="intro"
+          value={formData.intro || ""}
+          onChange={handleChange}
+          placeholder="자신을 소개하는 글을 작성해주세요."
+          className="w-full border rounded px-4 py-2 h-24 resize-none"
+        />
+      </div>
+
       {/* URL / 채널 */}
       {role === "ROLE_USER" &&
-        reviewerChannelList.map((ch) => {
+        reviewerChannelList.map(ch => {
           const Icon =
             ch.infTypeCodeId === "INF001"
               ? FaBlogger
@@ -260,7 +326,7 @@ export default function ProfileManageForm({ user }) {
                 value={ch.channelUrl}
                 placeholder={placeholder}
                 className="flex-1 border rounded px-4 py-2"
-                onChange={(e) => handleChannelChange(ch.infTypeCodeId, e.target.value)}
+                onChange={e => handleChannelChange(ch.infTypeCodeId, e.target.value)}
               />
             </div>
           );
@@ -289,17 +355,44 @@ export default function ProfileManageForm({ user }) {
               name="zipCode"
               className="w-1/3 border rounded px-4 py-2"
               value={formData.zipCode || ""}
-              onChange={handleChange}
+              readOnly
+              placeholder="우편번호 (검색 버튼 클릭)"
             />
-            <button className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">검색</button>
+            <button
+              type="button"
+              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+              onClick={async () => {
+                try {
+                  await loadDaumPostcode();
+                  new window.daum.Postcode({
+                    oncomplete: (data) => {
+                      const addr =
+                        data.userSelectedType === "R"
+                          ? data.roadAddress
+                          : data.jibunAddress;
+                      setFormData(prev => ({
+                        ...prev,
+                        zipCode: data.zonecode,
+                        address: addr,
+                      }));
+                      setIsModified(checkModified({...formData, zipCode: data.zonecode, address: addr}, reviewerChannelList, agree));
+                    },
+                  }).open();
+                } catch {
+                  alert("주소 검색 실패");
+                }
+              }}
+            >
+              검색
+            </button>
           </div>
           <input
             type="text"
             name="address"
             className="w-full border rounded px-4 py-2 mb-2"
             value={formData.address || ""}
-            onChange={handleChange}
-            placeholder="주소"
+            readOnly
+            placeholder="기본 주소 (검색 버튼 클릭)"
           />
           <input
             type="text"
@@ -339,7 +432,10 @@ export default function ProfileManageForm({ user }) {
         <button className="text-gray-400 text-sm px-6 py-2">회원탈퇴</button>
         <button
           onClick={handleSubmit}
-          className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+          disabled={!isModified}
+          className={`px-6 py-2 rounded text-white ${
+            isModified ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-300 cursor-not-allowed"
+          }`}
         >
           수정하기
         </button>

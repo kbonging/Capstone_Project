@@ -2,6 +2,8 @@ package com.webcore.platform.member.dao;
 
 import com.webcore.platform.member.dto.MemberAuthDTO;
 import com.webcore.platform.member.dto.MemberDTO;
+import com.webcore.platform.member.dto.MemberUpdateDTO;
+import com.webcore.platform.reviewer.dto.ReviewerChannelDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -22,4 +24,10 @@ public interface MemberDAO {
     int countByMemberId(String memberId);
     /** 이메일 중복 체크*/
     int countByMemberEmail(String memberEmail);
+
+    void updateMember(MemberUpdateDTO dto);
+    void updateReviewerProfile(MemberUpdateDTO dto);
+    void updateOwnerProfile(MemberUpdateDTO dto);
+    void updateReviewerChannel(ReviewerChannelDTO dto);
+    void insertReviewerChannel(ReviewerChannelDTO dto);
 }

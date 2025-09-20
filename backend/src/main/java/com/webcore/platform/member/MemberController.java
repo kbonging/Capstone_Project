@@ -2,6 +2,7 @@ package com.webcore.platform.member;
 
 import com.webcore.platform.member.dto.MemberAuthDTO;
 import com.webcore.platform.member.dto.MemberDTO;
+import com.webcore.platform.member.dto.MemberUpdateDTO;
 import com.webcore.platform.owner.OwnerService;
 import com.webcore.platform.reviewer.ReviewerService;
 import com.webcore.platform.security.custom.CustomUser;
@@ -57,7 +58,17 @@ public class MemberController {
 
     /** 회원 정보 수정 */
     @PutMapping("")
-
+    public ResponseEntity<String> updateMember(@RequestBody MemberUpdateDTO dto,
+                                               @AuthenticationPrincipal CustomUser customUser) {
+        try {
+            String role = customUser.getAuthorities().iterator().next().getAuthority();
+            memberService.updateMember(dto, role);
+            return ResponseEntity.ok("SUCCESS");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("FAIL");
+        }
+    }
 
     /** MemberIdx로 회원 정보 조회 */
     @GetMapping("/{memberIdx}")

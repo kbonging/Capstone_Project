@@ -3,13 +3,16 @@ package com.webcore.platform.member;
 import com.webcore.platform.constants.AuthRole;
 import com.webcore.platform.member.dao.MemberDAO;
 import com.webcore.platform.member.dto.MemberAuthDTO;
+import com.webcore.platform.member.dto.MemberUpdateDTO;
 import com.webcore.platform.owner.OwnerService;
 import com.webcore.platform.reviewer.ReviewerService;
+import com.webcore.platform.reviewer.dto.ReviewerChannelDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -51,6 +54,31 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public boolean isEmailExists(String memberEmail) {
         return memberDAO.countByMemberEmail(memberEmail) > 0;
+    }
+
+    @Transactional
+    @Override
+    public void updateMember(MemberUpdateDTO memberUpdateDTO, String role) {
+        // 회원 기본 정보
+        memberDAO.updateMember(memberUpdateDTO);
+
+        if ("ROLE_USER".equals(role)) {
+            // 리뷰어 프로필
+            memberDAO.updateReviewerProfile(memberUpdateDTO);
+
+            // 리뷰어 채널
+            for (ReviewerChannelDTO ch : memberUpdateDTO.getReviewerChannelDTOList()) {
+                if (ch.getRevChaIdx() > 0) {
+                    memberDAO.updateReviewerChannel(ch);
+                } else {
+                    ch.setMemberIdx(memberUpdateDTO.getMemberIdx());
+                    memberDAO.insertReviewerChannel(ch);
+                }
+            }
+        } else if ("ROLE_OWNER".equals(role)) {
+            // 소상공인 프로필
+            memberDAO.updateOwnerProfile(memberUpdateDTO);
+        }
     }
 
 }

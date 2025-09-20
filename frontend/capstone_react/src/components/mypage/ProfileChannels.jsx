@@ -4,7 +4,7 @@ export default function ProfileChannels({ user, platformList }) {
   if (!user) return null;
 
   return (
-    <div className="flex justify-center gap-12">
+    <div className="flex justify-center gap-12 font-['Noto_Sans_KR',sans-serif]">
       {platformList.map((platform) => {
         const channel = user.reviewerChannelList?.find(
           (c) => c.infTypeCodeId === platform.code_id
@@ -23,7 +23,7 @@ export default function ProfileChannels({ user, platformList }) {
             />
             {isRegistered ? (
               <a
-                href={channel.channelUrl}
+                href={/^https?:\/\//.test(channel.channelUrl) ? channel.channelUrl : `https://${channel.channelUrl}`}
                 target="_blank"
                 rel="noreferrer"
                 className="text-sm mt-2 text-gray-700 font-semibold"

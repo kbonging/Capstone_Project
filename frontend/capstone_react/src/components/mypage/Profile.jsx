@@ -92,7 +92,7 @@ export default function Profile({ user }) {
             )}
           </div>
         </div>
-        <div className="w-1/2 space-y-3">
+        <div className="w-1/2 space-y-4">
           <div className="flex items-baseline space-x-3">
             <div className="text-sm text-blue-400 bg-blue-100 font-bold rounded-md p-2">
               {userRole === "ROLE_OWNER" ? "소상공인" : "체험단"}
@@ -109,7 +109,7 @@ export default function Profile({ user }) {
 
       {/* 캠페인 탭 영역 (리뷰어만) */}
       {userRole === "ROLE_USER" && (
-        <div className="mt-10">
+        <div className="mt-10 font-['Noto_Sans_KR',sans-serif]">
           <div className="flex justify-center w-full mb-4">
             <div className="flex space-x-8 text-sm pb-2 border-b border-gray-300">
               {["진행중", "완료"].map((tab) => (
