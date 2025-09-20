@@ -4,8 +4,8 @@ import com.webcore.platform.reviewer.dto.ReviewerCancelDTO;
 import com.webcore.platform.reviewer.dto.ReviewerChannelDTO;
 import com.webcore.platform.reviewer.dto.ReviewerDTO;
 
+import com.webcore.platform.reviewer.dto.ReviewerRunningCampaignDTO;
 import java.util.List;
-import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,7 +19,7 @@ public interface ReviewerDAO {
     ReviewerDTO selectReviewerByIdx(int memberIdx);
 
     /** 리뷰어 기준 진행중(발표~마감)이며 당첨 상태인 캠페인 목록 */
-    List<Map<String,Object>> selectRunningCampaignsForReviewer(@Param("memberIdx") Integer memberIdx);
+    List<ReviewerRunningCampaignDTO> selectRunningCampaignsForReviewer(@Param("memberIdx") Integer memberIdx);
 
     // 내 당첨(Approved) 신청 1건 조회
     ReviewerCancelDTO findApprovedApplication(@Param("memberIdx") Integer memberIdx,

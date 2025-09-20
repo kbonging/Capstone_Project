@@ -200,7 +200,7 @@ export default function CampaignManageForm() {
       <tr
         key={c.campaignIdx}
         className="hover:bg-gray-50 border-b h-[110px] text-[15px] cursor-pointer"
-        onClick={() => navigate(`/campaign/${c.campaignIdx}`)} //  행 클릭 시 상세 이동
+        onClick={() => navigate(`/owner/campaigns/${c.campaignIdx}/reviews`)} //  행 클릭 시 상세 이동
       >
         {/* 캠페인 정보 열 */}
         <td className="pl-4 py-3">

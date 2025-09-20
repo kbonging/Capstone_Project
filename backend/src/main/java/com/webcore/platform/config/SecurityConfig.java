@@ -105,6 +105,7 @@ public class SecurityConfig {
                         // 리뷰어
                         .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 회원가입만 전체 허용
                         .requestMatchers(HttpMethod.GET, "/api/reviewer/running-campaigns").hasRole("USER") // 진행중 캠페인 조회는 로그인 유저만
+                        .requestMatchers(HttpMethod.POST, "/api/reviewer/cancels").hasRole("USER")
                         .requestMatchers("/api/reviewer/**").hasRole("USER") // 나머지 리뷰어 API는 USER 권한 필요
 
 

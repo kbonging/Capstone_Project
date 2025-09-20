@@ -348,3 +348,23 @@ CREATE TABLE `TB_NOTIFICATION_READ` (
 )comment '알림 읽음 이력 테이블';
 
 
+########## 진행중 취소 테이블 ############
+/* ===========================================================
+ *  - 증빙 이미지 URL 배열을 JSON으로 저장
+ *  - 리뷰어 진행중 취소
+ * =========================================================== */
+CREATE TABLE  tb_cancel_reviewer_list (
+  cancel_idx       INT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  application_idx  INT       NOT NULL,
+  member_idx       INT       NOT NULL,
+  type_code        VARCHAR(20)  NOT NULL,      -- SIMPLE | NEGOTIATED
+  reason           TEXT         NULL,          -- 협의사유 등
+  evidence_json    JSON         NULL,          -- ["https://...","https://..."]
+  reg_date         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY idx_cancel_member (member_idx),
+  KEY idx_cancel_app (application_idx)
+    , CONSTRAINT fk_cancel_member FOREIGN KEY (member_idx) REFERENCES tb_member(member_idx)
+    , CONSTRAINT fk_cancel_app FOREIGN KEY (application_idx) REFERENCES tb_campaign_application(APPLICATION_IDX)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
