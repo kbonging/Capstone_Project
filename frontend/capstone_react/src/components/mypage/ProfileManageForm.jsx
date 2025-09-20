@@ -1,57 +1,79 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { updateMember } from "../../api/memberApi";
+import { AppContext } from "../../contexts/AppContext";
 import { FiUpload } from "react-icons/fi";
 import { FaBlogger, FaInstagram, FaYoutube, FaGlobe } from "react-icons/fa";
 
 export default function ProfileManageForm({ user }) {
+  const { token } = useContext(AppContext);
+
   const [formData, setFormData] = useState({});
+  const [reviewerChannelList, setReviewerChannelList] = useState([
+    { infTypeCodeId: "INF001", channelUrl: "" },
+    { infTypeCodeId: "INF002", channelUrl: "" },
+    { infTypeCodeId: "INF003", channelUrl: "" },
+    { infTypeCodeId: "INF004", channelUrl: "" },
+  ]);
 
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        ...user,
-        blogUrl:
-          user?.reviewerChannelList?.find((c) => c.infTypeCodeId === "INF001")
-            ?.channelUrl || "",
-        instaUrl:
-          user?.reviewerChannelList?.find((c) => c.infTypeCodeId === "INF002")
-            ?.channelUrl || "",
-        youtubeUrl:
-          user?.reviewerChannelList?.find((c) => c.infTypeCodeId === "INF003")
-            ?.channelUrl || "",
-        etcUrl:
-          user?.reviewerChannelList?.find((c) => c.infTypeCodeId === "INF004")
-            ?.channelUrl || "",
-      });
-    }
-  }, [user]);
-
-  // 1. 상태 정의
+  // 동의 체크 상태
   const [agree, setAgree] = useState({
     commentNotificationAgree: false,
     pushNotificationAgree: false,
     marketingAgree: false,
   });
 
-  // 2. 상태 변경 핸들러
-  const handleAgreeChange = (e) => {
-    const { name, checked } = e.target;
-    setAgree((prev) => ({ ...prev, [name]: checked }));
-  };
+  useEffect(() => {
+    if (user) {
+      setFormData(user);
+
+      if (user.reviewerChannelList?.length) {
+        setReviewerChannelList(prev =>
+          prev.map(ch => ({
+            ...ch,
+            channelUrl:
+              user.reviewerChannelList.find(c => c.infTypeCodeId === ch.infTypeCodeId)
+                ?.channelUrl || "",
+          }))
+        );
+      }
+    }
+  }, [user]);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    console.log("제출 데이터:", formData);
-    // API 호출 예: axios.post("/api/members/update", formData)
+  const handleChannelChange = (codeId, url) => {
+    setReviewerChannelList(prev =>
+      prev.map(ch =>
+        ch.infTypeCodeId === codeId ? { ...ch, channelUrl: url } : ch
+      )
+    );
   };
 
-  // 3. Switch 컴포넌트
+  const handleAgreeChange = (e) => {
+    const { name, checked } = e.target;
+    setAgree(prev => ({ ...prev, [name]: checked }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        ...formData,
+        reviewerChannelList,
+        ...agree, // 동의 상태도 함께 전송 가능
+      };
+      await updateMember(payload, token);
+      alert("회원 정보 수정 완료!");
+    } catch (err) {
+      alert("회원 정보 수정 실패");
+    }
+  };
+
+  const role = user?.authDTOList?.[0]?.auth;
+
+  // 동의 스위치
   const Switch = ({ name, checked, label }) => (
     <label className="flex items-center gap-3 cursor-pointer">
       <div className="relative">
@@ -59,16 +81,16 @@ export default function ProfileManageForm({ user }) {
           type="checkbox"
           name={name}
           checked={checked}
-          onChange={handleAgreeChange}  // <- 여기가 중요
+          onChange={handleAgreeChange}
           className="sr-only"
         />
         <div
-          className={`w-11 h-6 rounded-full transition-colors duration-1000 ease-in-out ${
+          className={`w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
             checked ? "bg-blue-500" : "bg-gray-300"
           }`}
         ></div>
         <div
-          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-1000 ease-in-out ${
+          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${
             checked ? "translate-x-5" : "translate-x-0"
           }`}
         ></div>
@@ -77,10 +99,8 @@ export default function ProfileManageForm({ user }) {
     </label>
   );
 
-  const role = user?.authDTOList?.[0]?.auth;
-
   return (
-    <div className="max-w-2xl ml-6 text-base text-gray-600 font-medium font-['Noto_Sans_KR',sans-serif] space-y-10">
+    <div className="max-w-2xl ml-6 space-y-10 text-base text-gray-600 font-medium font-['Noto_Sans_KR',sans-serif]">
       {/* 이메일 */}
       <div className="mb-4">
         <label className="block mb-3">이메일</label>
@@ -93,7 +113,7 @@ export default function ProfileManageForm({ user }) {
         />
       </div>
 
-      {/* 이름 - 공통 */}
+      {/* 이름 */}
       <div className="mb-4">
         <label className="block mb-3">이름</label>
         <input
@@ -106,7 +126,7 @@ export default function ProfileManageForm({ user }) {
         />
       </div>
 
-      {/* 닉네임 / 상호명 - 역할별 */}
+      {/* 닉네임 / 상호명 */}
       {role === "ROLE_USER" && (
         <div className="mb-4">
           <label className="block mb-3">닉네임</label>
@@ -119,7 +139,6 @@ export default function ProfileManageForm({ user }) {
           />
         </div>
       )}
-
       {role === "ROLE_OWNER" && (
         <div className="mb-4">
           <label className="block mb-3">상호명</label>
@@ -144,10 +163,7 @@ export default function ProfileManageForm({ user }) {
             value={formData.memberPhone || ""}
             onChange={handleChange}
           />
-          <button
-            type="button"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
+          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
             인증번호 받기
           </button>
         </div>
@@ -189,7 +205,7 @@ export default function ProfileManageForm({ user }) {
         </div>
       </div>
 
-      {/* 활동영역 + 활동주제 (리뷰어만) */}
+      {/* 활동지역 + 활동주제 (리뷰어만) */}
       {role === "ROLE_USER" && (
         <div className="mb-4 flex gap-4">
           <div className="flex-1">
@@ -215,71 +231,55 @@ export default function ProfileManageForm({ user }) {
         </div>
       )}
 
-      {/* URL */}
-      <div className="space-y-3">
-        <label className="block">
-          {role === "ROLE_USER" ? "리뷰어 URL" : role === "ROLE_OWNER" ? "비즈니스 URL" : "URL"}
-        </label>
-        {role === "ROLE_USER" ? (
-          <>
-            <div className="flex items-center gap-2">
-              <FaBlogger className="text-green-600 text-3xl" />
+      {/* URL / 채널 */}
+      {role === "ROLE_USER" &&
+        reviewerChannelList.map((ch) => {
+          const Icon =
+            ch.infTypeCodeId === "INF001"
+              ? FaBlogger
+              : ch.infTypeCodeId === "INF002"
+              ? FaInstagram
+              : ch.infTypeCodeId === "INF003"
+              ? FaYoutube
+              : FaGlobe;
+
+          const placeholder =
+            ch.infTypeCodeId === "INF001"
+              ? "블로그 URL 입력"
+              : ch.infTypeCodeId === "INF002"
+              ? "인스타그램 URL 입력"
+              : ch.infTypeCodeId === "INF003"
+              ? "유튜브 URL 입력"
+              : "기타 URL 입력";
+
+          return (
+            <div key={ch.infTypeCodeId} className="flex items-center gap-2 mb-2">
+              <Icon className="text-3xl" />
               <input
                 type="text"
-                name="blogUrl"
-                placeholder="블로그 URL 입력"
+                value={ch.channelUrl}
+                placeholder={placeholder}
                 className="flex-1 border rounded px-4 py-2"
-                value={formData.blogUrl || ""}
-                onChange={handleChange}
+                onChange={(e) => handleChannelChange(ch.infTypeCodeId, e.target.value)}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <FaInstagram className="text-pink-500 text-3xl" />
-              <input
-                type="text"
-                name="instaUrl"
-                placeholder="인스타그램 URL 입력"
-                className="flex-1 border rounded px-4 py-2"
-                value={formData.instaUrl || ""}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <FaYoutube className="text-red-500 text-3xl" />
-              <input
-                type="text"
-                name="youtubeUrl"
-                placeholder="유튜브 URL 입력"
-                className="flex-1 border rounded px-4 py-2"
-                value={formData.youtubeUrl || ""}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <FaGlobe className="text-blue-500 text-3xl" />
-              <input
-                type="text"
-                name="etcUrl"
-                placeholder="기타 URL 입력"
-                className="flex-1 border rounded px-4 py-2"
-                value={formData.etcUrl || ""}
-                onChange={handleChange}
-              />
-            </div>
-          </>
-        ) : role === "ROLE_OWNER" ? (
+          );
+        })}
+
+      {role === "ROLE_OWNER" && (
+        <div className="mb-4">
+          <label className="block mb-3">비즈니스 URL</label>
           <input
             type="text"
             name="businessUrl"
-            placeholder="비즈니스 URL 입력"
             className="w-full border rounded px-4 py-2"
             value={formData.businessUrl || ""}
             onChange={handleChange}
           />
-        ) : null}
-      </div>
+        </div>
+      )}
 
-      {/* 주소 입력: 리뷰어만 */}
+      {/* 주소 (리뷰어만) */}
       {role === "ROLE_USER" && (
         <div>
           <label className="block mb-3">주소</label>
@@ -291,12 +291,7 @@ export default function ProfileManageForm({ user }) {
               value={formData.zipCode || ""}
               onChange={handleChange}
             />
-            <button
-              type="button"
-              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-            >
-              검색
-            </button>
+            <button className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">검색</button>
           </div>
           <input
             type="text"
@@ -317,7 +312,7 @@ export default function ProfileManageForm({ user }) {
         </div>
       )}
 
-      {/* 동의 항목 (Tailwind 스위치 적용) */}
+      {/* 동의 스위치 */}
       <div className="flex space-x-20">
         <Switch
           name="commentNotificationAgree"
@@ -341,11 +336,8 @@ export default function ProfileManageForm({ user }) {
 
       {/* 버튼 */}
       <div className="flex justify-between">
-        <button type="button" className="text-gray-400 text-sm px-6 py-2">
-          회원탈퇴
-        </button>
+        <button className="text-gray-400 text-sm px-6 py-2">회원탈퇴</button>
         <button
-          type="button"
           onClick={handleSubmit}
           className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
         >

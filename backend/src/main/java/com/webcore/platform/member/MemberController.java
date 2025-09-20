@@ -55,6 +55,10 @@ public class MemberController {
         return new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
     }
 
+    /** 회원 정보 수정 */
+    @PutMapping("")
+
+
     /** MemberIdx로 회원 정보 조회 */
     @GetMapping("/{memberIdx}")
     public ResponseEntity<?> getUserInfoByIdx(@PathVariable int memberIdx) {

@@ -108,7 +108,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/reviewer/**").hasRole("USER") // 나머지 리뷰어 API는 USER 권한 필요
 
 
-                    // 소상공인
+                        // 소상공인
                         .requestMatchers(HttpMethod.POST, "/api/owner").permitAll() // 소상공인 회원가입은 누구나 가능 (POST)
                         .requestMatchers("/api/owner", "/api/owner/**").hasRole("OWNER") // 회원 가입 제외 모든 경로는 권한 필요
 
