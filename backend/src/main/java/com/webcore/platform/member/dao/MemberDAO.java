@@ -25,9 +25,6 @@ public interface MemberDAO {
     /** 이메일 중복 체크*/
     int countByMemberEmail(String memberEmail);
 
+    /** 공통 회원 정보 수정 */
     void updateMember(MemberUpdateDTO dto);
-    void updateReviewerProfile(MemberUpdateDTO dto);
-    void updateOwnerProfile(MemberUpdateDTO dto);
-    void updateReviewerChannel(ReviewerChannelDTO dto);
-    void insertReviewerChannel(ReviewerChannelDTO dto);
 }

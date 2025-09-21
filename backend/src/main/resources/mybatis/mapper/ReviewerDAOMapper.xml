@@ -143,4 +143,37 @@
         #{applicationIdx}, #{memberIdx}, #{type}, #{reason}, #{evidenceJson}, NOW()
         )
     </insert>
+
+    <!-- 리뷰어 프로필 수정 -->
+    <update id="updateReviewerProfile" parameterType="com.webcore.platform.member.dto.MemberUpdateDTO">
+        UPDATE tb_reviewer_profile
+        SET NICKNAME = #{nickname},
+        GENDER = #{gender},
+        BIRTH_DATE = #{birthDate},
+        ACTIVITY_AREA = #{activityArea},
+        ACTIVITY_TOPIC = #{activityTopic},
+        ZIP_CODE = #{zipCode},
+        ADDRESS = #{address},
+        DETAIL_ADDRESS = #{detailAddress}
+        WHERE MEMBER_IDX = #{memberIdx}
+    </update>
+
+    <!-- 리뷰어 채널 등록/수정 (UPSERT) -->
+    <insert id="upsertReviewerChannel" parameterType="com.webcore.platform.reviewer.dto.ReviewerChannelDTO">
+        INSERT INTO tb_reviewer_channel (
+        MEMBER_IDX,
+        INF_TYPE_CODE_ID,
+        CHANNEL_URL,
+        REG_DATE
+        )
+        VALUES (
+        #{memberIdx},
+        #{infTypeCodeId},
+        #{channelUrl},
+        NOW()
+        )
+        ON DUPLICATE KEY UPDATE
+        CHANNEL_URL = VALUES(CHANNEL_URL),
+        MOD_DATE = NOW()
+    </insert>
 </mapper>

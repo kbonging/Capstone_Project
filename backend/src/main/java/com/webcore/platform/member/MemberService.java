@@ -25,5 +25,6 @@ public interface MemberService {
     /** 이메일 중복 체크*/
     boolean isEmailExists(String memberEmail);
 
+    /** 회원 정보 수정 */
     void updateMember(MemberUpdateDTO memberUpdateDTO, String role);
 }

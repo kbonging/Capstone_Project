@@ -1,5 +1,6 @@
 package com.webcore.platform.reviewer.dao;
 
+import com.webcore.platform.member.dto.MemberUpdateDTO;
 import com.webcore.platform.reviewer.dto.ReviewerCancelDTO;
 import com.webcore.platform.reviewer.dto.ReviewerChannelDTO;
 import com.webcore.platform.reviewer.dto.ReviewerDTO;
@@ -34,4 +35,10 @@ public interface ReviewerDAO {
 
     // 취소 로그 저장
     int insertCancelReviewer(ReviewerCancelDTO dto);
+
+    /** 리뷰어 프로필 수정 */
+    void updateReviewerProfile(MemberUpdateDTO dto);
+
+    /** 리뷰어 채널 수정 */
+    void upsertReviewerChannel(ReviewerChannelDTO dto);
 }

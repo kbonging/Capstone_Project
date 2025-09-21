@@ -85,6 +85,7 @@
         SELECT count(*) from tb_member where member_email = #{memberEmail};
     </select>
 
+    <!-- 공통 회원 정보 수정 -->
     <update id="updateMember" parameterType="com.webcore.platform.member.dto.MemberUpdateDTO">
         UPDATE tb_member
         SET MEMBER_PHONE = #{memberPhone},
@@ -92,37 +93,5 @@
         MOD_DATE = NOW()
         WHERE MEMBER_IDX = #{memberIdx}
     </update>
-
-    <update id="updateReviewerProfile" parameterType="com.webcore.platform.member.dto.MemberUpdateDTO">
-        UPDATE tb_reviewer_profile
-        SET NICKNAME = #{nickname},
-        GENDER = #{gender},
-        BIRTH_DATE = #{birthDate},
-        ACTIVITY_AREA = #{activityArea},
-        ACTIVITY_TOPIC = #{activityTopic},
-        ZIP_CODE = #{zipCode},
-        ADDRESS = #{address},
-        DETAIL_ADDRESS = #{detailAddress}
-        WHERE MEMBER_IDX = #{memberIdx}
-    </update>
-
-    <update id="updateOwnerProfile" parameterType="com.webcore.platform.member.dto.MemberUpdateDTO">
-        UPDATE tb_owner_profile
-        SET BUSINESS_NAME = #{businessName},
-        BUSINESS_URL = #{businessUrl}
-        WHERE MEMBER_IDX = #{memberIdx}
-    </update>
-
-    <update id="updateReviewerChannel" parameterType="com.webcore.platform.reviewer.dto.ReviewerChannelDTO">
-        UPDATE tb_reviewer_channel
-        SET CHANNEL_URL = #{channelUrl},
-        MOD_DATE = NOW()
-        WHERE REV_CHA_IDX = #{revChaIdx}
-    </update>
-
-    <insert id="insertReviewerChannel" parameterType="com.webcore.platform.reviewer.dto.ReviewerChannelDTO">
-        INSERT INTO tb_reviewer_channel(MEMBER_IDX, INF_TYPE_CODE_ID, CHANNEL_URL, REG_DATE)
-        VALUES (#{memberIdx}, #{infTypeCodeId}, #{channelUrl}, NOW())
-    </insert>
 
 </mapper>

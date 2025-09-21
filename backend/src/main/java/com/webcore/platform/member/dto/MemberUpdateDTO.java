@@ -25,7 +25,7 @@ public class MemberUpdateDTO {
     private String zipCode; // 우편번호
     private String address; // 주소
     private String detailAddress; // 상세주소
-    private List<ReviewerChannelDTO> reviewerChannelDTOList = new ArrayList<>(); // 리뷰어 채널 정보
+    private List<ReviewerChannelDTO> reviewerChannelList = new ArrayList<>(); // 리뷰어 채널 정보
 
     /** 소상공인 */
     private String businessName; // 상호명

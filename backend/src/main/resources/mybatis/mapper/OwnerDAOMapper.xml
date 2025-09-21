@@ -47,4 +47,12 @@
         on mb.MEMBER_IDX=op.MEMBER_IDX
         where mb.member_idx=#{memberIdx};
     </select>
+
+    <!-- 소상공인 프로필 수정 -->
+    <update id="updateOwnerProfile" parameterType="com.webcore.platform.member.dto.MemberUpdateDTO">
+        UPDATE tb_owner_profile
+        SET BUSINESS_NAME = #{businessName},
+        BUSINESS_URL = #{businessUrl}
+        WHERE MEMBER_IDX = #{memberIdx}
+    </update>
 </mapper>

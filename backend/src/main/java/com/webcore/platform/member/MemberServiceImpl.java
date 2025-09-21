@@ -5,7 +5,9 @@ import com.webcore.platform.member.dao.MemberDAO;
 import com.webcore.platform.member.dto.MemberAuthDTO;
 import com.webcore.platform.member.dto.MemberUpdateDTO;
 import com.webcore.platform.owner.OwnerService;
+import com.webcore.platform.owner.dao.OwnerDAO;
 import com.webcore.platform.reviewer.ReviewerService;
+import com.webcore.platform.reviewer.dao.ReviewerDAO;
 import com.webcore.platform.reviewer.dto.ReviewerChannelDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberDAO memberDAO;
+    private final ReviewerDAO reviewerDAO;
+    private final OwnerDAO ownerDAO;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final ReviewerService reviewerService;
@@ -56,6 +60,7 @@ public class MemberServiceImpl implements MemberService {
         return memberDAO.countByMemberEmail(memberEmail) > 0;
     }
 
+    /** 회원 정보 수정 */
     @Transactional
     @Override
     public void updateMember(MemberUpdateDTO memberUpdateDTO, String role) {
@@ -64,20 +69,23 @@ public class MemberServiceImpl implements MemberService {
 
         if ("ROLE_USER".equals(role)) {
             // 리뷰어 프로필
-            memberDAO.updateReviewerProfile(memberUpdateDTO);
+            reviewerDAO.updateReviewerProfile(memberUpdateDTO);
 
             // 리뷰어 채널
-            for (ReviewerChannelDTO ch : memberUpdateDTO.getReviewerChannelDTOList()) {
-                if (ch.getRevChaIdx() > 0) {
-                    memberDAO.updateReviewerChannel(ch);
-                } else {
+            List<ReviewerChannelDTO> channelList = memberUpdateDTO.getReviewerChannelList();
+            log.info("리뷰어 채널 리스트 크기: {}", channelList != null ? channelList.size() : 0);
+
+            if (channelList != null) {
+                for (ReviewerChannelDTO ch : channelList) {
+                    log.info("채널 DTO: memberIdx={}, infTypeCodeId={}, channelUrl={}",
+                            ch.getMemberIdx(), ch.getInfTypeCodeId(), ch.getChannelUrl());
                     ch.setMemberIdx(memberUpdateDTO.getMemberIdx());
-                    memberDAO.insertReviewerChannel(ch);
+                    reviewerDAO.upsertReviewerChannel(ch);
                 }
             }
         } else if ("ROLE_OWNER".equals(role)) {
             // 소상공인 프로필
-            memberDAO.updateOwnerProfile(memberUpdateDTO);
+            ownerDAO.updateOwnerProfile(memberUpdateDTO);
         }
     }
 
