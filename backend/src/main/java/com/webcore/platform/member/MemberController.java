@@ -58,11 +58,14 @@ public class MemberController {
 
     /** 회원 정보 수정 */
     @PutMapping("")
-    public ResponseEntity<String> updateMember(@RequestBody MemberUpdateDTO dto,
+    public ResponseEntity<String> updateMember(@RequestBody MemberUpdateDTO memberUpdateDTO,
                                                @AuthenticationPrincipal CustomUser customUser) {
+
         try {
+            memberUpdateDTO.setMemberIdx(customUser.getMemberDTO().getMemberIdx());
+
             String role = customUser.getAuthorities().iterator().next().getAuthority();
-            memberService.updateMember(dto, role);
+            memberService.updateMember(memberUpdateDTO, role);
             return ResponseEntity.ok("SUCCESS");
         } catch (Exception e) {
             e.printStackTrace();

@@ -90,6 +90,7 @@
         UPDATE tb_member
         SET MEMBER_PHONE = #{memberPhone},
         INTRO = #{intro},
+        MEMBER_EMAIL = #{memberEmail},
         MOD_DATE = NOW()
         WHERE MEMBER_IDX = #{memberIdx}
     </update>
