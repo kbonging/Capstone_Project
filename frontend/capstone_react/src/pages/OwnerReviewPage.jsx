@@ -10,7 +10,7 @@ import CampaignCalendar from "../components/detail/CampaignCalendar";
 import MissionIconsGrid from "../components/detail/MissionIconsGrid";
 import { norm as normChannel, CHANNEL_SPECS } from "../config/channelSpecs";
 import { fmtDate } from "../utils/date";
-import { getCampaignDetail /*, getOwnerReviewList*/ } from "../api/campaigns/api";
+import { getCampaignDetail, getOwnerReviewList } from "../api/campaigns/api"; // ✅ 실제 API 사용
 import { toAbsoluteUrl } from "../utils/url";
 import KakaoMap from "../components/KakaoMap";
 
@@ -129,7 +129,12 @@ export default function OwnerReviewPage() {
 
   // 제출된 리뷰 목록
   const [rows, setRows] = useState([]);
+  const [totalCount, setTotalCount] = useState(0); // ✅ 백엔드 totalCount
   const [listLoading, setListLoading] = useState(false);
+
+  // (옵션) 간단한 페이지/사이즈 상태
+  const [page] = useState(1);
+  const [size] = useState(10);
 
   // 토스트
   const [toastOpen, setToastOpen] = useState(false);
@@ -158,52 +163,43 @@ export default function OwnerReviewPage() {
     return () => { ignore = true; };
   }, [id]);
 
-  /* 리뷰 제출 목록 로드 (API 연결 지점) */
+  /* 리뷰 제출 목록 로드 (실제 API) */
   useEffect(() => {
-    if (!data) return;
+    if (!data?.campaignIdx) return;
     let ignore = false;
     (async () => {
       try {
         setListLoading(true);
-        // const token = localStorage.getItem("token");
-        // const res = await getOwnerReviewList(data.campaignIdx, token);
-        // if (!ignore) setRows(res.list);
+        const resp = await getOwnerReviewList(data.campaignIdx, {
+          page,
+          size,
+          channel: undefined,  // 필요 시 채널코드 전달 (예: "CAMC002")
+          sort: "desc",
+        });
 
-        // --- 데모용 Mock: 실제 API 연동 시 제거 ---
-        const mock = [
-          {
-            id: 1,
-            reviewerName: "리뷰어A",
-            channel: "인스타그램",
-            status: "제출",
-            reviewUrl: "https://insta.example/review/xxx",
-            submittedAt: "2025-09-10 14:22",
-            title: "샐러드가 신선하고 소스가 최고!",
-            excerpt: "야채가 아삭하고 신선했어요. 상큼한 드레싱과의 조합이 좋았고...",
-            images: ["/uploads/reviews/101-1.jpg", "/uploads/reviews/101-2.jpg"],
-            rating: 4.5,
-            likes: 123,
-            views: 2043,
-          },
-          {
-            id: 2,
-            reviewerName: "리뷰어B",
-            channel: "블로그",
-            status: "제출",
-            reviewUrl: "https://blog.example.com/abcd",
-            submittedAt: "2025-09-11 09:12",
-            title: "자세한 후기 정리",
-            excerpt: "구성품/배송/사용기/총평 순서로 정리했습니다...",
-            images: [],
-            rating: 4.0,
-            likes: 45,
-            views: 711,
-          },
-        ];
-        if (!ignore) setRows(mock);
+        // resp = { list: [], totalCount, page, recordCount }
+        if (!ignore) {
+          const mapped = (resp.list || []).map((it) => ({
+            id: it.reviewIdx ?? it.id,
+            reviewerName: it.reviewerName,
+            channel: it.channelName ?? it.channelCode,
+            status: it.status || "제출",
+            reviewUrl: it.reviewUrl,
+            submittedAt: it.submittedAt,
+            title: it.title,     // 백엔드에 없을 수 있음
+            excerpt: it.excerpt, // 백엔드에 없을 수 있음
+            images: Array.isArray(it.images) ? it.images : (it.imageUrl ? [it.imageUrl] : []),
+            rating: typeof it.rating === "number" ? it.rating : undefined,
+            likes: typeof it.likes === "number" ? it.likes : undefined,
+            views: typeof it.views === "number" ? it.views : undefined,
+          }));
+          setRows(mapped);
+          setTotalCount(resp.totalCount ?? mapped.length);
+        }
       } catch (e) {
         if (!ignore) {
           setRows([]);
+          setTotalCount(0);
           setToastMsg("리뷰 목록을 불러오지 못했습니다.");
           setToastOpen(true);
           setTimeout(() => setToastOpen(false), 2500);
@@ -213,7 +209,7 @@ export default function OwnerReviewPage() {
       }
     })();
     return () => { ignore = true; };
-  }, [data]);
+  }, [data, page, size]);
 
   if (loading) {
     return (
@@ -540,7 +536,7 @@ export default function OwnerReviewPage() {
         {/* ===== 제출된 리뷰 목록 (단일 표) ===== */}
         <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="mb-3 text-sm font-semibold text-stone-900 dark:text-zinc-100">
-            제출된 리뷰 ({rows.length})
+            제출된 리뷰 ({totalCount})
           </div>
 
           <div className="overflow-x-auto">
@@ -607,12 +603,12 @@ export default function OwnerReviewPage() {
                               </div>
                             )}
                             <div className="min-w-0">
-                              <div className="truncate font-medium text-stone-900 dark:text-zinc-100">
+                              {/* <div className="truncate font-medium text-stone-900 dark:text-zinc-100">
                                 {r.title || "제목 없음"}
-                              </div>
-                              <div className="line-clamp-2 text-xs text-stone-600 dark:text-zinc-400">
+                              </div> */}
+                              {/* <div className="line-clamp-2 text-xs text-stone-600 dark:text-zinc-400">
                                 {r.excerpt || "요약 없음"}
-                              </div>
+                              </div> */}
                               <div className="mt-1 flex items-center gap-2 text-[11px] text-stone-500 dark:text-zinc-400">
                                 {typeof r.rating === "number" && <span>평점 {r.rating.toFixed(1)} / 5</span>}
                                 {typeof r.likes === "number" && <span>좋아요 {r.likes}</span>}
@@ -620,7 +616,7 @@ export default function OwnerReviewPage() {
                               </div>
                               <button
                                 onClick={() => openPreview(r)}
-                                className="mt-1 inline-flex items-center rounded-md border border-stone-200 px-2 py-1 text-xs text-stone-700 hover:bg-stone-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                                className="mt-3 inline-flex items-center rounded-md border border-stone-200 px-2 py-1 text-xs text-stone-700 hover:bg-stone-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
                               >
                                 자세히 보기
                               </button>
@@ -661,20 +657,20 @@ export default function OwnerReviewPage() {
                 <Gallery images={previewItem.images || []} />
 
                 <div className="min-w-0">
-                  <div className="truncate text-base font-semibold text-stone-900 dark:text-zinc-100">
+                  {/* <div className="truncate text-base font-semibold text-stone-900 dark:text-zinc-100">
                     {previewItem.title || "제목 없음"}
                   </div>
                   <div className="mt-2 whitespace-pre-wrap text-sm leading-6 text-stone-700 dark:text-zinc-300">
                     {previewItem.excerpt || "요약 정보가 없습니다."}
-                  </div>
+                  </div> */}
 
-                  <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-stone-500 dark:text-zinc-400">
-                    <span>리뷰어: <b className="text-stone-700 dark:text-zinc-200">{previewItem.reviewerName}</b></span>
-                    <span>채널: {previewItem.channel}</span>
+                  <div className="mt-3 flex flex-col items-start gap-3 text-[15px] text-stone-500 dark:text-zinc-400">
+                    <span className="">리뷰어: <b className="text-stone-800 dark:text-zinc-200">{previewItem.reviewerName}</b></span>
+                    <span>채널: <b className="text-stone-800 dark:text-zinc-200">{previewItem.channel}</b></span>
                     {typeof previewItem.rating === "number" && <span>평점 {previewItem.rating.toFixed(1)} / 5</span>}
                     {typeof previewItem.likes === "number" && <span>좋아요 {previewItem.likes}</span>}
                     {typeof previewItem.views === "number" && <span>조회수 {previewItem.views}</span>}
-                    {previewItem.submittedAt && <span>제출일 {previewItem.submittedAt}</span>}
+                    {previewItem.submittedAt && <span>제출일<b className="text-stone-800 dark:text-zinc-200"> {previewItem.submittedAt}</b></span>}
                   </div>
 
                   <div className="mt-4 flex items-center gap-2">

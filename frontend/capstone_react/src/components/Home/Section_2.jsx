@@ -14,10 +14,7 @@ import { toAbsoluteUrl } from "../../utils/url";
 /* ===== 공용: 가운데 정렬 래퍼 ===== */
 function CenterWrap({ max = 880, className = "", children }) {
   return (
-    <div
-      className={`mx-auto w-full px-3 sm:px-4`}
-      style={{ maxWidth: `${max}px` }}
-    >
+    <div className="mx-auto w-full px-3 sm:px-4" style={{ maxWidth: `${max}px` }}>
       <div className={className}>{children}</div>
     </div>
   );
@@ -26,26 +23,40 @@ function CenterWrap({ max = 880, className = "", children }) {
 /* ===== 화면 열 수 ( Row 전용) ===== */
 function useColumns() {
   const [cols, setCols] = useState(1);
+
   useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+      setCols(1);
+      return;
+    }
     const sm = matchMedia("(min-width:640px)");
     const lg = matchMedia("(min-width:1024px)");
     const xl = matchMedia("(min-width:1280px)");
+
     const calc = () => {
       if (xl.matches) return setCols(4);
       if (lg.matches) return setCols(3);
       if (sm.matches) return setCols(2);
       setCols(1);
     };
+
     calc();
-    sm.addEventListener("change", calc);
-    lg.addEventListener("change", calc);
-    xl.addEventListener("change", calc);
+
+    const onSM = () => calc();
+    const onLG = () => calc();
+    const onXL = () => calc();
+
+    sm.addEventListener?.("change", onSM);
+    lg.addEventListener?.("change", onLG);
+    xl.addEventListener?.("change", onXL);
+
     return () => {
-      sm.removeEventListener("change", calc);
-      lg.removeEventListener("change", calc);
-      xl.removeEventListener("change", calc);
+      sm.removeEventListener?.("change", onSM);
+      lg.removeEventListener?.("change", onLG);
+      xl.removeEventListener?.("change", onXL);
     };
   }, []);
+
   return cols;
 }
 
@@ -57,6 +68,7 @@ const chunk = (arr, size) => {
 
 /* ===== Ribbon Header ===== */
 function RibbonHeader({
+  title = "",
   subtitle = "체험하고 리뷰 쓰면 혜택이 팡팡!",
   logoUrl = mainLogo,
 }) {
@@ -66,25 +78,33 @@ function RibbonHeader({
         <div className="flex items-center gap-3 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-2xl font-extrabold tracking-tight text-gray-700 dark:text-zinc-100 whitespace-nowrap">
-              <img
-                src={logoUrl}
-                alt="Revory logo"
-                className="h-8"
-                loading="lazy"
-              />
+              <img src={logoUrl} alt="Revory logo" className="h-8" loading="lazy" />
             </span>
+            {/* {title && (
+              <span className="text-xl font-bold text-gray-800 dark:text-zinc-100 hidden sm:inline">
+                {title}
+              </span>
+            )} */}
           </div>
-          <span className="text-gray-400 select-none">|</span>
-          <p className="text-sm text-gray-600 dark:text-zinc-300 truncate">
-            {subtitle}
-          </p>
+          <span className="text-gray-400 dark:text-zinc-600 select-none">|</span>
+          <p className="text-sm text-gray-600 dark:text-zinc-300 truncate">{subtitle}</p>
         </div>
+
+        {/* 예시: 우측 더보기 아이콘(필요 없으면 제거) */}
+        <button
+          onClick={() => (window.location.href = "/campaigns")}
+          type="button"
+          className="hidden sm:inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-sm text-stone-600 dark:text-zinc-300 hover:bg-stone-100 dark:hover:bg-zinc-800 transition"
+          aria-label="더보기"
+        >
+          <FiMoreHorizontal />
+          더보기
+        </button>
       </div>
     </CenterWrap>
   );
 }
 
-/* ===== Row ===== */
 /* ===== Row ===== */
 function Row({ items, gapPx = 24 }) {
   const ref = useRef(null);
@@ -93,7 +113,7 @@ function Row({ items, gapPx = 24 }) {
   const cols = useColumns();
 
   useEffect(() => {
-    if (!ref.current) return;
+    if (!ref.current || typeof ResizeObserver === "undefined") return;
     const ro = new ResizeObserver(([e]) => setRowW(e.contentRect.width));
     ro.observe(ref.current);
     return () => ro.disconnect();
@@ -131,7 +151,7 @@ function Row({ items, gapPx = 24 }) {
           if (isActive) {
             w = BASE + EXPAND; // 활성 카드 확장
           } else {
-            w = BASE - Math.floor(EXPAND / others); // 나머지(실제+플레이스홀더) 카드 축소
+            w = BASE - Math.floor(EXPAND / others); // 나머지 카드 축소
           }
         }
 
@@ -147,8 +167,7 @@ function Row({ items, gapPx = 24 }) {
             onBlur={() => setActiveIdx(null)}
             className={[
               "flex-none min-w-0 transition-all duration-300 ease-out h-[360px] overflow-hidden",
-              // placeholder는 자리만 차지(투명/클릭불가)
-              isPlaceholder ? "opacity-0 pointer-events-none" : ""
+              isPlaceholder ? "opacity-0 pointer-events-none" : "",
             ].join(" ")}
             style={{ width: `${Math.round(w)}px` }}
             aria-hidden={isPlaceholder ? true : undefined}
@@ -167,71 +186,12 @@ function Row({ items, gapPx = 24 }) {
   );
 }
 
-
-
-
-/* ===== 탭 바 ===== */
-function TopTabBar({ tabs, active, onChange, layout = "spread" }) {
-  const alignCls =
-    layout === "left"
-      ? "justify-start"
-      : layout === "center"
-      ? "justify-center"
-      : "justify-center";
-
-  return (
-    <CenterWrap max={1150}>
-      <div className={`flex ${alignCls} w-full border-t-2 border-b-2 `}>
-        <div
-          className={
-            layout === "spread"
-              ? "flex w-full"
-              : `flex ${
-                  layout === "left" ? "justify-start" : "justify-center"
-                } gap-4`
-          }
-        >
-          {tabs.map((t, i) => {
-            const isActive = active === i;
-            return (
-              <button
-                key={t.key}
-                onClick={() => onChange(i)}
-                className={[
-                  layout === "spread" ? "flex-1" : "flex-none",
-                  "relative px-3 py-2.5 text-sm font-semibold text-center transition-colors",
-                  isActive
-                    ? "text-blue-500 dark:text-zinc-100"
-                    : "text-stone-500 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-zinc-100",
-                ].join(" ")}
-              >
-                <span className="inline-block">{t.label}</span>
-                <span
-                  className={[
-                    "pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-0 h-10 rounded-md transition-all duration-200",
-                    isActive
-                      ? "w-full dark:bg-zinc-100 opacity-60"
-                      : "w-0 bg-transparent",
-                  ].join(" ")}
-                  aria-hidden
-                />
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      
-    </CenterWrap>
-  );
-}
-
 /* ===== 줌 카드 & 그리드 ===== */
 function ZoomCard({ data }) {
   return (
     <a
       href={`/campaign/${data.campaignIdx}`}
-      className="group block rounded-xl overflow-hidden bg-white dark:bg-zinc-700 border border-stone-200 dark:border-zinc-700 shadow-sm hover:shadow-lg transition"
+      className="group block rounded-xl overflow-hidden bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 shadow-sm hover:shadow-lg transition"
     >
       <div className="relative h-56 w-full overflow-hidden">
         <img
@@ -263,11 +223,11 @@ function ZoomCard({ data }) {
 function ZoomCardGrid({ items }) {
   if (!items?.length) {
     return (
-      <div className="py-10 text-center text-stone-500">
+      <div className="py-10 text-center text-stone-500 dark:text-zinc-400">
         조건에 맞는 결과가 없어요.
       </div>
     );
-  }
+    }
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
       {items.map((it) => (
@@ -292,14 +252,73 @@ function CategoryChips({ value, onChange }) {
               className={[
                 "px-3 py-1.5 rounded-full text-sm border transition-colors",
                 active
-                  ? "bg-stone-900 text-white border-stone-900"
-                  : "bg-white text-stone-700 border-stone-200 hover:bg-stone-100 dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700",
+                  ? "bg-stone-900 text-white border-stone-900 dark:bg-zinc-100 dark:text-zinc-900 dark:border-zinc-100"
+                  : "bg-white text-stone-700 border-stone-200 hover:bg-stone-100 dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700 dark:hover:bg-zinc-700",
               ].join(" ")}
             >
               {c}
             </button>
           );
         })}
+      </div>
+    </CenterWrap>
+  );
+}
+
+/* ===== 탭 바 ===== */
+function TopTabBar({ tabs, active, onChange, layout = "spread" }) {
+  const alignCls =
+    layout === "left"
+      ? "justify-start"
+      : layout === "center"
+      ? "justify-center"
+      : "justify-center";
+
+  return (
+    <CenterWrap max={1150}>
+      <div className="flex w-full">
+        <div
+          className={[
+            "w-full border-y",
+            "border-stone-200 dark:border-zinc-800",
+          ].join(" ")}
+        >
+          <div
+            className={
+              layout === "spread"
+                ? "flex w-full"
+                : `flex ${layout === "left" ? "justify-start" : "justify-center"} gap-4`
+            }
+          >
+            {tabs.map((t, i) => {
+              const isActive = active === i;
+              return (
+                <button
+                  key={t.key}
+                  onClick={() => onChange(i)}
+                  className={[
+                    layout === "spread" ? "flex-1" : "flex-none",
+                    "relative px-3 py-2.5 text-sm font-semibold text-center transition-colors",
+                    isActive
+                      ? "text-blue-600 dark:text-zinc-100"
+                      : "text-stone-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-zinc-100",
+                  ].join(" ")}
+                >
+                  <span className="inline-block">{t.label}</span>
+                  <span
+                    className={[
+                      "pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-0 h-[2px] rounded-md transition-all duration-200",
+                      isActive
+                        ? "w-full bg-blue-600 dark:bg-zinc-100"
+                        : "w-0 bg-transparent",
+                    ].join(" ")}
+                    aria-hidden
+                  />
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </CenterWrap>
   );
@@ -421,12 +440,14 @@ export default function Section_2() {
     if (!store[key].items?.length) {
       fetchTab({ which: key, append: false });
     }
-  }, [tab]); // eslint-disable-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
 
   useEffect(() => {
     if (activeTab.key !== "popular") return;
     fetchTab({ which: "popular", append: false, override: { page: 1 } });
-  }, [cat]); // eslint-disable-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cat]);
 
   const MAX_ROWS = 3;
   const COLS_DESKTOP = 4;
@@ -451,7 +472,9 @@ export default function Section_2() {
   let content = null;
   if (state.loading && !items.length) {
     content = (
-      <div className="py-16 text-center text-stone-500">불러오는 중…</div>
+      <div className="py-16 text-center text-stone-500 dark:text-zinc-400">
+        불러오는 중…
+      </div>
     );
   } else if (state.error && !items.length) {
     content = (
@@ -461,10 +484,7 @@ export default function Section_2() {
     content = (
       <>
         <CategoryChips value={cat} onChange={setCat} />
-        <div
-          className="mx-auto w-full px-3 sm:px-4 mt-4"
-          style={{ maxWidth: "1180px" }}
-        >
+        <div className="mx-auto w-full px-3 sm:px-4 mt-4" style={{ maxWidth: "1180px" }}>
           <ZoomCardGrid items={items.slice(0, LIMIT)} />
           {canMore && (
             <div className="mt-4 flex justify-end">
@@ -476,10 +496,7 @@ export default function Section_2() {
     );
   } else if (key === "deadline") {
     content = (
-      <div
-        className="mx-auto w-full px-3 sm:px-4 mt-4"
-        style={{ maxWidth: "1180px" }}
-      >
+      <div className="mx-auto w-full px-3 sm:px-4 mt-4" style={{ maxWidth: "1180px" }}>
         <ZoomCardGrid items={items.slice(0, LIMIT)} />
         {canMore && (
           <div className="mt-4 flex justify-end">
@@ -491,10 +508,7 @@ export default function Section_2() {
   } else {
     const visibleRows = rows.slice(0, MAX_ROWS);
     content = (
-      <div
-        className="mx-auto w-full px-3 sm:px-4 mt-4"
-        style={{ maxWidth: "1180px" }}
-      >
+      <div className="mx-auto w-full px-3 sm:px-4 mt-4" style={{ maxWidth: "1180px" }}>
         <div className="space-y-6">
           {visibleRows.map((r, i) => (
             <Row key={i} items={r} />
@@ -511,7 +525,7 @@ export default function Section_2() {
 
   return (
     <section className="mt-8 space-y-3">
-      <RibbonHeader title="Revory"  />
+      <RibbonHeader title="Revory" />
       <TopTabBar tabs={tabs} active={tab} onChange={setTab} layout="spread" />
       {content}
     </section>
