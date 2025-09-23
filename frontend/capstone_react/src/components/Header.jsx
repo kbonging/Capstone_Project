@@ -75,18 +75,24 @@ export default function Header() {
               value={searchKeyword} // 🔹 URL 쿼리와 동기화된 상태 사용
               onChange={(e) => setSearchKeyword(e.target.value)}
               onKeyDown={handleKeyPress}
-              className="w-full pl-10 pr-4 py-2 rounded-full border border-zinc-300 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2 rounded-full border border-zinc-300 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
             />
-          </div>
+          </div> 
         </div>
 
         {/* 이하 기존 코드 그대로 */}
         <div className="hidden md:flex items-center space-x-6">
           <nav className="flex items-center space-x-6 font-medium mr-8">
-            <Link to="/campaigns" className="text-[16px] cursor-pointer text-gray-600 hover:text-gray-500">
+            <Link
+              to="/campaigns"
+              className="text-[16px] cursor-pointer text-gray-600 hover:text-gray-500 dark:text-white"
+            >
               체험단검색
             </Link>
-            <Link to="/community" className="text-[16px] cursor-pointer text-gray-600 hover:text-gray-500">
+            <Link
+              to="/community"
+              className="text-[16px] cursor-pointer text-gray-600 hover:text-gray-500 dark:text-white"
+            >
               커뮤니티
             </Link>
           </nav>
@@ -132,31 +138,86 @@ export default function Header() {
               </Link>
             )}
           </div>
-
         </div>
 
-        <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 hover:text-zinc-600 dark:hover:text-zinc-300" aria-label="메뉴 열기/닫기">
-          <i className={`fa-solid ${menuOpen ? "fa-xmark" : "fa-bars"} text-xl`}></i>
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden p-2 hover:text-zinc-600 dark:hover:text-zinc-300"
+          aria-label="메뉴 열기/닫기"
+        >
+          <i
+            className={`fa-solid ${menuOpen ? "fa-xmark" : "fa-bars"} text-xl`}
+          ></i>
         </button>
       </div>
 
       {menuOpen && (
         <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/80 px-4 py-3 space-y-2 text-zinc-900 dark:text-zinc-100 backdrop-blur">
-          <Link to="/campaigns" className="block hover:text-zinc-600 dark:hover:text-zinc-300" onClick={() => setMenuOpen(false)}>체험단검색</Link>
-          <Link to="/community" className="block hover:text-zinc-600 dark:hover:text-zinc-300" onClick={() => setMenuOpen(false)}>커뮤니티</Link>
-          <Link to="/support" className="block hover:text-zinc-600 dark:hover:text-zinc-300" onClick={() => setMenuOpen(false)}>1대1문의</Link>
-          <Link to="/events" className="block hover:text-zinc-600 dark:hover:text-zinc-300" onClick={() => setMenuOpen(false)}>공지/이벤트</Link>
+          <Link
+            to="/campaigns"
+            className="block hover:text-zinc-600 dark:hover:text-zinc-300"
+            onClick={() => setMenuOpen(false)}
+          >
+            체험단검색
+          </Link>
+          <Link
+            to="/community"
+            className="block hover:text-zinc-600 dark:hover:text-zinc-300"
+            onClick={() => setMenuOpen(false)}
+          >
+            커뮤니티
+          </Link>
+          <Link
+            to="/support"
+            className="block hover:text-zinc-600 dark:hover:text-zinc-300"
+            onClick={() => setMenuOpen(false)}
+          >
+            1대1문의
+          </Link>
+          <Link
+            to="/events"
+            className="block hover:text-zinc-600 dark:hover:text-zinc-300"
+            onClick={() => setMenuOpen(false)}
+          >
+            공지/이벤트
+          </Link>
           <hr className="my-2 border-zinc-200 dark:border-zinc-800" />
 
           {user ? (
             <>
-              <Link to="/mypage" className="block hover:text-zinc-600 dark:hover:text-zinc-300" onClick={() => setMenuOpen(false)}>{user.memberName}</Link>
-              <button onClick={() => { logout(); setMenuOpen(false); }} className="block w-full text-left hover:text-zinc-600 dark:hover:text-zinc-300">로그아웃</button>
+              <Link
+                to="/mypage"
+                className="block hover:text-zinc-600 dark:hover:text-zinc-300"
+                onClick={() => setMenuOpen(false)}
+              >
+                {user.memberName}
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  setMenuOpen(false);
+                }}
+                className="block w-full text-left hover:text-zinc-600 dark:hover:text-zinc-300"
+              >
+                로그아웃
+              </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="block hover:text-zinc-600 dark:hover:text-zinc-300" onClick={() => setMenuOpen(false)}>로그인</Link>
-              <Link to="/signup" className="block hover:text-zinc-600 dark:hover:text-zinc-300" onClick={() => setMenuOpen(false)}>회원가입</Link>
+              <Link
+                to="/login"
+                className="block hover:text-zinc-600 dark:hover:text-zinc-300"
+                onClick={() => setMenuOpen(false)}
+              >
+                로그인
+              </Link>
+              <Link
+                to="/signup"
+                className="block hover:text-zinc-600 dark:hover:text-zinc-300"
+                onClick={() => setMenuOpen(false)}
+              >
+                회원가입
+              </Link>
             </>
           )}
         </div>
