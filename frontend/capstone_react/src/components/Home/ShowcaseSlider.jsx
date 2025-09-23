@@ -1,30 +1,39 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
- const SLIDES = [
+/** ─────────────────────────────────────────────────────────
+ * 슬라이드 데이터 (라이트/다크 배경색 분리)
+ * ───────────────────────────────────────────────────────── */
+const SLIDES = [
   {
     id: 101,
     tag: "Revory 체험단 × 배송형",
     title: ["한입 가득 신선함", "제철 과일 선물세트"],
     cta: { label: "자세히 보기", href: "/campaign/101" },
-    image: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1600&auto=format&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1600&auto=format&fit=crop",
     bgLeft: "#FFF6E5",
+    bgLeftDark: "#2a2419",
   },
   {
     id: 102,
     tag: "Revory 체험단 × 방문형",
     title: ["수제 버거 맛집", "신메뉴 ‘더블치즈’ 런칭"],
     cta: { label: "코스 보기", href: "/campaign/102" },
-    image: "https://images.unsplash.com/photo-1550317138-10000687a72b?q=80&w=1600&auto=format&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1550317138-10000687a72b?q=80&w=1600&auto=format&fit=crop",
     bgLeft: "#F7E57A",
+    bgLeftDark: "#3a381d",
   },
   {
     id: 103,
     tag: "Revory 체험단 × 콘텐츠형",
     title: ["홈트 브랜드 협업", "운동 루틴 영상 리뷰"],
     cta: { label: "지도 열기", href: "/campaign/103" },
-    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1600&auto=format&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1600&auto=format&fit=crop",
     bgLeft: "#E8F8FF",
+    bgLeftDark: "#18252a",
   },
 ];
 
@@ -36,6 +45,46 @@ const GAP_PX = 12;
 export default function ShowcaseHero() {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
+
+  // 다크모드 감지 (html.dark 또는 prefers-color-scheme)
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const root = document.documentElement;
+    const mql = window.matchMedia?.("(prefers-color-scheme: dark)");
+    return root.classList.contains("dark") || (!!mql && mql.matches);
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const mql = window.matchMedia?.("(prefers-color-scheme: dark)");
+
+    const handleMedia = (e) => {
+      // OS 테마 변경 시 html에 .dark가 없다면 미디어쿼리 따름
+      if (!root.classList.contains("dark") && !root.classList.contains("light")) {
+        setIsDark(e.matches);
+      }
+    };
+
+    const obs = new MutationObserver(() => {
+      setIsDark(root.classList.contains("dark"));
+    });
+    obs.observe(root, { attributes: true, attributeFilter: ["class"] });
+
+    if (mql && mql.addEventListener) {
+      mql.addEventListener("change", handleMedia);
+    } else if (mql && mql.addListener) {
+      mql.addListener(handleMedia);
+    }
+
+    return () => {
+      obs.disconnect();
+      if (mql && mql.removeEventListener) {
+        mql.removeEventListener("change", handleMedia);
+      } else if (mql && mql.removeListener) {
+        mql.removeListener(handleMedia);
+      }
+    };
+  }, []);
 
   const total = SLIDES.length;
   const current = SLIDES[index];
@@ -54,7 +103,6 @@ export default function ShowcaseHero() {
 
   const go = (dir) => {
     setIndex((i) => (i + dir + total) % total);
-    // 다음 슬라이드로 전환하면 진행바 타이머도 즉시 리셋
     startedAtRef.current = performance.now();
     if (barRef.current) barRef.current.style.width = "0%";
   };
@@ -68,19 +116,14 @@ export default function ShowcaseHero() {
       const elapsed = t - startedAtRef.current;
 
       if (playing) {
-        // 리렌더 없이 width만 업데이트 → 끊김 최소화
         const p = Math.min(1, elapsed / DURATION);
         if (barRef.current) {
-          // transition 없이 직접 너비만 세팅 (GPU-friendly)
           barRef.current.style.width = (p * 100).toFixed(4) + "%";
         }
         if (p >= 1) {
-          // 호버 여부와 상관없이 전환
           go(1);
-          // go(1)에서 startedAtRef 갱신됨
         }
       } else {
-        // 일시정지 시 시작 기준점을 밀어, 멈춘 지점 유지
         startedAtRef.current += t - last;
       }
 
@@ -128,19 +171,41 @@ export default function ShowcaseHero() {
     };
   }, []);
 
+  // 진행바 색상 (다크/라이트 대비)
+  const barColorClass = isDark ? "bg-white" : "bg-black";
+  const barTrackClass = isDark ? "bg-white/20" : "bg-black/10";
+  const textPrimary = isDark ? "text-zinc-100" : "text-zinc-900";
+  const textSecondary = isDark ? "text-zinc-300" : "text-zinc-700";
+  const pillBg = isDark ? "bg-zinc-100 text-zinc-900" : "bg-black text-white";
+  const cardBg = isDark ? "bg-gray-800" : "bg-white";
+  const ctrlBtnHover = isDark ? "hover:bg-white/10" : "hover:bg-black/5";
+  const borderColor = isDark ? "border-zinc-200" : "border-zinc-900";
+  const ctaHover =
+    "transition " +
+    (isDark
+      ? "hover:bg-zinc-100 hover:text-zinc-900"
+      : "hover:bg-zinc-900 hover:text-white");
+
   return (
-    <section className="w-full relative overflow-visible bg-transparent" aria-label="쇼케이스">
-      {/* 왼쪽 컬러 배경 */}
+    <section
+      className="w-full relative overflow-visible bg-transparent"
+      aria-label="쇼케이스"
+    >
+      {/* 왼쪽 컬러 배경 (다크/라이트 색상 분기) */}
       <div
         className="absolute inset-y-0 left-0 w-full md:w-7/12 -z-10"
-        style={{ backgroundColor: current.bgLeft }}
+        style={{ backgroundColor: isDark ? current.bgLeftDark : current.bgLeft }}
       />
 
-      <div className="mx-auto px-36 h-screen">
-        <div className="relative rounded-3xl ring-black/5 overflow-visible bg-white">
+      <div className="mx-auto px-36 h-auto mt-auto pt-20">
+        <div
+          className={`relative rounded-3xl ring-black/5 overflow-visible ${cardBg}`}
+        >
           <div className="grid grid-cols-12 gap-0 items-stretch">
             {/* LEFT */}
-            <div className="col-span-12 md:col-span-6 p-8 md:p-14 flex flex-col justify-between bg-white">
+            <div
+              className={`col-span-12 md:col-span-6 p-8 md:p-14 flex flex-col justify-between ${cardBg}`}
+            >
               <div className="overflow-hidden">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
@@ -154,10 +219,14 @@ export default function ShowcaseHero() {
                       transition: { duration: 0.6, ease: EASE },
                     }}
                   >
-                    <span className="inline-block text-xs md:text-sm px-3 py-2 rounded-full bg-black text-white">
+                    <span
+                      className={`inline-block text-xs md:text-sm px-3 py-2 rounded-full ${pillBg}`}
+                    >
                       {current.tag}
                     </span>
-                    <h2 className="mt-6 text-4xl md:text-6xl font-semibold leading-tight text-zinc-900">
+                    <h2
+                      className={`mt-6 text-4xl md:text-6xl font-semibold leading-tight ${textPrimary}`}
+                    >
                       {current.title.map((t, i) => (
                         <span key={i} className="block">
                           {t}
@@ -166,10 +235,15 @@ export default function ShowcaseHero() {
                     </h2>
                     <a
                       href={current.cta.href}
-                      className="mt-8 inline-flex items-center gap-2 px-4 py-2 rounded-full border border-zinc-900 text-zinc-900 hover:bg-zinc-900 hover:text-white transition"
+                      className={`mt-8 inline-flex items-center gap-2 px-4 py-2 rounded-full border ${borderColor} ${textPrimary} ${ctaHover}`}
                     >
                       {current.cta.label}
-                      <svg width="16" height="16" viewBox="0 0 24 24" className="-mr-1">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        className="-mr-1"
+                      >
                         <path
                           d="M7 17L17 7M17 7H9M17 7v8"
                           stroke="currentColor"
@@ -187,27 +261,28 @@ export default function ShowcaseHero() {
               <div className="mt-10 w-full">
                 <div className="w-[420px] max-w-full">
                   <div
-                    className="relative h-1.5 bg-black/10 rounded-full overflow-hidden"
+                    className={`relative h-1.5 ${barTrackClass} rounded-full overflow-hidden`}
                     aria-hidden
                   >
                     <div
                       ref={barRef}
-                      className="absolute inset-y-0 left-0 bg-black rounded-full"
-                      style={{
-                        width: "0%",
-                        // transition 제거: JS로 직접 width를 매 프레임 갱신하므로 부드러움 ↑
-                      }}
+                      className={`absolute inset-y-0 left-0 ${barColorClass} rounded-full`}
+                      style={{ width: "0%" }}
                     />
                   </div>
-                  <div className="mt-3 flex items-center gap-4 text-sm text-zinc-800 select-none">
+                  <div
+                    className={`mt-3 flex items-center gap-4 text-sm ${textSecondary} select-none`}
+                  >
                     <span className="tabular-nums">{pageText}</span>
-                    <span className="opacity-60">/ {String(total).padStart(2, "0")}</span>
+                    <span className="opacity-60">
+                      / {String(total).padStart(2, "0")}
+                    </span>
                     <button
                       onClick={() => {
-                        setPlaying(false); // 수동 탐색 시 자동재생 잠깐 멈춤(원하면 유지해도 됨)
+                        setPlaying(false);
                         go(-1);
                       }}
-                      className="ml-4 p-2 hover:bg-black/5 rounded-full"
+                      className={`ml-4 p-2 rounded-full ${ctrlBtnHover}`}
                       aria-label="이전"
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24">
@@ -222,12 +297,18 @@ export default function ShowcaseHero() {
                     </button>
                     <button
                       onClick={() => setPlaying((p) => !p)}
-                      className="p-2 hover:bg-black/5 rounded-full"
+                      className={`p-2 rounded-full ${ctrlBtnHover}`}
                       aria-label="재생/일시정지"
                     >
                       {playing ? (
                         <svg width="18" height="18" viewBox="0 0 24 24">
-                          <path d="M10 6v12M14 6v12" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+                          <path
+                            d="M10 6v12M14 6v12"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            fill="none"
+                            strokeLinecap="round"
+                          />
                         </svg>
                       ) : (
                         <svg width="18" height="18" viewBox="0 0 24 24">
@@ -240,7 +321,7 @@ export default function ShowcaseHero() {
                         setPlaying(false);
                         go(1);
                       }}
-                      className="p-2 hover:bg-black/5 rounded-full"
+                      className={`p-2 rounded-full ${ctrlBtnHover}`}
                       aria-label="다음"
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24">
@@ -265,7 +346,7 @@ export default function ShowcaseHero() {
                 ref={cardAnchorRef}
                 className="absolute inset-x-0 top-0 bottom-0 translate-y-6 md:translate-y-8 z-10"
               >
-                <div className="relative h-full rounded-2xl overflow-hidden shadow-[0_18px_50px_rgba(0,0,0,0.22)] bg-white">
+                <div className="relative h-full rounded-2xl overflow-hidden shadow-[0_18px_50px_rgba(0,0,0,0.22)] bg-white dark:bg-zinc-800">
                   <AnimatePresence mode="wait" initial={false}>
                     {/* NEXT: 오른쪽에서 확장 */}
                     <motion.img
@@ -317,7 +398,7 @@ export default function ShowcaseHero() {
       >
         {/* 카드와의 얇은 갭 */}
         <div
-          className="absolute inset-y-0 bg-white/80"
+          className="absolute inset-y-0 bg-white/80 dark:bg-zinc-900/80"
           style={{ left: `-${GAP_PX}px`, width: `${GAP_PX}px` }}
         />
         {/* 다음 이미지 미리보기 */}

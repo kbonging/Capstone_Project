@@ -9,7 +9,7 @@ export default function MyPageLayout({ userRole, children }) {
         <Sidebar userRole={userRole} />
 
         {/* Content */}
-        <main className="flex-1 px-10 py-10">
+        <main className="flex-1 px-10 py-10 dark:bg-gray-950">
           {children}
         </main>
       </div>

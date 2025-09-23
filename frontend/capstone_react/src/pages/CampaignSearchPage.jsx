@@ -93,13 +93,13 @@ export default function CampaignSearchPage() {
     setParams((prev) => ({ ...prev, ...updates }));
   };
 
-  // 🔹 URL query와 params 동기화 (검색 등)
+  // URL query -> params 동기화
   useEffect(() => {
     const keyword = query.get("benefitSearch") || "";
     setParams((prev) => ({ ...prev, benefitSearch: keyword, page: 1 }));
-  }, [location.search]);
+  }, [location.search]); // eslint-disable-line
 
-  // 🔹 캠페인 리스트 fetch
+  // 캠페인 리스트 fetch
   useEffect(() => {
     const fetchCampaigns = async () => {
       setLoading(true);
@@ -137,7 +137,6 @@ export default function CampaignSearchPage() {
     fetchCampaigns();
   }, [params]);
 
-  // 🔹 초기화 버튼 클릭 시 모든 필터 + 검색어 + URL 초기화
   const handleReset = () => {
     setSelectedRegion(null);
     setParams({
@@ -149,8 +148,19 @@ export default function CampaignSearchPage() {
       page: 1,
       benefitSearch: "",
     });
-    navigate("/campaigns", { replace: true }); // URL 초기화
+    navigate("/campaigns", { replace: true });
   };
+
+  // 공통 버튼 클래스
+  const buttonBase =
+    "flex items-center justify-center py-1.5 px-2.5 text-xs rounded-lg cursor-pointer font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-0 focus-visible:ring-blue-500";
+  const buttonPassive =
+    "bg-gray-200 text-gray-700 border border-gray-300 hover:bg-gray-300 dark:bg-zinc-700 dark:text-zinc-300 dark:border-zinc-600 dark:hover:bg-zinc-600";
+  const buttonActive =
+    "bg-blue-600 text-white border-blue-600 hover:bg-blue-700";
+
+  const selectBase =
+    "border rounded-full px-3 py-1.5 text-sm pr-6 bg-white dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 text-gray-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500";
 
   return (
     <div className="w-full flex justify-center mb-48">
@@ -158,18 +168,20 @@ export default function CampaignSearchPage() {
 
         {/* 지역 */}
         <div className="flex mt-4 gap-4 w-full">
-          <div>
-            <h1 className="pl-2 mt-4 text-2xl font-semibold">지역</h1>
+          <div className="shrink-0">
+            <h1 className="pl-2 mt-4 text-2xl font-semibold text-gray-900 dark:text-zinc-100">지역</h1>
             <button
               onClick={handleReset}
-              className="mt-2 ml-3 px-3 py-1.5 text-sm font-medium rounded-full bg-red-500 text-white hover:bg-red-600 transition"
+              className="mt-2 ml-2 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-gray-500 text-white hover:bg-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-0 focus-visible:ring-red-500"
+              title="필터 초기화"
             >
-              <FaRedoAlt className="w-4 h-4" />
+              <FaRedoAlt className="w-3.5 h-3.5" />
+              
             </button>
           </div>
 
-          <div className="flex-1 border p-4">
-            <div className="grid grid-cols-9 gap-2">
+          <div className="flex-1 border border-gray-200 dark:border-zinc-700 rounded-xl p-4 bg-white dark:bg-zinc-900">
+            <div className="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-9 gap-2">
               {regions.map((region) => (
                 <button
                   key={region.name}
@@ -179,14 +191,14 @@ export default function CampaignSearchPage() {
                       updateParams({ region: "", page: 1 });
                     } else {
                       setSelectedRegion(region);
-                      updateParams({ region: region.name, page: 1 });
+                      // 상단 지역만 선택한 상태로 우선 설정
+                      updateParams({ region: region.name === "재택" ? "재택" : region.name, page: 1 });
                     }
                   }}
-                  className={`flex items-center justify-center py-1.5 px-2.5 text-xs rounded-lg cursor-pointer font-semibold ${
-                    selectedRegion === region
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-gray-200 text-gray-700 dark:bg-zinc-700 dark:text-zinc-300 border border-gray-300 dark:border-zinc-600"
-                  }`}
+                  className={[
+                    buttonBase,
+                    selectedRegion === region ? buttonActive : buttonPassive,
+                  ].join(" ")}
                 >
                   {region.name}
                 </button>
@@ -194,18 +206,15 @@ export default function CampaignSearchPage() {
             </div>
 
             {selectedRegion && selectedRegion.name !== "재택" && (
-              <div className="mt-3 border-t pt-2 grid grid-cols-6 gap-2">
+              <div className="mt-3 pt-3 border-t border-gray-200 dark:border-zinc-700 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                 {selectedRegion.guguns.map((gugun) => {
                   const fullRegion = `${selectedRegion.name} ${gugun}`;
+                  const isActive = params.region === fullRegion;
                   return (
                     <button
                       key={gugun}
                       onClick={() => updateParams({ region: fullRegion, page: 1 })}
-                      className={`flex items-center justify-center py-1.5 px-2 text-xs rounded-lg cursor-pointer font-medium ${
-                        params.region === fullRegion
-                          ? "bg-blue-600 text-white border-blue-600"
-                          : "bg-gray-200 text-gray-700 dark:bg-zinc-700 dark:text-zinc-300 border border-gray-300 dark:border-zinc-600"
-                      }`}
+                      className={[buttonBase, isActive ? buttonActive : buttonPassive].join(" ")}
                     >
                       {gugun}
                     </button>
@@ -217,39 +226,79 @@ export default function CampaignSearchPage() {
         </div>
 
         {/* 셀렉트박스 */}
-        <div className="flex justify-end flex-wrap gap-4 items-center">
-          <select value={params.campaignType} onChange={(e) => updateParams({ campaignType: e.target.value, page: 1 })} className="border rounded-full px-2 py-1 text-sm pr-6">
-            {campaignTypes.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+        <div className="flex justify-end flex-wrap gap-3 items-center">
+          <select
+            value={params.campaignType}
+            onChange={(e) => updateParams({ campaignType: e.target.value, page: 1 })}
+            className={selectBase}
+            aria-label="캠페인 유형"
+          >
+            {campaignTypes.map((t) => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
           </select>
 
-          <select value={params.categoryCode} onChange={(e) => updateParams({ categoryCode: e.target.value, page: 1 })} className="border rounded-full px-2 py-1 text-sm pr-6">
-            {categories.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+          <select
+            value={params.categoryCode}
+            onChange={(e) => updateParams({ categoryCode: e.target.value, page: 1 })}
+            className={selectBase}
+            aria-label="카테고리"
+          >
+            {categories.map((c) => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
           </select>
 
-          <select value={params.channelCode} onChange={(e) => updateParams({ channelCode: e.target.value, page: 1 })} className="border rounded-full px-2 py-1 text-sm pr-6">
-            {channels.map((ch) => <option key={ch.value} value={ch.value}>{ch.label}</option>)}
+          <select
+            value={params.channelCode}
+            onChange={(e) => updateParams({ channelCode: e.target.value, page: 1 })}
+            className={selectBase}
+            aria-label="채널"
+          >
+            {channels.map((ch) => (
+              <option key={ch.value} value={ch.value}>{ch.label}</option>
+            ))}
           </select>
 
-          <select value={params.sort} onChange={(e) => updateParams({ sort: e.target.value, page: 1 })} className="border rounded-full px-2 py-1 text-sm pr-6">
-            {sorts.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+          <select
+            value={params.sort}
+            onChange={(e) => updateParams({ sort: e.target.value, page: 1 })}
+            className={selectBase}
+            aria-label="정렬"
+          >
+            {sorts.map((s) => (
+              <option key={s.value} value={s.value}>{s.label}</option>
+            ))}
           </select>
         </div>
 
         {/* 캠페인 카드 */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-60 bg-stone-200 dark:bg-zinc-700 animate-pulse rounded-xl" />)}
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-60 bg-stone-200 dark:bg-zinc-800 animate-pulse rounded-xl"
+              />
+            ))}
           </div>
         ) : campaigns.length === 0 ? (
-          <div className="p-4 text-center text-stone-500">캠페인이 없습니다.</div>
+          <div className="p-6 text-center text-stone-500 dark:text-zinc-400">
+            캠페인이 없습니다.
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {campaigns.map((c) => <CampaignCardV2 key={c.campaignIdx} campaign={c} />)}
+            {campaigns.map((c) => (
+              <CampaignCardV2 key={c.campaignIdx} campaign={c} />
+            ))}
           </div>
         )}
 
         {/* 페이지네이션 */}
-        <Pagination pagination={pagination} onPageChange={(newPage) => updateParams({ page: newPage })} />
+        <Pagination
+          pagination={pagination}
+          onPageChange={(newPage) => updateParams({ page: newPage })}
+        />
       </div>
     </div>
   );
