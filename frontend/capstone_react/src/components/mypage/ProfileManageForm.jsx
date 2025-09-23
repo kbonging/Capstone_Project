@@ -1,6 +1,7 @@
 // src/components/mypage/ProfileManageForm.jsx
 import React, { useState, useEffect, useContext } from "react";
 import { updateMember } from "../../api/memberApi";
+import { isEmailExists, sendVerificationCode, verifyAuthCode } from "../../api/authApi";
 import { AppContext } from "../../contexts/AppContext";
 import { FiUpload } from "react-icons/fi";
 import { FaBlogger, FaInstagram, FaYoutube, FaGlobe } from "react-icons/fa";
@@ -24,6 +25,11 @@ export default function ProfileManageForm({ user }) {
 
   const [originalFormData, setOriginalFormData] = useState(null);
   const [isModified, setIsModified] = useState(false);
+
+  // 이메일 인증 관련
+  const [emailVerified, setEmailVerified] = useState(true); // 초기엔 기존 이메일이라 true
+  const [authCode, setAuthCode] = useState("");
+  const [isCodeSent, setIsCodeSent] = useState(false);
 
   const role = user?.authDTOList?.[0]?.auth;
 
@@ -66,11 +72,65 @@ export default function ProfileManageForm({ user }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => {
-      const updated = { ...prev, [name]: value };
+
+    let newValue = value;
+
+    // 닉네임 길이 제한
+    if (name === "nickname" && value.length > 8) {
+      newValue = value.slice(0, 8);
+      alert("닉네임은 8글자까지 입력 가능합니다.");
+    }
+
+      setFormData(prev => {
+      const updated = { ...prev, [name]: newValue };
       setIsModified(checkModified(updated, reviewerChannelList, agree));
       return updated;
     });
+
+    // 이메일 변경 감지 시 인증 필요
+    if (name === "memberEmail") {
+      setEmailVerified(false);
+      setIsCodeSent(false);
+      setAuthCode("");
+    }
+  };
+  
+
+const handleSendCode = async (e) => {
+  e.preventDefault();
+  const email = formData.memberEmail.trim();
+  if (!email) {
+    alert("이메일을 입력해주세요.");
+    return;
+  }
+
+  const exists = await isEmailExists(email); // Axios response 전체
+  console.log("exists:", exists.data);       // 실제 boolean 값 확인
+  if (exists.data) {                          // true이면 이미 존재
+    alert("이미 사용 중인 이메일입니다.");
+    return;
+  }
+
+  await sendVerificationCode({ memberEmail: email });
+  alert("인증번호가 발송되었습니다.");
+  setIsCodeSent(true);
+};
+
+  const handleVerifyCode = async () => {
+    try {
+      const res = await verifyAuthCode({
+        memberEmail: formData.memberEmail,
+        authCode,
+      });
+      if (res.data.success) {
+        alert("이메일 인증 성공");
+        setEmailVerified(true);
+      } else {
+        alert("인증번호가 올바르지 않습니다.");
+      }
+    } catch {
+      alert("인증번호 확인 실패");
+    }
   };
 
   const handleChannelChange = (codeId, url) => {
@@ -93,9 +153,16 @@ export default function ProfileManageForm({ user }) {
   };
 
   const handleSubmit = async () => {
+    if (!emailVerified) {
+      alert("이메일 인증을 완료해주세요.");
+      return;
+    }
+
     try {
+      const { memberIdx, ...payloadWithoutIdx } = formData;
+
       const payload = {
-        ...formData,
+        ...payloadWithoutIdx,
         reviewerChannelList,
       };
       await updateMember(payload, token);
@@ -149,13 +216,44 @@ export default function ProfileManageForm({ user }) {
       {/* 이메일 */}
       <div className="mb-4">
         <label className="block mb-3">이메일</label>
-        <input
-          type="email"
-          name="memberEmail"
-          className="w-full border rounded px-4 py-2"
-          value={formData.memberEmail || ""}
-          disabled
-        />
+        <div className="flex gap-2">
+          <input
+            type="email"
+            name="memberEmail"
+            className="flex-1 border rounded px-4 py-2"
+            value={formData.memberEmail || ""}
+            onChange={handleChange}
+          />
+          {!emailVerified && (
+            <button
+              type="button"
+              onClick={handleSendCode}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              인증번호 받기
+            </button>
+          )}
+        </div>
+
+        {/* 인증번호 입력 */}
+        {!emailVerified && isCodeSent && (
+          <div className="mt-2 flex gap-2">
+            <input
+              type="text"
+              placeholder="인증번호 입력"
+              className="flex-1 border rounded px-4 py-2"
+              value={authCode}
+              onChange={(e) => setAuthCode(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={handleVerifyCode}
+              className="bg-gray-300 text-white px-4 py-2 rounded hover:bg-green-600"
+            >
+              확인
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 이름 */}
@@ -199,18 +297,13 @@ export default function ProfileManageForm({ user }) {
       {/* 휴대폰 */}
       <div className="mb-4">
         <label className="block mb-3">휴대폰 번호</label>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            name="memberPhone"
-            className="flex-1 border rounded px-4 py-2"
-            value={formData.memberPhone || ""}
-            onChange={handleChange}
-          />
-          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            인증번호 받기
-          </button>
-        </div>
+        <input
+          type="text"
+          name="memberPhone"
+          className="w-full border rounded px-4 py-2"
+          value={formData.memberPhone || ""}
+          onChange={handleChange}
+        />
       </div>
 
       {/* 프로필 사진 */}

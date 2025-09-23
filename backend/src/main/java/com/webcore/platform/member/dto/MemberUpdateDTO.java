@@ -15,6 +15,7 @@ public class MemberUpdateDTO {
     private int memberIdx; // 멤버 고유 번호
     private String memberPhone; // 전화번호
     private String intro; // 소개글
+    private String memberEmail; // 이메일
 
     /** 리뷰어 */
     private String nickname; // 닉네임
