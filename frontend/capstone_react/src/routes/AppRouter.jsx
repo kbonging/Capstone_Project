@@ -30,6 +30,10 @@ import Cancellation_in_progress from "../components/mypage/cancle/Cancellation_i
 import CancelRequestPage from "../components/mypage/cancle/CancelRequestPage";
 import OwnerReviewPage from "../pages/OwnerReviewPage";
 
+import GuidePage from "../pages/GuidePage";
+import FAQPage from "../pages/FAQPage";
+
+
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
 // import SearchPage from '../pages/SearchPage';
@@ -195,6 +199,12 @@ export default function AppRouter() {
       <Route path="/campaigns" element={<CampaignSearchPage />} />
 
       <Route path="/test/image-upload" element={<ImageUploadTest />} />
+
+      {/* 가이드 페이지 */}
+      <Route path="/mypage/guide" element={<GuidePage />}/>
+
+      {/* 자주 묻는 질문 페이지 */}
+      <Route path="/mypage/faq" element={<FAQPage />}/>
 
       {/* 404 페이지도 추가 가능  나중에 할거임*/}
     </Routes>
