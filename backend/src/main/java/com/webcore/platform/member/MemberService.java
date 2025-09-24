@@ -27,4 +27,7 @@ public interface MemberService {
 
     /** 회원 정보 수정 */
     void updateMember(MemberUpdateDTO memberUpdateDTO, String role);
+
+    /** 회원 탈퇴 */
+    void deleteMember(int memberIdx);
 }

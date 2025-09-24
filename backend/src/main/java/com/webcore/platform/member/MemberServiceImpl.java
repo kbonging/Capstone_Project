@@ -89,4 +89,9 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
+    /** 회원 탈퇴 */
+    @Override
+    public void deleteMember(int memberIdx) {
+        memberDAO.deleteMember(memberIdx);
+    }
 }

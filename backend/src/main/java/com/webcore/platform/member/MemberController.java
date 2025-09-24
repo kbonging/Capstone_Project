@@ -60,7 +60,6 @@ public class MemberController {
     @PutMapping("")
     public ResponseEntity<String> updateMember(@RequestBody MemberUpdateDTO memberUpdateDTO,
                                                @AuthenticationPrincipal CustomUser customUser) {
-
         try {
             memberUpdateDTO.setMemberIdx(customUser.getMemberDTO().getMemberIdx());
 
@@ -71,6 +70,14 @@ public class MemberController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("FAIL");
         }
+    }
+
+    /** 회원 탈퇴 */
+    @PatchMapping("")
+    public ResponseEntity<String> deleteMember(@AuthenticationPrincipal CustomUser customUser) {
+        int memberIdx = customUser.getMemberDTO().getMemberIdx();
+        memberService.deleteMember(memberIdx);
+        return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
     }
 
     /** MemberIdx로 회원 정보 조회 */

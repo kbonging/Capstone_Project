@@ -27,4 +27,7 @@ public interface MemberDAO {
 
     /** 공통 회원 정보 수정 */
     void updateMember(MemberUpdateDTO dto);
+
+    /** 회원 탈퇴 */
+    void deleteMember(int memberIdx);
 }

@@ -95,4 +95,12 @@
         WHERE MEMBER_IDX = #{memberIdx}
     </update>
 
+    <!-- 회원 탈퇴 -->
+    <update id="deleteMember" parameterType="int">
+        UPDATE tb_member
+        SET DEL_YN = 'Y',
+        MOD_DATE = NOW()
+        WHERE MEMBER_IDX = #{memberIdx}
+    </update>
+
 </mapper>
