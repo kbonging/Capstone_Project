@@ -1,13 +1,13 @@
 // src/components/mypage/ProfileManageForm.jsx
 import React, { useState, useEffect, useContext } from "react";
-import { updateMember } from "../../api/memberApi";
+import { updateMember, deleteMember } from "../../api/memberApi";
 import { isEmailExists, sendVerificationCode, verifyAuthCode } from "../../api/authApi";
 import { AppContext } from "../../contexts/AppContext";
 import { FiUpload } from "react-icons/fi";
 import { FaBlogger, FaInstagram, FaYoutube, FaGlobe } from "react-icons/fa";
 
 export default function ProfileManageForm({ user }) {
-  const { token } = useContext(AppContext);
+  const { token, logout } = useContext(AppContext);
 
   const [formData, setFormData] = useState({});
   const [reviewerChannelList, setReviewerChannelList] = useState([
@@ -77,7 +77,7 @@ export default function ProfileManageForm({ user }) {
 
     // 닉네임 길이 제한
     if (name === "nickname" && value.length > 8) {
-      newValue = value.slice(0, 8);
+      newValue = value.slice(0, 5);
       alert("닉네임은 8글자까지 입력 가능합니다.");
     }
 
@@ -210,6 +210,21 @@ const handleSendCode = async (e) => {
       document.head.appendChild(script);
     });
   }
+
+  const handleDeleteMember = async () => {
+  if (!window.confirm("정말 회원탈퇴 하시겠습니까?")) {
+    return;
+  }
+
+  try {
+    const res = await deleteMember(token);
+    alert(res.data); // "회원 탈퇴가 완료되었습니다."
+    logout(); // 🔹 토큰 삭제 + 유저 초기화 + 메인 이동
+  } catch (err) {
+    console.error(err);
+    alert("회원 탈퇴에 실패했습니다.");
+    }
+  };
 
   return (
     <div className="max-w-2xl ml-6 space-y-10 text-base text-gray-600 font-medium font-['Noto_Sans_KR',sans-serif]">
@@ -522,7 +537,12 @@ const handleSendCode = async (e) => {
 
       {/* 버튼 */}
       <div className="flex justify-between">
-        <button className="text-gray-400 text-sm px-6 py-2">회원탈퇴</button>
+        <button
+          onClick={handleDeleteMember}
+          className="text-gray-400 text-sm px-6 py-2"
+        >
+          회원탈퇴
+        </button>
         <button
           onClick={handleSubmit}
           disabled={!isModified}

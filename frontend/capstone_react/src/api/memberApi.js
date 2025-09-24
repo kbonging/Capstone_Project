@@ -30,3 +30,12 @@ export const updateMember = async (memberData, token) => {
     throw error;
   }
 };
+
+/** 회원 탈퇴 */
+export function deleteMember(token) {
+  return axios.patch("/api/members", null, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
