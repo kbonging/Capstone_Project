@@ -36,6 +36,9 @@ dependencies {
 	implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api' //스프링부트 3.0 이상
 	implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl' //스프링부트 3.0 이상
 
+	// 게이트 웨이 역할 파이참 연결
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 	// Spring Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 

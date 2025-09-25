@@ -133,6 +133,9 @@ public class SecurityConfig {
                         // 알림 관련
                         .requestMatchers("/api/notifications", "/api/notifications/**").permitAll()
 
+                        //챗봇 api연결 항상 열어둠 우선 테스트작업중
+                        .requestMatchers("/api/chat/**").permitAll()
+
                         .requestMatchers("/api/comments", "/api/comments/**")// 댓글 경로는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")
 
