@@ -9,6 +9,7 @@ const categoryColorMap = {
   COMMU002: "#4DB6AC",
   COMMU003: "#7986CB",
   COMMU004: "#dc2626",
+  COMMU005: '#2196F3',
 };
 
 export default function PostCard({ post, onDelete}) {
