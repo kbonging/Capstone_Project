@@ -1,5 +1,6 @@
 // src/components/mypage/Profile.jsx
 import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import ProfileStats from "./ProfileStats";
 import ProfileChannels from "./ProfileChannels";
 import { getOngoingCampaigns, getCompletedCampaigns } from "../../api/campaigns/api";
@@ -8,6 +9,7 @@ import { toAbsoluteUrl } from "../../utils/url";
 
 export default function Profile({ user }) {
   const { token } = useContext(AppContext);
+  const navigate = useNavigate();
   const userRole = user?.authDTOList?.[0]?.auth;
 
   const [activeTab, setActiveTab] = useState("진행중");
@@ -22,9 +24,14 @@ export default function Profile({ user }) {
     userRole === "ROLE_OWNER"
       ? user.businessName || "미등록"
       : user.nickname || "미등록";
+
   const profileImg = user.profileImgUrl
-    ? toAbsoluteUrl(user.profileImgUrl)
-    : null;
+  ? toAbsoluteUrl(
+      user.profileImgUrl.startsWith("/uploads/")
+        ? user.profileImgUrl
+        : `/uploads/profiles/${user.profileImgUrl}`
+    )
+  : null;
 
   const fetchOngoingCampaigns = async (page = 1) => {
     if (!user.memberIdx) return;
@@ -80,7 +87,7 @@ export default function Profile({ user }) {
       {/* 프로필 영역 */}
       <div className="flex w-full gap-6">
         <div className="w-1/2 flex justify-center items-center">
-          <div className="w-40 h-40 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden text-4xl text-gray-400">
+          <div className="w-40 h-40 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden text-4xl text-gray-400">
             {profileImg ? (
               <img
                 src={profileImg}
@@ -141,7 +148,8 @@ export default function Profile({ user }) {
               ).map((c) => (
                 <div
                   key={c.campaignIdx}
-                  className="border rounded-xl overflow-hidden shadow-sm"
+                  className="border rounded-xl overflow-hidden shadow-sm cursor-pointer"
+                  onClick={() => navigate(`/campaign/${c.campaignIdx}`)}
                 >
                   <img
                     src={toAbsoluteUrl(c.thumbnailUrl)}

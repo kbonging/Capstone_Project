@@ -1,5 +1,5 @@
 // src/components/mypage/ProfileManageForm.jsx
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { updateMember, deleteMember } from "../../api/memberApi";
 import { isEmailExists, sendVerificationCode, verifyAuthCode } from "../../api/authApi";
 import { AppContext } from "../../contexts/AppContext";
@@ -26,12 +26,27 @@ export default function ProfileManageForm({ user }) {
   const [originalFormData, setOriginalFormData] = useState(null);
   const [isModified, setIsModified] = useState(false);
 
+  const fileInputRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+
   // 이메일 인증 관련
   const [emailVerified, setEmailVerified] = useState(true); // 초기엔 기존 이메일이라 true
   const [authCode, setAuthCode] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
 
   const role = user?.authDTOList?.[0]?.auth;
+
+  const handleFileClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setIsModified(checkModified(formData, reviewerChannelList, agree, file));
+    }
+  };
 
   // 초기 데이터 세팅
   useEffect(() => {
@@ -62,11 +77,12 @@ export default function ProfileManageForm({ user }) {
     }
   }, [user]);
 
-  const checkModified = (newFormData, newReviewerList, newAgree) => {
+  const checkModified = (newFormData, newReviewerList, newAgree, newFile) => {
     if (!originalFormData) return false;
     if (JSON.stringify(newFormData) !== JSON.stringify(originalFormData)) return true;
     if (JSON.stringify(newReviewerList) !== JSON.stringify(originalFormData.reviewerChannelList)) return true;
     if (JSON.stringify(newAgree) !== JSON.stringify(originalFormData.agree)) return true;
+    if (newFile) return true; // 파일 선택되면 수정된 것으로 간주
     return false;
   };
 
@@ -152,26 +168,29 @@ const handleSendCode = async (e) => {
     });
   };
 
-  const handleSubmit = async () => {
-    if (!emailVerified) {
-      alert("이메일 인증을 완료해주세요.");
-      return;
-    }
+const handleSubmit = async () => {
+  if (!emailVerified) {
+    alert("이메일 인증을 완료해주세요.");
+    return;
+  }
 
-    try {
-      const { memberIdx, ...payloadWithoutIdx } = formData;
+  try {
+    const { memberIdx, ...payloadWithoutIdx } = formData;
 
-      const payload = {
-        ...payloadWithoutIdx,
-        reviewerChannelList,
-      };
-      await updateMember(payload, token);
-      alert("회원 정보 수정 완료!");
-      window.location.reload();
-    } catch (err) {
-      alert("회원 정보 수정 실패");
-    }
-  };
+    const payload = {
+      ...payloadWithoutIdx,
+      reviewerChannelList,
+    };
+
+    // file은 상태값으로 관리해야 함 (예: useState로 setFile 했다고 가정)
+    await updateMember(payload, selectedFile, token);
+
+    alert("회원 정보 수정 완료!");
+    window.location.reload();
+  } catch (err) {
+    alert("회원 정보 수정 실패");
+  }
+};
 
   const Switch = ({ name, checked, label }) => (
     <label className="flex items-center gap-3 cursor-pointer">
@@ -225,6 +244,8 @@ const handleSendCode = async (e) => {
     alert("회원 탈퇴에 실패했습니다.");
     }
   };
+
+
 
   return (
     <div className="max-w-2xl ml-6 space-y-10 text-base text-gray-600 font-medium font-['Noto_Sans_KR',sans-serif]">
@@ -324,11 +345,21 @@ const handleSendCode = async (e) => {
       {/* 프로필 사진 */}
       <div className="mb-6">
         <label className="block mb-3">프로필 사진</label>
-        <div className="border-2 border-dashed rounded-lg h-32 flex flex-col items-center justify-center text-gray-500 cursor-pointer">
+        <div
+          onClick={handleFileClick}
+          className="border-2 border-dashed rounded-lg h-32 flex flex-col items-center justify-center text-gray-500 cursor-pointer"
+        >
           <FiUpload size={24} />
-          <span>클릭하여 업로드</span>
+          <span>{selectedFile ? selectedFile.name : "클릭하여 업로드"}</span>
           <span className="text-xs text-gray-400">jpg, png, gif 가능</span>
         </div>
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
       </div>
 
       {/* 생년월일 + 성별 */}

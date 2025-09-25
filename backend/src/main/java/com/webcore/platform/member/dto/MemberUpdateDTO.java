@@ -16,6 +16,7 @@ public class MemberUpdateDTO {
     private String memberPhone; // 전화번호
     private String intro; // 소개글
     private String memberEmail; // 이메일
+    private String profileImgUrl; // 프로필 이미지 경로
 
     /** 리뷰어 */
     private String nickname; // 닉네임

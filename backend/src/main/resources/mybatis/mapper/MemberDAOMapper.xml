@@ -88,10 +88,16 @@
     <!-- 공통 회원 정보 수정 -->
     <update id="updateMember" parameterType="com.webcore.platform.member.dto.MemberUpdateDTO">
         UPDATE tb_member
-        SET MEMBER_PHONE = #{memberPhone},
-        INTRO = #{intro},
-        MEMBER_EMAIL = #{memberEmail},
-        MOD_DATE = NOW()
+        <trim prefix="SET" suffixOverrides=",">
+            MEMBER_PHONE = #{memberPhone},
+            INTRO = #{intro},
+            MEMBER_EMAIL = #{memberEmail},
+            <!-- profileImgUrl이 있으면 업데이트 -->
+            <if test="profileImgUrl != null and profileImgUrl != ''">
+                PROFILE_IMG_URL = #{profileImgUrl},
+            </if>
+            MOD_DATE = NOW()
+        </trim>
         WHERE MEMBER_IDX = #{memberIdx}
     </update>
 
