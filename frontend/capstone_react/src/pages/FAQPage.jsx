@@ -167,18 +167,19 @@ const faqList = [
 
 export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [inputValue, setInputValue] = useState(""); 
+  const [searchTerm, setSearchTerm] = useState("");   
   const faqSectionRef = useRef(null);
 
   const toggle = (i) => setOpenIndex(openIndex === i ? null : i);
 
   const handleSearchClick = () => {
+    setSearchTerm(inputValue);                      
     faqSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // 버튼 클릭·엔터키 공통 처리
   const handleSearchSubmit = (e) => {
-    e.preventDefault(); // 페이지 새로고침 방지
+    e.preventDefault();
     handleSearchClick();
   };
 
@@ -195,8 +196,8 @@ export default function FAQPage() {
         <input
           type="text"
           placeholder="문의 내용과 관련된 키워드로 검색해 주세요. 예) “취소”, “연장”, “포인트”"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          value={inputValue}                                 
+          onChange={(e) => setInputValue(e.target.value)}   
           className="w-full max-w-md border border-gray-300 rounded-l-md px-4 py-2
                      focus:outline-none focus:ring-1 focus:ring-blue-400
                      placeholder:text-xs"
@@ -209,7 +210,7 @@ export default function FAQPage() {
         </button>
       </form>
 
-      {/* 상단 카드 5개 */}
+      {/* 상단 카드 영역 */}
       <div className="grid md:grid-cols-5 gap-4 mb-16">
         {topQuestions.map((item, idx) => (
           <div key={idx} className="border rounded-xl p-6 shadow-sm hover:shadow-md transition bg-white">

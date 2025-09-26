@@ -1,6 +1,7 @@
 import React from "react";
 import LogoImage from "../images/main_logo.png";
 import { FaTwitter, FaInstagram, FaGithub } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -61,24 +62,24 @@ const Footer = () => {
         {/* 네비게이션 + 소셜 */}
         <div className="flex flex-col md:flex-row items-center gap-4">
           <div className="flex gap-6">
-            <a
-              href="#"
+            <Link
+              to="/about"
               className="hover:text-gray-900 dark:hover:text-zinc-100 transition"
             >
               소개
-            </a>
+            </Link>
             <a
               href="#"
               className="hover:text-gray-900 dark:hover:text-zinc-100 transition"
             >
               고객센터
             </a>
-            <a
-              href="#"
+            <Link
+              to="/terms"
               className="hover:text-gray-900 dark:hover:text-zinc-100 transition"
             >
               이용약관
-            </a>
+            </Link>
           </div>
 
           {/* 소셜 아이콘 */}

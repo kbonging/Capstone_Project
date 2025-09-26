@@ -4,7 +4,10 @@ import com.webcore.platform.common.dto.DefaultDTO;
 import java.util.List;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
+import lombok.EqualsAndHashCode;
 
+
+@EqualsAndHashCode(callSuper = false)
 @Data
 public class ReviewerCancelDTO extends DefaultDTO {
   // ====== 프론트 입력 ======

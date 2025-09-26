@@ -19,7 +19,7 @@ export default function Section_3() {
         // 1) 서버에서 공지 카테고리만 요청
         const res = await getCommunities({
           page: 1,
-          recordCount: 6,          // 최대 6개
+          recordCount: 8,          // 최대 8개
           categoryId: "COMMU004",  // 공지
           showMycommunitiesParam: "" // 공개
         });
@@ -30,8 +30,8 @@ export default function Section_3() {
         );
 
         // 최대 6개 보장
-        const top6 = onlyNotices.slice(0, 6).map(mapCommunityForNews);
-        setItems(top6);
+        const top8 = onlyNotices.slice(0, 8).map(mapCommunityForNews);
+        setItems(top8);
       } catch (e) {
         setErr(e?.message || "불러오기에 실패했습니다.");
         setItems([]);
@@ -42,7 +42,7 @@ export default function Section_3() {
   }, []);
 
   return (
-    <section className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <section className="max-w-6xl mx-auto px-4 py-52 grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* 왼쪽 배너 */}
       <div className="relative rounded-2xl overflow-hidden aspect-[16/9] lg:aspect-auto">
         <img
@@ -65,7 +65,7 @@ export default function Section_3() {
       </div>
 
       {/* 오른쪽 뉴스 리스트 */}
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-zinc-800">
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl  border-gray-100 dark:border-zinc-800">
         {/* 헤더 */}
         <div className="flex items-center justify-between px-5 py-4">
           <h2 className="text-xl font-bold text-gray-900 dark:text-zinc-100">
@@ -103,12 +103,12 @@ export default function Section_3() {
                   className="group flex items-start justify-between gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
                 >
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
                       {/* 뱃지: 라이트/다크 대비 */}
                       <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300">
                         {item.badge /* '공지' */}
                       </span>
-                      <span className="text-sm font-semibold text-sky-700 dark:text-sky-400 group-hover:underline truncate">
+                      <span className="flex-1 min-w-0 text-sm font-semibold text-sky-700 dark:text-sky-400 group-hover:underline truncate">
                         {item.title}
                       </span>
                       <span className="text-sm text-gray-600 dark:text-zinc-400 truncate">

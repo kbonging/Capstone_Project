@@ -83,17 +83,23 @@ export default function Header() {
           </div>
 
           {/* 2. 중간: 메뉴 */}
-          <nav className="hidden md:flex items-center space-x-6 ml-6 flex-shrink-0">
-            <Link to="/campaigns" className="text-gray-600 hover:text-gray-500 dark:text-white">
-              체험단검색
-            </Link>
-            <Link to="/community" className="text-gray-600 hover:text-gray-500 dark:text-white">
-              커뮤니티
-            </Link>
-          </nav>
+          <div className="ml-auto flex items-center space-x-4 flex-shrink-0">
+            <nav className="hidden md:flex items-center space-x-6 mr-4">
+              <Link to="/campaigns" className="text-gray-600 hover:text-gray-500 dark:text-white">
+                체험단검색
+              </Link>
+              <Link to="/community" className="text-gray-600 hover:text-gray-500 dark:text-white">
+                커뮤니티
+              </Link>
+              <Link to="/mypage/faq" className="text-gray-600 hover:text-gray-500 dark:text-white">
+               FAQ
+              </Link>
+              <Link to="/mypage/guide" className="text-gray-600 hover:text-gray-500 dark:text-white">
+                이용가이드
+              </Link>
+            </nav>
 
           {/* 3. 오른쪽: 유저 정보 */}
-          <div className="ml-auto flex items-center space-x-4 flex-shrink-0">
             {/* 알림 버튼 */}
             {user && (
               <Link to="/mypage/alarm" className="relative p-1">
@@ -115,11 +121,11 @@ export default function Header() {
               <span>{getDisplayName(user)}</span>
             </Link>
 
-            {user ? (
+            {/* {user ? (
               <button onClick={logout}>로그아웃</button>
             ) : (
               <Link to="/signup">회원가입</Link>
-            )}
+            )} */}
           </div>
         </div>  
 
@@ -141,7 +147,7 @@ export default function Header() {
             className="block hover:text-zinc-600 dark:hover:text-zinc-300"
             onClick={() => setMenuOpen(false)}
           >
-            체험단검색
+            체험단 검색
           </Link>
           <Link
             to="/community"
@@ -151,18 +157,18 @@ export default function Header() {
             커뮤니티
           </Link>
           <Link
-            to="/support"
+            to="/mypage/faq"
             className="block hover:text-zinc-600 dark:hover:text-zinc-300"
             onClick={() => setMenuOpen(false)}
           >
-            1대1문의
+            FAQ
           </Link>
           <Link
-            to="/events"
+            to="/mypage/guide"
             className="block hover:text-zinc-600 dark:hover:text-zinc-300"
             onClick={() => setMenuOpen(false)}
           >
-            공지/이벤트
+            이용 가이드
           </Link>
           <hr className="my-2 border-zinc-200 dark:border-zinc-800" />
 
@@ -173,7 +179,7 @@ export default function Header() {
                 className="block hover:text-zinc-600 dark:hover:text-zinc-300"
                 onClick={() => setMenuOpen(false)}
               >
-                {user.memberName}
+                {user.nickname}
               </Link>
               <button
                 onClick={() => {

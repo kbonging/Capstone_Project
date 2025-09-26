@@ -33,6 +33,11 @@ import OwnerReviewPage from "../pages/OwnerReviewPage";
 import GuidePage from "../pages/GuidePage";
 import FAQPage from "../pages/FAQPage";
 
+import TermsPage from "../pages/TermsPage";
+import AboutPage from "../pages/AboutPage";
+
+import ErrorPage from "../pages/ErrorPage";
+
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
@@ -200,13 +205,20 @@ export default function AppRouter() {
 
       <Route path="/test/image-upload" element={<ImageUploadTest />} />
 
-      {/* 가이드 페이지 */}
+      {/* 이용 가이드 페이지 */}
       <Route path="/mypage/guide" element={<GuidePage />}/>
 
       {/* 자주 묻는 질문 페이지 */}
       <Route path="/mypage/faq" element={<FAQPage />}/>
 
+      {/* 이용 약관 */}
+      <Route path="/terms" element={<TermsPage />} />
+
+      {/* 회사 소개 */}
+      <Route path="/about" element={<AboutPage />} />
+
       {/* 404 페이지도 추가 가능  나중에 할거임*/}
+      <Route path="/error" element={<ErrorPage />} />
     </Routes>
   );
 }
