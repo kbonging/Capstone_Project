@@ -1,17 +1,21 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+import slide1 from "../../images/showcase/main2.png";
+import slide2 from "../../images/showcase/burger.avif";
+import slide3 from "../../images/showcase/rib.png";
+
+
 /** ─────────────────────────────────────────────────────────
  * 슬라이드 데이터 (라이트/다크 배경색 분리)
  * ───────────────────────────────────────────────────────── */
 const SLIDES = [
   {
     id: 101,
-    tag: "Revory 체험단 × 배송형",
+    tag: "Revory",
     title: ["한입 가득 신선함", "제철 과일 선물세트"],
     cta: { label: "자세히 보기", href: "/campaign/101" },
-    image:
-      "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1600&auto=format&fit=crop",
+    image: slide1,
     bgLeft: "#FFF6E5",
     bgLeftDark: "#2a2419",
   },
@@ -20,8 +24,7 @@ const SLIDES = [
     tag: "Revory 체험단 × 방문형",
     title: ["수제 버거 맛집", "신메뉴 ‘더블치즈’ 런칭"],
     cta: { label: "코스 보기", href: "/campaign/102" },
-    image:
-      "https://images.unsplash.com/photo-1550317138-10000687a72b?q=80&w=1600&auto=format&fit=crop",
+    image: slide2,
     bgLeft: "#F7E57A",
     bgLeftDark: "#3a381d",
   },
@@ -30,8 +33,7 @@ const SLIDES = [
     tag: "Revory 체험단 × 콘텐츠형",
     title: ["홈트 브랜드 협업", "운동 루틴 영상 리뷰"],
     cta: { label: "지도 열기", href: "/campaign/103" },
-    image:
-      "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1600&auto=format&fit=crop",
+    image: slide3,
     bgLeft: "#E8F8FF",
     bgLeftDark: "#18252a",
   },
@@ -47,12 +49,17 @@ export default function ShowcaseHero() {
   const [playing, setPlaying] = useState(true);
 
   // 다크모드 감지 (html.dark 또는 prefers-color-scheme)
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof window === "undefined") return false;
-    const root = document.documentElement;
-    const mql = window.matchMedia?.("(prefers-color-scheme: dark)");
-    return root.classList.contains("dark") || (!!mql && mql.matches);
-  });
+  const [isDark, setIsDark] = useState(() =>
+  document.documentElement.classList.contains('dark')
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+   });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;

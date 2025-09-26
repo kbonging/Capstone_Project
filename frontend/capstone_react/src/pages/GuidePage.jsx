@@ -1,16 +1,16 @@
 import { useState } from "react";
 
-import influencerImg from "../images/userGuide.png";
-import advertiserImg from "../images/adGuide.png";
-import gradeGuideImg from "../images/gradePrepare.png";
-import premiumGuideImg from "../images/premiumPrepare.png";
+import influencerImg from "../images/guide/userGuide.png";
+import advertiserImg from "../images/guide/adGuide.png";
+import gradeGuideImg from "../images/guide/gradePrepare.png";
+import premiumGuideImg from "../images/guide/premiumPrepare.png";
 
-import userIcon from "../images/user.png";
-import adIcon from "../images/ad.png";
-import gradeIcon from "../images/grade.png";
-import premiumIcon from "../images/premium.png";
+import userIcon from "../images/guide/user.png";
+import adIcon from "../images/guide/ad.png";
+import gradeIcon from "../images/guide/grade.png";
+import premiumIcon from "../images/guide/premium.png";
 
-import arrowDown from "../images/arrow.png";
+import arrowDown from "../images/guide/arrow.png";
 
 export default function GuideTabs() {
   const [activeTab, setActiveTab] = useState("influencer");

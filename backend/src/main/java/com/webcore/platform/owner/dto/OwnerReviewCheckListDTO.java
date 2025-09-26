@@ -3,9 +3,11 @@ package com.webcore.platform.owner.dto;
 
 import com.webcore.platform.common.dto.DefaultDTO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = false)
 @Data
 public class OwnerReviewCheckListDTO extends DefaultDTO {
   private Long reviewIdx;

@@ -11,7 +11,7 @@ const categoryColorMap = {
   COMMU002: "#4DB6AC",
   COMMU003: "#7986CB",
   COMMU004: "#dc2626",
-  COMMU005: '#2196F3',
+  COMMU005: '#2196F3'
 };
 
 export default function CommunityPage() {
@@ -116,8 +116,8 @@ export default function CommunityPage() {
             <h1 className="text-2xl font-bold">
               <div className="relative two">
                 <h1 className="relative text-[40px] font-light font-[Raleway] text-[#080808] dark:text-gray-100 transition-all duration-400 ease-in-out capitalize">
-                  커뮤니티
-                  <span className="block text-[13px] font-medium uppercase tracking-[4px] leading-[3em] pl-1 text-black/40 dark:text-white/40 pb-[10px]">
+                  <span className="font-mediumd">커뮤니티</span>
+                  <span className="block mt-4 text-[13px] font-medium uppercase tracking-[4px] leading-[3em] pl-1 text-black/40 dark:text-white/40 pb-[10px]">
                     사람들과 함께 나누는 이야기
                   </span>
                 </h1>
