@@ -25,7 +25,7 @@ function App() {
              </Main>
             <Footer />
 
-              <div className="fixed bottom-20 right-5 flex flex-col gap-3 items-end rounded-full bg-white border border-gray-300 dark:bg-zinc-800  shadow-sm">
+              <div className="fixed bottom-20 right-5 flex flex-col gap-3 items-end rounded-full bg-white   dark:bg-zinc-800  shadow-sm">
                 {/* <ChatbotIcon size={44} className="cursor-pointer" /> */}
                  <ChatbotLauncher />
                <ThemeToggleFab /> 
