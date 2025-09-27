@@ -5,6 +5,7 @@ import {
   deleteComment,
   updateComment,
 } from "../../api/communityApi";
+import { toAbsoluteUrl } from "../../utils/url";
 import { AppContext } from "../../contexts/AppContext";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -131,10 +132,16 @@ export default function CommentList({ refreshKey, onCommentAdded }) {
               className={`replies mt-4 space-y-4 ${indent}`}
             >
               <div className="flex space-x-4 border-b border-gray-200 pb-2">
-                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center">
-                  <span className="text-gray-400 font-semibold">
-                    {writerName.charAt(0)}
-                  </span>
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100">
+                  <img
+                    src={toAbsoluteUrl(
+                      comment.profileImgUrl?.startsWith("/uploads/")
+                        ? comment.profileImgUrl
+                        : "/uploads/profiles/defaultprofile.png"
+                    )}
+                    alt={writerName}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="flex-1">
                   <div className="flex justify-between">

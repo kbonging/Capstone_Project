@@ -29,6 +29,8 @@ public class CommunityDetailResponseDTO extends DefaultDTO {
     private int commentCount;
     /** 사용자의 좋아요 유무*/
     private int likeByMe;
+    /** 작성자 프로필 이미지 */
+    private String profileImgUrl;
     /** 작성자 권한 */
     private String auth;
     /** 작성자 닉네임, 상호명 */

@@ -15,6 +15,8 @@ public class CommentListResponseDTO extends DefaultDTO {
     private int communityIdx;
     /** 회원 고유 번호 (FK)*/
     private int memberIdx;
+    /** 회원 프로필 url */
+    private String profileImgUrl;
     /** 댓글 내용 */
     private String content;
     /** 댓글 타입 */

@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { AppContext } from "../../contexts/AppContext";
 import { addLike, deleteLike } from "../../api/communityApi";
+import { toAbsoluteUrl } from "../../utils/url";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 
@@ -51,10 +52,16 @@ export default function PostCard({ post, onDelete}) {
           <h1 className="text-2xl  text-gray-900 mb-2">{post.title}</h1>
         </div>
         <div className="flex items-center space-x-3 mb-3 ">
-          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-            <span className="text-gray-500 font-semibold">
-              {post.writerName?.charAt(0) || "익"}
-            </span>
+          <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
+            <img
+              src={toAbsoluteUrl(
+                post.profileImgUrl?.startsWith("/uploads/")
+                  ? post.profileImgUrl
+                  : "/uploads/profiles/defaultprofile.png"
+              )}
+              alt={post.writerName}
+              className="w-full h-full object-cover"
+            />
           </div>
           <span className="font-medium text-gray-700">{post.writerName}</span>
           {post.auth === "ROLE_OWNER" && (
