@@ -2,7 +2,8 @@ import React, { useState, useCallback, useEffect } from "react";
 import ChatbotModal from "./ChatbotModal";
 import ChatbotWindow from "./ChatbotWindow";
 // ⬇️ 네가 쓰는 ChatbotIcon 경로에 맞춰 import (질문 코드 기준)
-import ChatbotIcon from "../ChatbotIcon";
+// import ChatbotIcon from "../ChatbotIcon";
+import ChatbotTeaser from "./ChatbotTeaser";
 
 export default function ChatbotLauncher({ className = "" }) {
   const [open, setOpen] = useState(false);
@@ -23,9 +24,10 @@ export default function ChatbotLauncher({ className = "" }) {
         type="button"
         onClick={openChat}
         aria-label="챗봇 열기"
-        className={`rounded-full p-2 shadow-lg ring-1 ring-black/5 bg-white hover:bg-gray-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition ${className}`}
+        className={`rounded-full bg-white hover:bg-gray-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition ${className}`}
       >
-        <ChatbotIcon size={28} className="cursor-pointer" />
+        <ChatbotTeaser onClick={openChat} className={className} />
+        {/* <ChatbotIcon size={28} className="cursor-pointer" /> */}
       </button>
 
       <ChatbotModal open={open} onClose={closeChat}>
