@@ -7,6 +7,32 @@ import remarkGfm from "remark-gfm";
 // ⬇️ 로고 이미지 import (경로는 현재 파일 위치 기준)
 import sLogo from "../../images/sLogo.png";
 
+// SSE 델타를 보기 좋게 연결
+function appendSSE(prev, chunk) {
+  let p = prev ?? "";
+  let s = chunk ?? "";
+
+  // 제목류가 시작되면 앞에 빈 줄 1개 확보
+  if (/^(📌|###|##|\d+\.)\s/.test(s)) {
+    if (!p.endsWith("\n\n")) {
+      if (p.endsWith("\n")) p += "\n";
+      else if (p) p += "\n\n";
+    }
+  }
+
+  // 리스트 항목이면( - 또는 * ) 앞에 줄바꿈 보장
+  if (/^\s*[-*]\s/.test(s)) {
+    if (!p.endsWith("\n")) p += "\n";
+  }
+
+  // 델타가 줄 끝에 개행이 없으면 붙여줌
+  if (!s.endsWith("\n")) s += "\n";
+
+  return p + s;
+}
+
+
+
 function classNames(...xs) { return xs.filter(Boolean).join(" "); }
 const nowKo = () =>
   new Intl.DateTimeFormat("ko-KR", { hour: "numeric", minute: "2-digit", hour12: true }).format(new Date());
@@ -75,7 +101,7 @@ function Bubble({ role, text }) {
 
       <div
         className={classNames(
-          "max-w-[80%] rounded-2xl px-3 py-2 text-sm leading-relaxed shadow-sm",
+          "max-w-screen-lg rounded-2xl px-3 py-2 text-sm leading-relaxed shadow-sm",
           isUser
             ? "bg-blue-600 text-white dark:bg-blue-500"
             : "bg-white text-gray-900 dark:bg-zinc-800 dark:text-gray-100 border border-gray-100 dark:border-white/10"
@@ -254,7 +280,7 @@ export default function ChatbotWindow({ onClose }) {
       return [...prev, { role: "assistant", text: "" }];
     });
 
-    const token = localStorage.getItem("accessToken") || undefined;
+    const token = localStorage.getItem("token") || undefined;
     const headers = { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) };
     const body = JSON.stringify({ message: text });
 
@@ -277,7 +303,7 @@ export default function ChatbotWindow({ onClose }) {
       }
       let acc = "";
       await readSSE(resp, (delta) => {
-        acc += delta;
+        acc = appendSSE(acc, delta);
         setMessages((prev) => {
           const next = [...prev];
           const idx = assistantIndexRef.current !== null ? assistantIndexRef.current : next.length - 1;
@@ -349,7 +375,7 @@ export default function ChatbotWindow({ onClose }) {
                 <Bubble key={i} role={m.role} text={m.text} />
               ))}
 
-              {sending && <div className="text-xs text-gray-500 dark:text-gray-400 px-1 py-2">응답 생성 중…</div>}
+            
             </div>
           </div>
 

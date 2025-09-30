@@ -2,7 +2,7 @@
 import os, re, pymysql
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -17,6 +17,12 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 CHROMA_DIR = os.getenv("CHROMA_DIR", "./chroma_index")
 client = OpenAI(api_key=OPENAI_API_KEY)
+
+SSE_HEADERS = {
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    "X-Accel-Buffering": "no",
+}
 
 # ─────────────────────────────────────────────────────────
 # FastAPI & CORS
@@ -57,6 +63,7 @@ class ChatReq(BaseModel):
     message: str
     top_k: int = 6
     user_id: int | None = None
+    role: Optional[str] = None           # "OWNER" / "REVIEWER" / None
     conversation_id: str | None = None
 
 # ─────────────────────────────────────────────────────────
@@ -156,7 +163,7 @@ def retrieve_context(query: str, k: int) -> dict:
     return {"chunks": chunks, "plain": plain}
 
 # ─────────────────────────────────────────────────────────
-# 응답 후처리 (출처 태그 제거)
+# 응답 후처리
 # ─────────────────────────────────────────────────────────
 _SRC_TAG = re.compile(r"\[출처\s*\d+\]")
 _SRC_INLINE = re.compile(r"\[source=.*?\]")
@@ -182,7 +189,6 @@ def sql_conn():
 PROM_MAP = {"방문형":"CAMP001","포장형":"CAMP002","배송형":"CAMP003","구매형":"CAMP004"}
 CHANNEL_WORDS = ["블로그","인스타그램","유튜브","클립","릴스","쇼츠","틱톡"]
 
-# 채널 코드/별칭 맵 (공통코드: CAMC001~CAMC008)
 CHANNEL_MAP = {
     "블로그":       ["블로그", "blog", "naver blog", "CAMC001"],
     "인스타그램":   ["인스타그램", "인스타", "instagram", "ig", "CAMC002"],
@@ -204,7 +210,6 @@ CHANNEL_CODES_BY_NAME = {
     "틱톡": ["CAMC008"],
 }
 
-# 조사/불용어
 JOSA = ("에서","으로","로","에게","에","의","은","는","이","가","을","를","와","과","도","만","까지","부터","이나","나","랑","하고")
 STOPWORDS = {
     "캠페인","리뷰","리뷰어","신청","지원","검색","목록","추천",
@@ -220,7 +225,6 @@ def strip_josa(word: str) -> str:
             return word[:-len(j)]
     return word
 
-# 자연어 정규화/의도
 NORMALIZE_MAP = {
     "켐페인":"캠페인","모집 중":"모집중","오픈":"OPEN",
     "열었어":"모집중","받나요":"모집중","받아?":"모집중",
@@ -257,7 +261,6 @@ def parse_filters(text: str):
         return {"region": None, "prom": None, "channel": None, "status": None, "q": None}
     s = normalize_text(raw)
 
-    # 지역
     region = None
     for r in REGIONS:
         if re.search(rf"{r}(에|에서|쪽|근처|지역|으로|로)?", s):
@@ -267,7 +270,6 @@ def parse_filters(text: str):
             pick = fuzzy_pick(t, REGIONS, cutoff=0.84)
             if pick: region = pick; break
 
-    # 상태
     tl = s.lower()
     status = None
     if ("모집중" in s) or ("open" in tl):
@@ -277,7 +279,6 @@ def parse_filters(text: str):
     elif re.search(r"(있어\??|있나요|있나|받나요|받아\??|열렸어|열렸냐|구함)", s):
         status = "모집중"
 
-    # 유형/채널
     prom = next((p for p in PROM_MAP.keys() if p in s), None)
     if not prom:
         for t in re.findall(r"[가-힣A-Za-z0-9]{2,}", s):
@@ -296,7 +297,6 @@ def parse_filters(text: str):
                 channel = name
                 break
 
-    # 키워드
     exclude = {region, prom, channel, "모집중", "마감", None}
     if region:
         for j in JOSA: exclude.add(region + j)
@@ -331,7 +331,6 @@ def _mk_header_text(filt: dict) -> str:
     return ", ".join(parts) if parts else "모든 캠페인"
 
 def _rows_to_markdown_table(rows: list[dict]) -> str:
-    """검색 결과를 마크다운 표로 변환 (프론트 ReactMarkdown+GFM로 예쁘게 렌더됨)"""
     if not rows:
         return ""
     header = (
@@ -417,13 +416,11 @@ def db_search(params, limit=10):
     """
     args: list[Any] = []
 
-    # 지난 모집기간 제외(상시 NULL 허용)
     if params.get("status") == "마감":
         sql += " AND c.RECRUIT_STATUS='CLOSED'"
     else:
         sql += " AND (c.APPLY_END_DATE IS NULL OR DATE(c.APPLY_END_DATE) >= CURDATE())"
 
-    # 키워드/지역/유형
     if params.get("q"):
         sql += " AND (c.TITLE LIKE %s OR c.MISSION LIKE %s OR c.KEYWORD_1 LIKE %s OR c.KEYWORD_2 LIKE %s OR c.KEYWORD_3 LIKE %s)"
         args += [f"%{params['q']}%"]*5
@@ -435,7 +432,6 @@ def db_search(params, limit=10):
         sql += " AND c.CAMPAIGN_TYPE = %s"
         args.append(code)
 
-    # 채널(안전 조립 + 별칭 중복 제거)
     if params.get("channel"):
         ch_name = params["channel"]
         cand_codes = CHANNEL_CODES_BY_NAME.get(ch_name, [])
@@ -472,11 +468,9 @@ def db_search(params, limit=10):
         sql += " AND (" + " OR ".join(conds) + ")"
         args += vals
 
-    # 상태: 모집중
     if params.get("status") == "모집중":
         sql += " AND c.RECRUIT_STATUS='OPEN'"
 
-    # 정렬 + LIMIT
     sql += (
         " ORDER BY (c.RECRUIT_STATUS='OPEN') DESC, "
         "bm.bookmark_cnt DESC, s.total_app DESC, c.REG_DATE DESC LIMIT %s"
@@ -524,7 +518,7 @@ def db_owner_stats(owner_id: int, limit=5):
         GROUP BY CAMPAIGN_IDX
       ) bm ON bm.CAMPAIGN_IDX=c.CAMPAIGN_IDX
       WHERE IFNULL(c.DEL_YN,'N')='N'
-        AND c.OWNER_ID = %s
+        AND c.member_idx = %s 
       ORDER BY c.REG_DATE DESC
       LIMIT %s
     """
@@ -607,12 +601,10 @@ def db_campaign_competition(title_kw: str, region: Optional[str] = None):
 
 def extract_title_keyword_for_detail(msg: str) -> Optional[str]:
     s = (msg or "").strip()
-    # 따옴표 안 텍스트 우선
     m = re.search(r"[\"'“”‘’](.+?)[\"'“”‘’]", s)
     if m:
         kw = m.group(1).strip()
         return kw if kw else None
-    # 잡단어 제거 후 첫 유효 토큰
     s = s.replace("캠페인", " ").replace("경쟁률", " ")
     toks = [t for t in re.findall(r"[가-힣A-Za-z0-9]+", s) if len(t) >= 2]
     bad = {
@@ -636,6 +628,7 @@ def detect_reviewer_intent(text: str) -> Optional[str]:
             return intent
     return None
 
+# ✅ FK 컬럼명: member_idx 로 수정
 def db_my_applications(user_id: int):
     sql = """
       SELECT c.TITLE, c.RECRUIT_STATUS,
@@ -645,8 +638,8 @@ def db_my_applications(user_id: int):
              a.APPLY_STATUS_CODE
       FROM tb_campaign_application a
       JOIN tb_campaign c ON c.CAMPAIGN_IDX=a.CAMPAIGN_IDX
-      WHERE a.USER_ID=%s AND IFNULL(a.DEL_YN,'N')='N'
-      ORDER BY a.APPLY_DATE DESC LIMIT 5
+      WHERE a.member_idx=%s AND IFNULL(a.DEL_YN,'N')='N'
+      
     """
     with sql_conn() as conn, conn.cursor() as cur:
         cur.execute(sql, (user_id,))
@@ -658,27 +651,26 @@ def db_my_bookmarks(user_id: int):
              DATE_FORMAT(c.APPLY_END_DATE,'%%Y-%%m-%%d') AS APPLY_END_DATE
       FROM tb_bookmark b
       JOIN tb_campaign c ON c.CAMPAIGN_IDX=b.CAMPAIGN_IDX
-      WHERE b.USER_ID=%s
-      ORDER BY b.REG_DATE DESC LIMIT 5
+      WHERE b.member_idx=%s
+     
     """
     with sql_conn() as conn, conn.cursor() as cur:
         cur.execute(sql, (user_id,))
         return cur.fetchall()
 
 def db_my_reviews(user_id: int):
-    sql = """
-      SELECT c.TITLE,
-             DATE_FORMAT(c.DEADLINE_DATE,'%%Y-%%m-%%d') AS DEADLINE_DATE,
-             r.REVIEW_IDX
-      FROM tb_review r
-      JOIN tb_campaign_application a ON a.APPLICATION_IDX=r.APPLICATION_IDX
-      JOIN tb_campaign c ON c.CAMPAIGN_IDX=a.CAMPAIGN_IDX
-      WHERE a.USER_ID=%s
-      ORDER BY r.REG_DATE DESC LIMIT 5
-    """
-    with sql_conn() as conn, conn.cursor() as cur:
-        cur.execute(sql, (user_id,))
-        return cur.fetchall()
+  sql = """
+         SELECT c.TITLE,
+                DATE_FORMAT(c.DEADLINE_DATE,'%%Y-%%m-%%d') AS DEADLINE_DATE
+         FROM tb_review r
+         JOIN tb_campaign_application a ON a.APPLICATION_IDX=r.APPLICATION_IDX
+         JOIN tb_campaign c ON c.CAMPAIGN_IDX=a.CAMPAIGN_IDX
+         WHERE a.member_idx=%s
+         ORDER BY r.REG_DATE DESC LIMIT 5
+       """
+  with sql_conn() as conn, conn.cursor() as cur:
+    cur.execute(sql, (user_id,))
+    return cur.fetchall()
 
 # ─────────────────────────────────────────────────────────
 # RAG
@@ -692,10 +684,15 @@ def _respond_rag(req: ChatReq):
         ctx_plain = (ctx_obj.get("plain") or "").strip()
     if not ctx_plain:
         def noctx_gen():
-            yield "data: 아직 내부 문서에서 답을 못 찾았어요. 예) '서울에 블로그 가능한 거 있어?' 처럼 자연어로 편하게 물어보셔도 돼요.\n\n"
-            yield "data: [DONE]\n\n"
+            try:
+                yield "data: 아직 내부 문서에서 답을 못 찾았어요. 예) '서울에 블로그 가능한 거 있어?' 처럼 자연어로 편하게 물어보셔도 돼요.\n\n"
+            except Exception as e:
+                yield f"data: [ERROR] {str(e)}\n\n"
+            finally:
+                yield "data: [DONE]\n\n"
         return StreamingResponse(noctx_gen(), media_type="text/event-stream",
-                                 headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+                                 headers=SSE_HEADERS)
+
     messages = [
         {"role": "system", "content": SYSTEM},
         {"role": "system", "content": f"컨텍스트(번호와 출처 포함):\n{ctx_plain}"},
@@ -717,9 +714,10 @@ def _respond_rag(req: ChatReq):
                         yield f"data: {delta}\n\n"
         except Exception as e:
             yield f"data: [ERROR] {str(e)}\n\n"
-        yield "data: [DONE]\n\n"
+        finally:
+            yield "data: [DONE]\n\n"
     return StreamingResponse(gen_rag(), media_type="text/event-stream",
-                             headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+                             headers=SSE_HEADERS)
 
 def _should_list(msg: str, filt: dict, intent: str) -> bool:
     if re.search(r"(방법|절차|어떻게|가이드|FAQ|리뷰\s*제출|후기\s*제출|업로드)", msg):
@@ -736,7 +734,11 @@ def is_owner_query(text: str) -> bool:
     return any(t in s for t in OWNER_TRIGGERS)
 
 @app.post("/chat/stream")
-def chat_stream(req: ChatReq, request: Request):
+def chat_stream(
+    req: ChatReq,
+    request: Request,
+    x_forwarded_authorization: Optional[str] = Header(None),
+):
     intent = detect_intent(req.message)
     filt = parse_filters(req.message)
 
@@ -745,133 +747,167 @@ def chat_stream(req: ChatReq, request: Request):
     if rev_intent:
         user_id = req.user_id
         def gen_reviewer():
-            if not user_id:
-                yield "data: ⚠️ 로그인 후 이용 가능합니다. (user_id 필요)\n\n"
-                yield "data: [DONE]\n\n"; return
-            if rev_intent == "apps":
-                rows = db_my_applications(user_id)
-                if not rows: yield "data: 📌 신청한 캠페인이 없습니다.\n\n"
-                else:
-                    yield "data: 📌 최근 신청 현황:\n\n"
-                    for r in rows:
-                        yield f"data: - {r['TITLE']} · 상태:{'모집중' if r['RECRUIT_STATUS']=='OPEN' else '마감'} (신청:{r['APPLY_START_DATE']}~{r['APPLY_END_DATE']}) · 리뷰마감:{r['DEADLINE_DATE']}\n\n"
-            elif rev_intent == "bookmarks":
-                rows = db_my_bookmarks(user_id)
-                if not rows: yield "data: 📌 저장한 캠페인이 없습니다.\n\n"
-                else:
-                    yield "data: 📌 내 북마크 목록:\n\n"
-                    for r in rows:
-                        yield f"data: - {r['TITLE']} · 상태:{'모집중' if r['RECRUIT_STATUS']=='OPEN' else '마감'} (마감:{r['APPLY_END_DATE']})\n\n"
-            elif rev_intent == "reviews":
-                rows = db_my_reviews(user_id)
-                if not rows: yield "data: 📌 제출한 리뷰가 없습니다.\n\n"
-                else:
-                    yield "data: 📌 내 리뷰 제출 현황:\n\n"
-                    for r in rows:
-                        yield f"data: - {r['TITLE']} · 리뷰ID:{r['REVIEW_IDX']} (리뷰마감:{r['DEADLINE_DATE']})\n\n"
-            elif rev_intent == "deadlines":
-                rows = db_my_applications(user_id)
-                if not rows: yield "data: 📌 리뷰 마감일 관련 캠페인이 없습니다.\n\n"
-                else:
-                    yield "data: 📌 내가 참여한 캠페인 리뷰 마감일:\n\n"
-                    for r in rows:
-                        yield f"data: - {r['TITLE']} · 리뷰마감:{r['DEADLINE_DATE']}\n\n"
-            yield "data: [DONE]\n\n"
+            try:
+                if not user_id:
+                    yield "data: ⚠️ 로그인 후 이용 가능합니다. (user_id 필요)\n\n"
+                    return
+
+                if rev_intent == "apps":
+                    rows = db_my_applications(user_id)
+                    if not rows: yield "data: 📌 신청한 캠페인이 없습니다.\n\n"
+                    else:
+                        yield "data: 📌 최근 신청 현황:\n\n"
+                        for r in rows:
+                            yield f"data: - {r['TITLE']} \n\n"
+
+                elif rev_intent == "bookmarks":
+                    rows = db_my_bookmarks(user_id)
+                    if not rows: yield "data: 📌 저장한 캠페인이 없습니다.\n\n"
+                    else:
+                        yield "data: 📌 내 북마크 목록:\n\n"
+                        for r in rows:
+                            yield f"data: - {r['TITLE']} · 모집상태:{'모집중' if r['RECRUIT_STATUS']=='OPEN' else '마감'} (일정:{r['APPLY_END_DATE']})\n\n"
+
+                elif rev_intent == "reviews":
+                    rows = db_my_reviews(user_id)
+                    if not rows: yield "data: 📌 제출한 리뷰가 없습니다.\n\n"
+                    else:
+                        yield "data: 📌 내 리뷰 제출 현황 ↓\n\n"
+                        for r in rows:
+                            yield f"data: - {r['TITLE']} · 리뷰마감:{r['DEADLINE_DATE']}\n\n"
+
+                elif rev_intent == "deadlines":
+                    rows = db_my_applications(user_id)
+                    if not rows: yield "data: 📌 리뷰 마감일 관련 캠페인이 없습니다.\n\n"
+                    else:
+                        yield "data: 📌 내가 참여한 캠페인 리뷰 마감일:\n\n"
+                        for r in rows:
+                            yield f"data: - {r['TITLE']} · 리뷰마감:{r['DEADLINE_DATE']}\n\n"
+
+            except Exception as e:
+                yield f"data: [ERROR] {str(e)}\n\n"
+            finally:
+                yield "data: [DONE]\n\n"
         return StreamingResponse(gen_reviewer(), media_type="text/event-stream",
-                                 headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+                                 headers=SSE_HEADERS)
 
     # 오너
     if is_owner_query(req.message):
         owner_id = req.user_id
         def gen_owner():
-            if not owner_id:
-                yield "data: ⚠️ 로그인 후 이용 가능합니다. (user_id 필요)\n\n"
-                yield "data: [DONE]\n\n"; return
-            rows = db_owner_stats(owner_id, limit=5)
-            if not rows:
-                yield "data: 📊 현재 등록한 캠페인이 없습니다.\n\n"
-                yield "data: [DONE]\n\n"; return
-            yield f"data: 📊 내 캠페인 현황 (최근 {len(rows)}건)\n\n"
-            for i, r in enumerate(rows, 1):
-                line = (
-                    f"{i}. {r['TITLE']} · 상태:{'모집중' if r['RECRUIT_STATUS']=='OPEN' else '마감'} "
-                    f"(신청:{r['total_app']}, 당첨:{r['approved_cnt']}, 리뷰:{r['review_cnt']}, 북마크:{r['bookmark_cnt']}) "
-                    f"모집:{r['APPLY_START_DATE']}~{r['APPLY_END_DATE']} | 발표:{r['ANNOUNCE_DATE']} | 리뷰마감:{r['DEADLINE_DATE']}"
-                )
-                yield f"data: {line}\n\n"
-            yield "data: [DONE]\n\n"
+            try:
+                if not owner_id:
+                    yield "data: ⚠️ 로그인 후 이용 가능합니다. (user_id 필요)\n\n"
+                    return
+
+                if (req.role or "").upper() != "OWNER":
+                    yield f"data: ⚠️  소상공인만 질문가능합니다. (현재 로그인상태 리뷰어)\n\n"
+                    return
+
+                rows = db_owner_stats(owner_id, limit=5)
+                if not rows:
+                    yield "data: 📊 현재 등록한 캠페인이 없습니다.\n\n"
+                    return
+
+                yield f"data: ### 📊 내 캠페인 현황 (최근 {len(rows)}건)\n\n"
+                for i, r in enumerate(rows, 1):
+                  status = "모집중" if r["RECRUIT_STATUS"] == "OPEN" else "마감"
+                  block = (
+                    f"**{i}. {r['TITLE']}**\n\n"
+                    f"- 상태: {status}\n"
+                    f"- 신청/당첨/리뷰/북마크: {r['total_app']}/{r['approved_cnt']}/{r['review_cnt']}/{r['bookmark_cnt']}\n"
+                    f"- 모집: {r['APPLY_START_DATE']} ~ {r['APPLY_END_DATE']}\n"
+                    f"- 발표: {r['ANNOUNCE_DATE']} · 리뷰마감: {r['DEADLINE_DATE']}\n\n"
+                    f"---\n\n"
+                  )
+                  for line in block.splitlines(True):
+                    yield f"data: {line}"
+            except Exception as e:
+                yield f"data: [ERROR] {str(e)}\n\n"
+            finally:
+                yield "data: [DONE]\n\n"
         return StreamingResponse(gen_owner(), media_type="text/event-stream",
-                                 headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+                                 headers=SSE_HEADERS)
 
     # 경쟁률
     if "경쟁률" in req.message:
-        title_kw = filt.get("q") or extract_title_keyword_for_detail(req.message)
+        title_kw = parse_filters(req.message).get("q") or extract_title_keyword_for_detail(req.message)
         def gen_comp():
-            if not title_kw:
-                yield "data: 경쟁률을 알려면 캠페인 제목의 핵심 단어가 필요해요. 예: \"인생맥주 경쟁률\"\n\n"
-                yield "data: [DONE]\n\n"; return
-            row = db_campaign_competition(title_kw, region=filt.get("region"))
-            if not row:
-                yield f"data: '{title_kw}'로 찾은 캠페인이 없어요. 제목의 다른 키워드로 다시 시도해 보세요.\n\n"
-                yield "data: [DONE]\n\n"; return
+            try:
+                if not title_kw:
+                    yield 'data: 경쟁률을 알려면 캠페인 제목의 핵심 단어가 필요해요. 예: "인생맥주 경쟁률"\n\n'
+                    return
+                row = db_campaign_competition(title_kw, region=parse_filters(req.message).get("region"))
+                if not row:
+                    yield f"data: '{title_kw}'로 찾은 캠페인이 없어요. 제목의 다른 키워드로 다시 시도해 보세요.\n\n"
+                    return
 
-            status = "모집중" if row["RECRUIT_STATUS"] == "OPEN" else "마감"
-            slots  = int(row["recruit_slots"] or 0)
-            apps   = int(row["total_app"] or 0)
-            ratio  = row["competition_ratio"]; pct = row["competition_pct"]
+                status = "모집중" if row["RECRUIT_STATUS"] == "OPEN" else "마감"
+                slots  = int(row["recruit_slots"] or 0)
+                apps   = int(row["total_app"] or 0)
+                ratio  = row["competition_ratio"]; pct = row["competition_pct"]
 
-            yield f"data: ### 🔎 {row['TITLE']} · {row['region']} · 상태:{status}\n\n"
-            yield f"data: - 모집기간: **{row['APPLY_START_DATE']} ~ {row['APPLY_END_DATE']}**\n\n"
-            yield f"data: - 신청 **{apps}명** / 모집 **{slots}명**\n\n"
-            if ratio is not None:
-                yield f"data: - 경쟁률: **약 {ratio}배 (≈ {pct}%)**\n\n"
-            else:
-                yield "data: - 경쟁률: 모집정원 정보를 찾지 못해 배수를 계산할 수 없어요.\n\n"
-            if row.get("approved_cnt") is not None:
-                yield f"data: - 당첨(선정) 수: **{row['approved_cnt']}명**\n\n"
-            yield "data: [DONE]\n\n"
+                yield f"data: ### 🔎 {row['TITLE']} · {row['region']} · 상태:{status}\n\n"
+                yield f"data: - 모집기간: **{row['APPLY_START_DATE']} ~ {row['APPLY_END_DATE']}**\n\n"
+                yield f"data: - 신청 **{apps}명** / 모집 **{slots}명**\n\n"
+                if ratio is not None:
+                    yield f"data: - 경쟁률: **약 {ratio}배 (≈ {pct}%)**\n\n"
+                else:
+                    yield "data: - 경쟁률: 모집정원 정보를 찾지 못해 배수를 계산할 수 없어요.\n\n"
+                if row.get("approved_cnt") is not None:
+                    yield f"data: - 당첨(선정) 수: **{row['approved_cnt']}명**\n\n"
+            except Exception as e:
+                yield f"data: [ERROR] {str(e)}\n\n"
+            finally:
+                yield "data: [DONE]\n\n"
         return StreamingResponse(gen_comp(), media_type="text/event-stream",
-                                 headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+                                 headers=SSE_HEADERS)
 
     # 카운트
     if re.search(r"(몇\s*개|몇\s*건|몇\s*명|총\s*몇)", req.message):
         filt_for_count = {**filt, "q": None}
         rows = db_search(filt_for_count, limit=9999)
         def gen_count():
-            cnt = len(rows)
-            hdr_text = _mk_header_text(filt_for_count)
-            yield f"data: ### 📊 현재 (**{hdr_text}**) 조건의 캠페인 수\n\n"
-            yield f"data: - **총 {cnt}건**\n\n"
-            if cnt > 0:
-                yield "data: - 상위 몇 개를 표로 보고 싶으면 **“상위 5개 보여줘”** 처럼 말해 보세요.\n\n"
-            yield "data: [DONE]\n\n"
+            try:
+                cnt = len(rows)
+                hdr_text = _mk_header_text(filt_for_count)
+                yield f"data: ### 📊 현재 (**{hdr_text}**) 조건의 캠페인 수\n\n"
+                yield f"data: - **총 {cnt}건**\n\n"
+                if cnt > 0:
+                    yield "data: - 상위 몇 개를 표로 보고 싶으면 **“상위 5개 보여줘”** 처럼 말해 보세요.\n\n"
+            except Exception as e:
+                yield f"data: [ERROR] {str(e)}\n\n"
+            finally:
+                yield "data: [DONE]\n\n"
         return StreamingResponse(gen_count(), media_type="text/event-stream",
-                                 headers={"Cache-Control": "no-cache","X-Accel-Buffering":"no"})
+                                 headers=SSE_HEADERS)
 
-    # QA
+    # QA / 목록
     if intent == "qa":
         return _respond_rag(req)
 
-    # 목록/탐색 (0건이면 0건 고지, 채널 완화 폴백 없음)
     if _should_list(req.message, filt, intent):
         rows = db_search(filt, limit=10)
         def gen_list():
-            hdr_text = _mk_header_text(filt)
-            if not rows:
-                yield f"data: ### 🔎 검색결과 (**{hdr_text}**)\n\n"
-                yield f"data: - **총 0건**입니다.\n\n"
-                yield "data: - 조건을 조금 넓혀 보시겠어요? (예: 채널/키워드 제거)\n\n"
+            try:
+                hdr_text = _mk_header_text(filt)
+                if not rows:
+                    yield f"data: ### 🔎 검색결과 (**{hdr_text}**)\n\n"
+                    yield f"data: - **총 0건**입니다.\n\n"
+                    yield "data: - 조건을 조금 넓혀 보시겠어요? (예: 채널/키워드 제거)\n\n"
+                    return
+                yield f"data: ### 🔎 검색결과 (**{hdr_text}**) 상위 {len(rows)}건\n\n"
+                table_md = _rows_to_markdown_table(rows)
+                for chunk in table_md.splitlines(True):
+                    yield f"data: {chunk}"
+                yield "data: \n\n"
+                yield "data: - 특정 캠페인 상세가 궁금하면 **제목 핵심 단어**로 물어보세요. (예: `OOO 경쟁률/리뷰 마감?`)\n\n"
+            except Exception as e:
+                yield f"data: [ERROR] {str(e)}\n\n"
+            finally:
                 yield "data: [DONE]\n\n"
-                return
-            yield f"data: ### 🔎 검색결과 (**{hdr_text}**) 상위 {len(rows)}건\n\n"
-            table_md = _rows_to_markdown_table(rows)
-            for chunk in table_md.splitlines(True):
-                yield f"data: {chunk}"
-            yield "data: \n\n"
-            yield "data: - 특정 캠페인 상세가 궁금하면 **제목 핵심 단어**로 물어보세요. (예: `OOO 경쟁률/리뷰 마감?`)\n\n"
-            yield "data: [DONE]\n\n"
         return StreamingResponse(gen_list(), media_type="text/event-stream",
-                                 headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+                                 headers=SSE_HEADERS)
 
     # 나머지: RAG
     return _respond_rag(req)
