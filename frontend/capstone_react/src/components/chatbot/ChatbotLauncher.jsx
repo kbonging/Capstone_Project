@@ -1,15 +1,24 @@
+// src/components/chatbot/ChatbotLauncher.jsx
 import React, { useState, useCallback, useEffect } from "react";
 import ChatbotModal from "./ChatbotModal";
 import ChatbotWindow from "./ChatbotWindow";
-// ⬇️ 네가 쓰는 ChatbotIcon 경로에 맞춰 import (질문 코드 기준)
-// import ChatbotIcon from "../ChatbotIcon";
 import ChatbotTeaser from "./ChatbotTeaser";
+import ChatbotWelcome from "./ChatbotWelcome";
 
 export default function ChatbotLauncher({ className = "" }) {
   const [open, setOpen] = useState(false);
-  const openChat = useCallback(() => setOpen(true), []);
-  const closeChat = useCallback(() => setOpen(false), []);
+  const [stage, setStage] = useState("welcome"); // 'welcome' | 'chat'
 
+  const openChat = useCallback(() => {
+    setStage("welcome");
+    setOpen(true);
+  }, []);
+  const closeChat = useCallback(() => {
+    setOpen(false);
+    setStage("welcome");
+  }, []);
+
+  // ESC 닫기
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && closeChat();
@@ -19,19 +28,26 @@ export default function ChatbotLauncher({ className = "" }) {
 
   return (
     <>
-      {/* 기존 아이콘 자리에 이 버튼만 렌더 */}
+      {/* 고정 티저 버튼 (네가 쓰던 자리 그대로) */}
       <button
         type="button"
         onClick={openChat}
         aria-label="챗봇 열기"
-        className={`rounded-full bg-white hover:bg-gray-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition ${className}`}
+        className={`rounded-full transition ${className}`}
       >
         <ChatbotTeaser onClick={openChat} className={className} />
-        {/* <ChatbotIcon size={28} className="cursor-pointer" /> */}
       </button>
 
+      {/* 모달 안에서 단계 전환 */}
       <ChatbotModal open={open} onClose={closeChat}>
-        <ChatbotWindow onClose={closeChat} />
+        {stage === "welcome" ? (
+          <ChatbotWelcome
+            onInquiry={() => setStage("chat")}
+            onClose={closeChat}
+          />
+        ) : (
+          <ChatbotWindow onClose={closeChat} />
+        )}
       </ChatbotModal>
     </>
   );
