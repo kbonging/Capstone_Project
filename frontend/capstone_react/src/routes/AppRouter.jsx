@@ -38,7 +38,6 @@ import AboutPage from "../pages/AboutPage";
 
 import ErrorPage from "../pages/ErrorPage";
 
-
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
 // import SearchPage from '../pages/SearchPage';
@@ -149,6 +148,7 @@ export default function AppRouter() {
           </PrivateRoute>
         }
       />
+
 
       {/*소상공인 체험단 리뷰 관리 페이지 */}
       <Route
