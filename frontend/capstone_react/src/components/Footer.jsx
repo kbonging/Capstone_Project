@@ -37,7 +37,7 @@ const Footer = () => {
           </h3>
           <p className="text-sm leading-relaxed">
             대표: 최진형<br />
-            인천광역시 부평구 무네미로 448번길 56<br />
+            인천광역시 남동구 구월말로 4번길 5<br />
             Progress96@gmail.com<br />
             사업자 등록번호: 010-67-12345<br />
             <br />

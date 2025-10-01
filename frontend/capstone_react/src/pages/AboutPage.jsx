@@ -2,6 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import mainLogo from "../images/main_logo.png";
+import aboutBack from "../images/about/aboutBack.jpg"
+
+//프로필
+import nam from "../images/about/nam.gif";
+import bong from "../images/about/bong.gif";
+import jun from "../images/about/jy.gif";
+import jae from "../images/about/jae.gif"
+import jin from "../images/about/jin.gif";
 
 //애니메이션 설정 코드
 const fadeUp = {
@@ -15,11 +23,11 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="relative h-[60vh] flex items-center justify-center text-center overflow-hidden">
         <img
-          src="https://source.unsplash.com/1600x900/?abstract,technology"
+          src= {aboutBack}
           alt="사진 만들어서 적용할 예정인 배경"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/60 to-purple-500/60 dark:from-indigo-700/60 dark:to-purple-700/60"></div>
+        <div className="absolute inset-0 bg-gradient-to-r"></div>
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -27,7 +35,7 @@ export default function AboutPage() {
           variants={fadeUp}
           className="relative z-10 px-6"
         >
-          <img src={mainLogo} alt="Revory 로고" className="mx-auto w-32 h-auto mb-6 drop-shadow-lg" />
+          <img src={mainLogo} alt="Revory 로고" className="mx-auto w-36 h-auto mb-6 drop-shadow-lg" />
           <h1 className="text-5xl font-extrabold mb-4 text-white drop-shadow-lg">
             Review + Memory = <span className="text-yellow-300">Revory</span>
           </h1>
@@ -125,12 +133,13 @@ export default function AboutPage() {
         >
           Revory를 만드는 사람들
         </motion.h2>
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-10 text-center">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-10 text-center">
           {[
-            { name: "김준영", role: "Backend Developer", img: "https://source.unsplash.com/200x200/?portrait,man" },
-            { name: "김봉중", role: "Frontend Developer", img: "https://source.unsplash.com/200x200/?portrait,boy" },
-            { name: "최재혁", role: "UI/UX Designer", img: "https://source.unsplash.com/200x200/?portrait,girl" },
-            { name: "바하", role: "Project Lead", img: "https://source.unsplash.com/200x200/?portrait,woman" },
+            { name: "김남국", role: "AI", img: nam },
+            { name: "김봉중", role: "AI", img: bong },
+            { name: "김준영", role: "AI", img: jun },
+            { name: "최재혁", role: "AI", img: jae },
+            { name: "최진형", role: "AI", img: jin },
           ].map((member) => (
             <motion.div
               key={member.name}

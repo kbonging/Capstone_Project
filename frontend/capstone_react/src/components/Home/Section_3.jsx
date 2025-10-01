@@ -19,7 +19,7 @@ export default function Section_3() {
         // 1) 서버에서 공지 카테고리만 요청
         const res = await getCommunities({
           page: 1,
-          recordCount: 8,          // 최대 8개
+          recordCount: 6,          // 최대 8개
           categoryId: "COMMU004",  // 공지
           showMycommunitiesParam: "" // 공개
         });
@@ -30,8 +30,8 @@ export default function Section_3() {
         );
 
         // 최대 6개 보장
-        const top8 = onlyNotices.slice(0, 8).map(mapCommunityForNews);
-        setItems(top8);
+        const top6 = onlyNotices.slice(0, 6).map(mapCommunityForNews);
+        setItems(top6);
       } catch (e) {
         setErr(e?.message || "불러오기에 실패했습니다.");
         setItems([]);
@@ -42,7 +42,7 @@ export default function Section_3() {
   }, []);
 
   return (
-    <section className="max-w-6xl mx-auto px-4 py-52 grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <section className="max-w-5xl mx-auto px-4 py-32 grid grid-cols-1 lg:grid-cols-2 gap-28">
       {/* 왼쪽 배너 */}
       <div className="relative rounded-2xl overflow-hidden aspect-[16/9] lg:aspect-auto">
         <img
