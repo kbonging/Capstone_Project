@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { FiChevronRight, FiPlus } from "react-icons/fi";
 import { getCommunities, mapCommunityForNews } from "../../api/maincommunity";
 // 배너 이미지: vite/CRA 번들 환경을 고려해 import 권장
-import mainBanner from "../../images/MainLogo.png";
+import RotatingBanner from "../../components/media/RotatingBanner";
 
 export default function Section_3() {
   const [items, setItems] = useState([]);
@@ -19,9 +19,9 @@ export default function Section_3() {
         // 1) 서버에서 공지 카테고리만 요청
         const res = await getCommunities({
           page: 1,
-          recordCount: 6,          // 최대 8개
-          categoryId: "COMMU004",  // 공지
-          showMycommunitiesParam: "" // 공개
+          recordCount: 6, // 최대 8개
+          categoryId: "COMMU004", // 공지
+          showMycommunitiesParam: "", // 공개
         });
 
         // 2) 안전망: 혹시 서버가 무시하면 프론트에서 한 번 더 필터
@@ -43,26 +43,45 @@ export default function Section_3() {
 
   return (
     <section className="max-w-5xl mx-auto px-4 py-32 grid grid-cols-1 lg:grid-cols-2 gap-28">
-      {/* 왼쪽 배너 */}
-      <div className="relative rounded-2xl overflow-hidden aspect-[16/9] lg:aspect-auto">
-        <img
-          src={mainBanner}
-          alt="Revory 구독 배너"
-          className="w-full h-full object-cover"
-          loading="lazy"
-        />
-        {/* 라이트/다크에 따라 살짝 다른 오버레이 톤 */}
-        <div className="absolute inset-0 bg-white/25 dark:bg-black/40 flex flex-col pt-5 justify-start items-center text-white text-center">
-          {/* <h3 className="text-xl font-bold mb-1 drop-shadow text-black/70 dark:text-white" >리뷰어 전용 뉴스레터</h3>
+      {/* 왼쪽 배너: 순환 비디오 컴포넌트 사용 */}
+      <RotatingBanner
+        className="aspect-[16/9] lg:aspect-auto"
+        videos={[
+          {
+            src: "/videos/Revory5team_introduceself.mp4",
+            type: "video/mp4",
+            poster: "/images/section3/poster1.jpg",
+          },
+          {
+            src: "/videos/video1.mp4",
+            type: "video/mp4",
+            poster: "/images/section3/poster1.jpg",
+          },
+          {
+            src: "/videos/video2.mp4",
+            type: "video/mp4",
+            poster: "/images/section3/poster2.jpg",
+          },
+          {
+            src: "/videos/video3.mp4",
+            type: "video/mp4",
+            poster: "/images/section3/poster3.jpg",
+          },
+        ]}
+      >
+        {/* 오버레이(자유롭게 커스텀) */}
+        <div className="bg-white/25 dark:bg-black/40 w-full h-full flex flex-col pt-5 justify-start items-center text-white text-center">
+          {/* 필요하면 텍스트/버튼 활성화 */}
+          {/* <h3 className="text-xl font-bold mb-1 drop-shadow text-black/70 dark:text-white">리뷰어 전용 뉴스레터</h3>
           <h2 className="text-3xl font-extrabold mb-4 drop-shadow text-black/70 dark:text-white">Revory Weekly</h2>
           <button
-            className="px-5 py-2 rounded-full font-semibold bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-500 dark:hover:bg-emerald-400 shadow"
+            className="pointer-events-auto px-5 py-2 rounded-full font-semibold bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-500 dark:hover:bg-emerald-400 shadow"
             onClick={() => (window.location.href = "/newsletter")}
           >
             지금 구독하고 꿀혜택 받기
           </button> */}
         </div>
-      </div>
+      </RotatingBanner>
 
       {/* 오른쪽 뉴스 리스트 */}
       <div className="bg-white dark:bg-zinc-900 rounded-2xl  border-gray-100 dark:border-zinc-800">
