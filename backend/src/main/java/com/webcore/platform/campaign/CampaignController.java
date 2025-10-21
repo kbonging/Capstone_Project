@@ -72,6 +72,7 @@ public class CampaignController {
       CampaignDTO campaignDTO,
       @AuthenticationPrincipal CustomUser customUser) {
     log.info("[GET] /api/campaigns/admin [Request]");
+    campaignDTO.setAdminYn(true);
 
     Map<String, Object> resultMap = campaignService.getCampaignList(campaignDTO);
 
