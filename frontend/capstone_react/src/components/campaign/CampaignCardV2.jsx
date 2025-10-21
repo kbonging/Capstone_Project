@@ -45,6 +45,10 @@ export default function CampaignCardV2({ campaign }) {
           alt={campaign.title}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-300 ease-out hover:scale-[1.03]"
+          onError={(e) => {
+            e.target.onerror = null; // 무한 루프 방지
+            e.target.src = toAbsoluteUrl("/uploads/thumbnails/default.png");
+        }}
         />
       </div>
 
