@@ -165,9 +165,6 @@
         LEFT JOIN TB_CAMPAIGN_VISIT v ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
         LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
         WHERE c.DEL_YN = 'N'
-        <if test="adminYn == null or adminYn == false">
-            AND c.RECRUIT_STATUS = 'OPEN'
-        </if>
         <include refid="searchWhere"></include>
 
         <!-- 동적 정렬 -->
