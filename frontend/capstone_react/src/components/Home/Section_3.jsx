@@ -130,9 +130,9 @@ export default function Section_3() {
                       <span className="flex-1 min-w-0 text-sm font-semibold text-sky-700 dark:text-sky-400 group-hover:underline truncate">
                         {item.title}
                       </span>
-                      <span className="text-sm text-gray-600 dark:text-zinc-400 truncate">
+                      {/* <span className="text-sm text-gray-600 dark:text-zinc-400 truncate">
                         {item.desc}
-                      </span>
+                      </span> */}
                     </div>
                   </div>
                   <FiChevronRight className="mt-1 shrink-0 text-gray-400 dark:text-zinc-500 group-hover:translate-x-0.5 transition-transform" />
