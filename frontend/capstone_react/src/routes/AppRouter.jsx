@@ -25,10 +25,18 @@ import AdminCampaignTime from "../pages/AdminCampaignTime";
 import CampaignSearchPage from "../pages/CampaignSearchPage";
 import AlarmPage from "../pages/AlarmPage";
 
-
 import ReviewSubmitPage from "../pages/ReviewSubmitPage";
 import Cancellation_in_progress from "../components/mypage/cancle/Cancellation_in_progress";
 import CancelRequestPage from "../components/mypage/cancle/CancelRequestPage";
+import OwnerReviewPage from "../pages/OwnerReviewPage";
+
+import GuidePage from "../pages/GuidePage";
+import FAQPage from "../pages/FAQPage";
+
+import TermsPage from "../pages/TermsPage";
+import AboutPage from "../pages/AboutPage";
+
+import ErrorPage from "../pages/ErrorPage";
 
 // 안쓰는거 삭제 및 나중에 사용할거면 주석좀 해주세요.
 
@@ -131,19 +139,32 @@ export default function AppRouter() {
         }
       />
 
-
       {/* 알람 페이지 */}
-      <Route path="/mypage/alarm" element={
-        <PrivateRoute>
+      <Route
+        path="/mypage/alarm"
+        element={
+          <PrivateRoute>
             <AlarmPage />
-        </PrivateRoute>
-      } />
+          </PrivateRoute>
+        }
+      />
 
+
+      {/*소상공인 체험단 리뷰 관리 페이지 */}
+      <Route
+        path="/owner/campaigns/:id/reviews"
+        element={<OwnerReviewPage />}
+      />
 
       <Route path="/mypage/my-campaigns" element={<MyCampaigns />} />
 
-      <Route path="/mypage/cancel-campaigns" element={<Cancellation_in_progress />} />
-       <Route path="/cancel/request" element={<CancelRequestPage />} />
+      {/* 취소 진행중 페이지 */}
+      <Route
+        path="/mypage/cancel-campaigns"
+        element={<Cancellation_in_progress />}
+      />
+      {/* 취소 신청페이지 */}
+      <Route path="/cancel/request" element={<CancelRequestPage />} />
 
       {/* 리뷰 제출 페이지 승인 검사 해야함*/}
       <Route
@@ -184,7 +205,20 @@ export default function AppRouter() {
 
       <Route path="/test/image-upload" element={<ImageUploadTest />} />
 
+      {/* 이용 가이드 페이지 */}
+      <Route path="/mypage/guide" element={<GuidePage />}/>
+
+      {/* 자주 묻는 질문 페이지 */}
+      <Route path="/mypage/faq" element={<FAQPage />}/>
+
+      {/* 이용 약관 */}
+      <Route path="/terms" element={<TermsPage />} />
+
+      {/* 회사 소개 */}
+      <Route path="/about" element={<AboutPage />} />
+
       {/* 404 페이지도 추가 가능  나중에 할거임*/}
+      <Route path="/error" element={<ErrorPage />} />
     </Routes>
   );
 }

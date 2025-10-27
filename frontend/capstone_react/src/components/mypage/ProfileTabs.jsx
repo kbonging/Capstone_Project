@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 
 export default function ProfileTabs() {
   return (
-    <div className="flex border-b text-xl font-semibold space-x-6 mb-8 w-max px-1">
+    <div className="flex border-b text-xl font-semibold space-x-6 mb-8 ml-6 w-max px-1">
       <NavLink
         to="/mypage"
         end

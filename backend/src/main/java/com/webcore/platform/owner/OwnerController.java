@@ -1,14 +1,21 @@
 package com.webcore.platform.owner;
 
 import com.webcore.platform.owner.dto.OwnerDTO;
+import com.webcore.platform.owner.dto.OwnerReviewCheckListDTO;
+import com.webcore.platform.security.custom.CustomUser;
 import jakarta.servlet.http.HttpSession;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -49,5 +56,26 @@ public class OwnerController {
             log.info("회원가입 실패..");
             return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
         }
+    }
+
+    // 소상공인(주최자) 캠페인 리뷰 제출 목록
+    @GetMapping("/campaigns/{campaignId}/reviews")
+    public Map<String, Object> getOwnerReviewList(
+        @PathVariable Long campaignId,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(required = false) String channel,     // CAMC001...
+        @RequestParam(defaultValue = "desc") String sort,   // asc | desc
+        @AuthenticationPrincipal CustomUser user
+    ) {
+        Integer ownerId = user.getMemberDTO().getMemberIdx(); // int면 오토박싱
+        OwnerReviewCheckListDTO cond = new OwnerReviewCheckListDTO();
+        cond.setPage(page);
+        cond.setRecordCount(size);
+        cond.setChannelCode(channel);
+        // 정렬은 cond에 전용 필드를 만들거나, 여기선 searchCondition을 임시 활용
+        cond.setSearchCondition(sort);
+
+        return ownerService.getOwnerReviewList(campaignId, ownerId, cond);
     }
 }

@@ -98,18 +98,22 @@ create table tb_reviewer_profile (
 
 -- 리뷰어 채널 정보
 create table tb_reviewer_channel (
-	rev_cha_idx		int			primary key auto_increment comment '채널 고유번호',
-	member_idx			int		not null comment '회원 고유번호',
-	inf_type_code_id	varchar(20)	not null comment '인플루언서 유형 코드 (공통 코드 INF_TYPE)',
-	channel_url			varchar(500)	not null comment '채널 주소',
-	reg_date			datetime	not null comment '등록일',
-	mod_date			datetime	null comment '수정일시',
-	foreign key (member_idx) references tb_member(member_idx)
-		on delete cascade
-		on update cascade,
-	foreign key (inf_type_code_id) references tb_common_code(code_id)
-		on delete cascade
-		on update cascade
+    rev_cha_idx        int           primary key auto_increment comment '채널 고유번호',
+    member_idx         int           not null comment '회원 고유번호',
+    inf_type_code_id   varchar(20)   not null comment '인플루언서 유형 코드 (공통 코드 INF_TYPE)',
+    channel_url        varchar(500)  not null comment '채널 주소',
+    reg_date           datetime      not null comment '등록일',
+    mod_date           datetime      null comment '수정일시',
+    
+    -- 제약 조건
+    unique key uq_member_inf_type (member_idx, inf_type_code_id),  -- 한 회원당 유형별 1개만 허용
+    
+    foreign key (member_idx) references tb_member(member_idx)
+        on delete cascade
+        on update cascade,
+    foreign key (inf_type_code_id) references tb_common_code(code_id)
+        on delete cascade
+        on update cascade
 ) COMMENT='리뷰어 채널 정보(리뷰어=인플루언서 유형 정보)';
 
 -- 소상공인
@@ -346,5 +350,25 @@ CREATE TABLE `TB_NOTIFICATION_READ` (
 	ON DELETE CASCADE
     ON UPDATE CASCADE
 )comment '알림 읽음 이력 테이블';
+
+
+########## 진행중 취소 테이블 ############
+/* ===========================================================
+ *  - 증빙 이미지 URL 배열을 JSON으로 저장
+ *  - 리뷰어 진행중 취소
+ * =========================================================== */
+CREATE TABLE  tb_cancel_reviewer_list (
+  cancel_idx       INT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  application_idx  INT       NOT NULL,
+  member_idx       INT       NOT NULL,
+  type_code        VARCHAR(20)  NOT NULL,      -- SIMPLE | NEGOTIATED
+  reason           TEXT         NULL,          -- 협의사유 등
+  evidence_json    JSON         NULL,          -- ["https://...","https://..."]
+  reg_date         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY idx_cancel_member (member_idx),
+  KEY idx_cancel_app (application_idx)
+    , CONSTRAINT fk_cancel_member FOREIGN KEY (member_idx) REFERENCES tb_member(member_idx)
+    , CONSTRAINT fk_cancel_app FOREIGN KEY (application_idx) REFERENCES tb_campaign_application(APPLICATION_IDX)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

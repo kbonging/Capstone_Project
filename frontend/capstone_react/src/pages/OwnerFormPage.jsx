@@ -713,7 +713,7 @@ export default function OwnerFormPage() {
 
                 <button
                     type="submit"
-                    className="w-full h-[42px] mt-[30px] bg-blue-500 rounded-lg text-white font-bold text-[16px] disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    className="w-full h-[42px] mt-[30px] mb-10 bg-blue-500 rounded-lg text-white font-bold text-[16px] disabled:bg-gray-300 disabled:cursor-not-allowed"
                     disabled={!isSignUpButtonEnabled}
                 >
                     회원가입

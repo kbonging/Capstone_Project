@@ -24,10 +24,10 @@ export default function Section4({
     >
       {/* ===== 문구 영역 ===== */}
       <div className="absolute top-28 w-full text-center z-10">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
           리뷰가 모여 가치를 만들다
         </h2>
-        <p className="mt-2 text-gray-500">
+        <p className="mt-2 text-gray-500 dark:text-white/70">
           Revory에서 경험이 연결되고, 이야기가 새로운 기회로 확장됩니다
         </p>
       </div>

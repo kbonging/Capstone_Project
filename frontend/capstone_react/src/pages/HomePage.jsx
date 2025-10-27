@@ -7,6 +7,8 @@ import ShowcaseSlider from "../components/Home/ShowcaseSlider";
 import Section_3 from "../components/Home/Section_3";
 import Section4 from "../components/Home/Section_4";
 import Section_3_banner from "../components/Home/Section_3_banner";
+import Section_5 from "../components/Home/Section_5";
+import Section_6 from "../components/Home/Section_6";
 
 export default function HomePage() {
   const [premium, setPremium] = useState([]);
@@ -75,10 +77,15 @@ export default function HomePage() {
       <section>
         <Section_3 />
       </section>
+        <section>
+          <Section_5/>
+        </section>
+      
       <section>
         <Section_3_banner/>
       </section>
-      <section>
+
+      {/* <section>
         <Section4
           height={640}
           speedSec={18}
@@ -97,7 +104,13 @@ export default function HomePage() {
             "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80", // 🍕 피자
           ]}
         />
+      </section> */}
+
+
+      <section>
+        <Section_6/>
       </section>
+
     </div>
   );
 }

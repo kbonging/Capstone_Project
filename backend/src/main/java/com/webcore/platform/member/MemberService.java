@@ -1,6 +1,7 @@
 package com.webcore.platform.member;
 
 import com.webcore.platform.member.dto.MemberAuthDTO;
+import com.webcore.platform.member.dto.MemberUpdateDTO;
 
 import java.util.List;
 
@@ -23,4 +24,10 @@ public interface MemberService {
 
     /** 이메일 중복 체크*/
     boolean isEmailExists(String memberEmail);
+
+    /** 회원 정보 수정 */
+    void updateMember(MemberUpdateDTO memberUpdateDTO, String role);
+
+    /** 회원 탈퇴 */
+    void deleteMember(int memberIdx);
 }

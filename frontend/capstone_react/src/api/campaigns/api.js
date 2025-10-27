@@ -504,3 +504,24 @@ export const getCompletedCampaigns = async (memberIdx, token, page = 1) => {
     };
   }
 };
+
+
+
+
+export async function getOwnerReviewList(campaignId, { page = 1, size = 10, channel, sort = "desc" } = {}) {
+  const token = localStorage.getItem("token");
+  const qs = new URLSearchParams({ page, size, sort });
+  if (channel) qs.set("channel", channel);
+
+  const res = await fetch(`/api/owner/campaigns/${campaignId}/reviews?` + qs.toString(), {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || "리뷰 목록 요청 실패");
+  }
+  return res.json(); // { list, totalCount, page, recordCount }
+}

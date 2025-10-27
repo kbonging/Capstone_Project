@@ -1,37 +1,72 @@
-import React, { useMemo, useRef, useState } from "react";
-
-/** 진행중 캠페인 더미: 실제로는 API로 교체하세요 */
-const useMyRunningCampaigns = () => {
-  // TODO: useEffect로 API 호출해 교체
-  return useMemo(
-    () => [
-      // { id: 101, title: "교촌치킨 강남점 방문형 리뷰" },
-      // { id: 102, title: "샐러디 테이크아웃 포장형" },
-    ],
-    []
-  );
-};
+// src/pages/.../CancelForm.jsx
+import React, { useEffect, useRef, useState } from "react";
+import { fetchRunningCampaigns, createCancel } from "../../../api/reviewerApi";
 
 export default function CancelForm() {
-  const campaigns = useMyRunningCampaigns();
+  const token = localStorage.getItem("token") || undefined;
 
-  const [type, setType] = useState(""); // '', 'SIMPLE', 'NEGOTIATED'
+  const [campaigns, setCampaigns] = useState([]);
+  const [loadingCampaigns, setLoadingCampaigns] = useState(true);
+  const [loadErr, setLoadErr] = useState("");
+
+  const [type, setType] = useState("");
   const [campaignId, setCampaignId] = useState("");
   const [reason, setReason] = useState("");
-  const [files, setFiles] = useState([]); // File[]
+  const [files, setFiles] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [okMsg, setOkMsg] = useState("");
 
   const fileInputRef = useRef(null);
 
-  const hasRunning = campaigns.length > 0;
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        setLoadingCampaigns(true);
+        setLoadErr("");
+
+        if (!token) {
+          setLoadErr("로그인이 필요합니다.");
+          setCampaigns([]);
+          return;
+        }
+
+        const data = await fetchRunningCampaigns({
+          token,
+          withCredentials: true,
+        });
+        if (!alive) return;
+
+        const normalized = Array.isArray(data)
+          ? data.map((row) => ({
+              id: row.id ?? row.campaignId,
+              title: row.title,
+            }))
+          : [];
+
+        setCampaigns(normalized);
+      } catch (e) {
+        if (!alive) return;
+        setLoadErr(e.message || "진행중 캠페인 로드 실패");
+      } finally {
+        if (alive) setLoadingCampaigns(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [token]);
+
+  const hasRunning = campaigns.length > 0 && !loadingCampaigns;
 
   const onFilesChange = (fileList) => {
-    // 5MB, jpg/png만
     const valid = Array.from(fileList).filter((f) => {
-      const okExt = /image\/(jpeg|png)/.test(f.type);
+      const okExt = /image\/(jpeg|png)/i.test(f.type);
       const okSize = f.size <= 5 * 1024 * 1024;
       return okExt && okSize;
     });
-    setFiles(valid.slice(0, 4)); // 원하면 개수 제한
+    setFiles(valid.slice(0, 4));
   };
 
   const onDrop = (e) => {
@@ -39,32 +74,65 @@ export default function CancelForm() {
     onFilesChange(e.dataTransfer.files);
   };
 
-  const onSubmit = (e) => {
+  const resetForm = () => {
+    setType("");
+    setCampaignId("");
+    setReason("");
+    setFiles([]);
+  };
+
+  const onSubmit = async (e) => {
     e.preventDefault();
 
-    // 간단 검증
+    console.log("native fetch?", /\[native code\]/.test(fetch.toString()));
+    console.log("sw controlled?", !!navigator.serviceWorker?.controller);
+
+    setErrorMsg("");
+    setOkMsg("");
+
+    if (!token) {
+      setErrorMsg("로그인이 필요합니다.");
+      return;
+    }
+
     if (!type) return alert("유형을 선택해 주세요.");
     if (!campaignId) return alert("체험단을 선택해 주세요.");
-    if (type === "NEGOTIATED" && !reason.trim())
+    if (type === "NEGOTIATED" && !reason.trim()) {
       return alert("취소 사유를 입력해 주세요.");
+    }
 
-    // 폼데이터 구성 (예시)
-    const fd = new FormData();
-    fd.append("type", type);
-    fd.append("campaignId", campaignId);
-    if (type === "NEGOTIATED") fd.append("reason", reason);
-    files.forEach((f, i) => fd.append("images", f, f.name));
+    try {
+      setSubmitting(true);
 
-    // TODO: 실제 API 호출
-    // await fetch('/api/cancels', { method: 'POST', body: fd, headers: { Authorization: `Bearer ${token}` }})
-    alert("제출되었습니다(데모).");
+      await createCancel(
+        { type, campaignId, reason, files },
+        { token, withCredentials: true }
+      );
+
+      setOkMsg("취소가 접수되었습니다.");
+      resetForm();
+    } catch (err) {
+      setErrorMsg(err.message || "처리 중 오류가 발생했습니다.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <form onSubmit={onSubmit} className="w-full max-w-3xl mx-auto">
-      {/* 제목 + 구분선 */}
       <h2 className="text-[18px] font-semibold">체험 취소하기</h2>
       <div className="mt-2 h-px bg-gray-200" />
+
+      {errorMsg && (
+        <div className="mt-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+          {errorMsg}
+        </div>
+      )}
+      {okMsg && (
+        <div className="mt-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+          {okMsg}
+        </div>
+      )}
 
       {/* 유형 */}
       <div className="mt-6">
@@ -73,7 +141,8 @@ export default function CancelForm() {
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="block w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+            disabled={submitting}
+            className="block w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 disabled:opacity-60"
           >
             <option value="">선택</option>
             <option value="SIMPLE">단순취소 (취소횟수 부과)</option>
@@ -89,16 +158,21 @@ export default function CancelForm() {
       <div className="mt-6">
         <label className="block text-sm font-medium mb-2">체험단</label>
 
-        {hasRunning ? (
+        {loadingCampaigns ? (
+          <div className="text-sm text-gray-500">불러오는 중…</div>
+        ) : loadErr ? (
+          <div className="text-sm text-red-500">{loadErr}</div>
+        ) : hasRunning ? (
           <div className="relative">
             <select
               value={campaignId}
               onChange={(e) => setCampaignId(e.target.value)}
-              className="block w-full rounded border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+              disabled={submitting}
+              className="block w-full rounded border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 disabled:opacity-60"
             >
               <option value="">체험단을 선택해 주세요.</option>
               {campaigns.map((c) => (
-                <option key={c.id} value={c.id}>
+                <option key={c.id} value={String(c.id)}>
                   {c.title}
                 </option>
               ))}
@@ -131,10 +205,9 @@ export default function CancelForm() {
         </p>
       )}
 
-      {/* 협의취소 전용 입력들 */}
+      {/* 협의취소 전용 */}
       {type === "NEGOTIATED" && (
         <>
-          {/* 사유 */}
           <div className="mt-8">
             <label className="block text-sm font-medium mb-2">
               취소 사유 작성
@@ -144,7 +217,8 @@ export default function CancelForm() {
               onChange={(e) => setReason(e.target.value)}
               rows={5}
               placeholder="취소 사유를 입력하세요"
-              className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+              disabled={submitting}
+              className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 disabled:opacity-60"
             />
             {!reason.trim() && (
               <p className="mt-2 text-xs text-red-500">필수 입력 사항입니다.</p>
@@ -163,7 +237,7 @@ export default function CancelForm() {
               className="grid gap-3"
             >
               <div
-                className="flex flex-col items-center justify-center rounded border-2 border-dashed border-gray-300 px-4 py-10 text-center"
+                className="flex flex-col items-center justify-center rounded border-2 border-dashed border-gray-300 px-4 py-10 text-center cursor-pointer"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <div className="text-3xl">🖼️</div>
@@ -181,10 +255,10 @@ export default function CancelForm() {
                   multiple
                   className="hidden"
                   onChange={(e) => onFilesChange(e.target.files)}
+                  disabled={submitting}
                 />
               </div>
 
-              {/* 미리보기 */}
               {files.length > 0 && (
                 <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {files.map((f, idx) => {
@@ -214,19 +288,20 @@ export default function CancelForm() {
         </>
       )}
 
-      {/* 하단 버튼 */}
       <div className="mt-10 flex justify-end">
         <button
           type="submit"
           className="rounded bg-sky-500 px-6 py-3 text-white text-sm font-semibold hover:bg-sky-600 disabled:opacity-50"
           disabled={
+            submitting ||
+            loadingCampaigns ||
             !type ||
             !campaignId ||
             (type === "NEGOTIATED" && !reason.trim()) ||
             !hasRunning
           }
         >
-          취소하기
+          {submitting ? "처리 중..." : "취소하기"}
         </button>
       </div>
     </form>

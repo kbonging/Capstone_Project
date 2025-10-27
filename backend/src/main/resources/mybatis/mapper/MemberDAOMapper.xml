@@ -84,4 +84,29 @@
     <select id="countByMemberEmail" parameterType="String" resultType="int">
         SELECT count(*) from tb_member where member_email = #{memberEmail};
     </select>
+
+    <!-- 공통 회원 정보 수정 -->
+    <update id="updateMember" parameterType="com.webcore.platform.member.dto.MemberUpdateDTO">
+        UPDATE tb_member
+        <trim prefix="SET" suffixOverrides=",">
+            MEMBER_PHONE = #{memberPhone},
+            INTRO = #{intro},
+            MEMBER_EMAIL = #{memberEmail},
+            <!-- profileImgUrl이 있으면 업데이트 -->
+            <if test="profileImgUrl != null and profileImgUrl != ''">
+                PROFILE_IMG_URL = #{profileImgUrl},
+            </if>
+            MOD_DATE = NOW()
+        </trim>
+        WHERE MEMBER_IDX = #{memberIdx}
+    </update>
+
+    <!-- 회원 탈퇴 -->
+    <update id="deleteMember" parameterType="int">
+        UPDATE tb_member
+        SET DEL_YN = 'Y',
+        MOD_DATE = NOW()
+        WHERE MEMBER_IDX = #{memberIdx}
+    </update>
+
 </mapper>

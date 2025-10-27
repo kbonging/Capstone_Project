@@ -70,4 +70,110 @@
         ON mb.member_idx = rc.member_idx
         where mb.member_idx=#{memberIdx};
     </select>
+
+
+    <!-- 리뷰어 기준: '내가 당첨(CAMAPP_APPROVED)' && '발표일 지난 시점부터 노출' -->
+    <resultMap id="runningCampaignResultMap" type="com.webcore.platform.reviewer.dto.ReviewerRunningCampaignDTO">
+        <id property="applicationIdx" column="applicationIdx"/>
+        <result property="campaignId" column="campaignId"/>
+        <result property="title" column="title"/>
+        <result property="thumbnailUrl" column="thumbnailUrl"/>
+        <result property="announceDate" column="announceDate"/>
+        <result property="deadlineDate" column="deadlineDate"/>
+    </resultMap>
+
+    <select id="selectRunningCampaignsForReviewer"
+      parameterType="java.lang.Integer"
+      resultMap="runningCampaignResultMap">
+        SELECT
+        a.APPLICATION_IDX   AS applicationIdx,
+        c.CAMPAIGN_IDX      AS campaignId,
+        c.TITLE             AS title,
+        c.THUMBNAIL_URL     AS thumbnailUrl,
+        c.ANNOUNCE_DATE     AS announceDate,
+        c.DEADLINE_DATE     AS deadlineDate
+        FROM tb_campaign_application a
+        JOIN tb_campaign c
+        ON c.CAMPAIGN_IDX = a.CAMPAIGN_IDX
+        WHERE a.MEMBER_IDX = #{memberIdx}
+        AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+        AND a.DEL_YN = 'N'
+        AND c.DEL_YN = 'N'
+        AND DATE(c.ANNOUNCE_DATE) <![CDATA[<=]]> CURDATE()
+        ORDER BY c.ANNOUNCE_DATE DESC, c.DEADLINE_DATE ASC
+    </select>
+
+    <!-- 내 당첨 신청 1건 조회 -->
+    <select id="findApprovedApplication" resultType="com.webcore.platform.reviewer.dto.ReviewerCancelDTO">
+        SELECT
+        APPLICATION_IDX AS applicationIdx,
+        CAMPAIGN_IDX    AS campaignId,
+        MEMBER_IDX      AS memberIdx,
+        APPLY_STATUS_CODE AS type  <!-- 임시로 type에 매핑 (필요 없으면 빼도 됨) -->
+        FROM tb_campaign_application
+        WHERE MEMBER_IDX = #{memberIdx}
+        AND CAMPAIGN_IDX = #{campaignId}
+        AND APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+        LIMIT 1
+    </select>
+
+    <!-- 상태 전환 -->
+    <update id="updateToCanceled">
+        UPDATE tb_campaign_application
+        SET APPLY_STATUS_CODE = 'CAMAPP_CANCEL',
+        MOD_DATE = NOW()
+        WHERE APPLICATION_IDX = #{applicationIdx}
+        AND MEMBER_IDX      = #{memberIdx}
+        AND APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
+    </update>
+
+    <!-- SIMPLE: penalty +1 -->
+    <update id="increaseMemberPenalty">
+        UPDATE tb_member
+        SET penalty = penalty + 1,
+        mod_date = NOW()
+        WHERE member_idx = #{memberIdx}
+    </update>
+
+    <!-- 취소 로그 저장 -->
+    <insert id="insertCancelReviewer" parameterType="com.webcore.platform.reviewer.dto.ReviewerCancelDTO">
+        INSERT INTO tb_cancel_reviewer_list (
+        application_idx, member_idx, type_code, reason, evidence_json, reg_date
+        ) VALUES (
+        #{applicationIdx}, #{memberIdx}, #{type}, #{reason}, #{evidenceJson}, NOW()
+        )
+    </insert>
+
+    <!-- 리뷰어 프로필 수정 -->
+    <update id="updateReviewerProfile" parameterType="com.webcore.platform.member.dto.MemberUpdateDTO">
+        UPDATE tb_reviewer_profile
+        SET NICKNAME = #{nickname},
+        GENDER = #{gender},
+        BIRTH_DATE = #{birthDate},
+        ACTIVITY_AREA = #{activityArea},
+        ACTIVITY_TOPIC = #{activityTopic},
+        ZIP_CODE = #{zipCode},
+        ADDRESS = #{address},
+        DETAIL_ADDRESS = #{detailAddress}
+        WHERE MEMBER_IDX = #{memberIdx}
+    </update>
+
+    <!-- 리뷰어 채널 등록/수정 (UPSERT) -->
+    <insert id="upsertReviewerChannel" parameterType="com.webcore.platform.reviewer.dto.ReviewerChannelDTO">
+        INSERT INTO tb_reviewer_channel (
+        MEMBER_IDX,
+        INF_TYPE_CODE_ID,
+        CHANNEL_URL,
+        REG_DATE
+        )
+        VALUES (
+        #{memberIdx},
+        #{infTypeCodeId},
+        #{channelUrl},
+        NOW()
+        )
+        ON DUPLICATE KEY UPDATE
+        CHANNEL_URL = VALUES(CHANNEL_URL),
+        MOD_DATE = NOW()
+    </insert>
 </mapper>

@@ -1,16 +1,20 @@
 package com.webcore.platform.member;
 
+import com.webcore.platform.file.FileStorageService;
 import com.webcore.platform.member.dto.MemberAuthDTO;
 import com.webcore.platform.member.dto.MemberDTO;
+import com.webcore.platform.member.dto.MemberUpdateDTO;
 import com.webcore.platform.owner.OwnerService;
 import com.webcore.platform.reviewer.ReviewerService;
 import com.webcore.platform.security.custom.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -29,6 +33,7 @@ public class MemberController {
     private final MemberService memberService;
     private final ReviewerService reviewerService;
     private final OwnerService ownerService;
+    private final FileStorageService fileStorageService;
 
     /**
      * 사용자 정보 조회
@@ -53,6 +58,42 @@ public class MemberController {
 
         // 인증 되지 않음
         return new ResponseEntity<>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
+    }
+
+    /** 회원 정보 수정 (파일 포함) */
+    @PutMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateMember(
+            @RequestPart("request") MemberUpdateDTO memberUpdateDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @AuthenticationPrincipal CustomUser customUser) {
+
+        try {
+            // 로그인 사용자 기준 memberIdx 세팅
+            memberUpdateDTO.setMemberIdx(customUser.getMemberDTO().getMemberIdx());
+
+            // 파일이 있으면 저장하고 DTO에 경로 넣기
+            if (file != null && !file.isEmpty()) {
+                // 'profiles' 하위 폴더에 저장하도록 결정 (uploads/profiles/...)
+                String savedPath = fileStorageService.storeFile(file, "profiles");
+                memberUpdateDTO.setProfileImgUrl(savedPath);
+            }
+
+            String role = customUser.getAuthorities().iterator().next().getAuthority();
+            memberService.updateMember(memberUpdateDTO, role);
+
+            return ResponseEntity.ok("SUCCESS");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("FAIL");
+        }
+    }
+
+    /** 회원 탈퇴 */
+    @PatchMapping("")
+    public ResponseEntity<String> deleteMember(@AuthenticationPrincipal CustomUser customUser) {
+        int memberIdx = customUser.getMemberDTO().getMemberIdx();
+        memberService.deleteMember(memberIdx);
+        return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
     }
 
     /** MemberIdx로 회원 정보 조회 */

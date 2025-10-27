@@ -103,8 +103,11 @@ public class SecurityConfig {
                         .requestMatchers( "/api/emails/**").permitAll()
 
                         // 리뷰어
-                        .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 리뷰어 회원가입은 누구나 가능 (POST)
-                        .requestMatchers("/api/reviewer", "/api/reviewer/**").hasRole("USER") // 회원 가입 제외 모든 경로는 권한 필요
+                        .requestMatchers(HttpMethod.POST, "/api/reviewer").permitAll() // 회원가입만 전체 허용
+                        .requestMatchers(HttpMethod.GET, "/api/reviewer/running-campaigns").hasRole("USER") // 진행중 캠페인 조회는 로그인 유저만
+                        .requestMatchers(HttpMethod.POST, "/api/reviewer/cancels").hasRole("USER")
+                        .requestMatchers("/api/reviewer/**").hasRole("USER") // 나머지 리뷰어 API는 USER 권한 필요
+
 
                         // 소상공인
                         .requestMatchers(HttpMethod.POST, "/api/owner").permitAll() // 소상공인 회원가입은 누구나 가능 (POST)
@@ -116,6 +119,7 @@ public class SecurityConfig {
                         // 캠페인 관련
                         .requestMatchers(HttpMethod.GET, "/api/campaigns", "/api/campaigns/**").permitAll() // 캠페인 전체 목록 조회는 모두 접근 가능
                         .requestMatchers(HttpMethod.GET, "/api/campaigns/*/apply-page").hasRole("USER") // 신청페이지는 리뷰어만 들어갈수있음
+
                         .requestMatchers("/api/campaigns/**") // 상세 조회, 수정, 삭제는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")// 캠페인 모든 경로는 권한 필요
 
@@ -128,6 +132,9 @@ public class SecurityConfig {
 
                         // 알림 관련
                         .requestMatchers("/api/notifications", "/api/notifications/**").permitAll()
+
+                        //챗봇 api연결 항상 열어둠 우선 테스트작업중
+                        .requestMatchers("/api/chat/**").permitAll()
 
                         .requestMatchers("/api/comments", "/api/comments/**")// 댓글 경로는 권한 필요
                         .hasAnyRole("USER", "OWNER", "ADMIN")

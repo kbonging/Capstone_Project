@@ -32,7 +32,9 @@ export default function CommunityForm({ mode = "create"}) {
     fetchCommonCode('COMMU_CATE')
     .then((data)=>{
       if(!isAdmin){
-        data = data.filter((code) => code.codeId !== "COMMU004"); // 관리자가 아닐경우 "공지" 항목을 빼고 노출
+        data = data.filter((code) => 
+          code.codeId !== "COMMU004" && code.codeId !== "COMMU005"
+        ); // 관리자가 아닐경우 "공지" 항목을 빼고 노출
       }
       setCategories(data);
     })

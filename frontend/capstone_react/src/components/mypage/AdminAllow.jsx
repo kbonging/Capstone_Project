@@ -12,34 +12,41 @@ export default function AdminAllow() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [pagination, setPagination] = useState(null);
+  const [pagination, setPagination] = useState({ currentPage: 1 });
 
   const { token } = useContext(AppContext);
 
-  // API 호출
-  useEffect(() => {
-    const fetchCampaigns = async () => {
-      setLoading(true);
-      try {
-        const data = await getAdminCampaignsList(token);
-        if (data && Array.isArray(data.campaignList)) {
-          setPosts(data.campaignList);
-          setPagination(data.paginationInfo || null);
-        } else {
-          setPosts([]);
-          setPagination(null);
-        }
-      } catch (error) {
-        console.error(error);
-        setPosts([]);
-        setPagination(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // 캠페인 목록 호출
+  const fetchCampaigns = async (page = 1) => {
+    if (!token) return;
+    setLoading(true);
+    try {
+      const statusMap = { 전체: "", 대기: "PENDING", 승인: "APPROVED", 반려: "REJECTED" };
+      const queryString = new URLSearchParams({
+        page,
+        status: statusMap[filterStatus] || "",
+        keyword: searchTerm || "",
+      }).toString();
 
-    if (token) fetchCampaigns();
-    else setLoading(false);
+      const data = await getAdminCampaignsList(token, queryString);
+      if (data && Array.isArray(data.campaignList)) {
+        setPosts(data.campaignList);
+        setPagination(data.paginationInfo || { currentPage: page });
+      } else {
+        setPosts([]);
+        setPagination({ currentPage: page });
+      }
+    } catch (error) {
+      console.error(error);
+      setPosts([]);
+      setPagination({ currentPage: page });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCampaigns(1);
   }, [token]);
 
   // 상태 변경
@@ -56,41 +63,17 @@ export default function AdminAllow() {
     }
   };
 
-  // 필터+검색 적용
-  const applyFilterSearch = (status, keyword) => {
-    const statusMap = {
-      전체: null,
-      대기: "PENDING",
-      승인: "APPROVED",
-      반려: "REJECTED",
-    };
-    const statusToFilter = statusMap[status];
-    const lowerKeyword = keyword.toLowerCase();
-
-    const filtered = posts.filter((post) => {
-      const matchesStatus =
-        !statusToFilter || post.campaignStatus === statusToFilter;
-      const matchesSearch =
-        post.title.toLowerCase().includes(lowerKeyword) ||
-        post.shopName.toLowerCase().includes(lowerKeyword);
-      return matchesStatus && matchesSearch;
-    });
-
-    setFilteredPosts(filtered);
-  };
-
   // 검색 실행 (돋보기, 엔터)
   const onSearch = () => {
-    applyFilterSearch(filterStatus, searchTerm);
+    fetchCampaigns(1);
   };
-
   const handleEnter = (e) => {
     if (e.key === "Enter") onSearch();
   };
 
+  // 페이지 변경
   const handlePageChange = (newPage) => {
-    // 실제 API 호출 시 page 파라미터 처리 필요
-    console.log("페이지 변경:", newPage);
+    fetchCampaigns(newPage);
   };
 
   // 모달 열기/닫기
@@ -104,8 +87,21 @@ export default function AdminAllow() {
   };
 
   useEffect(() => {
-    applyFilterSearch(filterStatus, searchTerm);
-  }, [posts]);
+    // posts가 바뀔 때 필터+검색 적용
+    const lowerKeyword = searchTerm.toLowerCase();
+    const statusMap = { 전체: null, 대기: "PENDING", 승인: "APPROVED", 반려: "REJECTED" };
+    const statusToFilter = statusMap[filterStatus];
+
+    setFilteredPosts(
+      posts.filter((post) => {
+        const matchesStatus = !statusToFilter || post.campaignStatus === statusToFilter;
+        const matchesSearch =
+          post.title.toLowerCase().includes(lowerKeyword) ||
+          post.shopName.toLowerCase().includes(lowerKeyword);
+        return matchesStatus && matchesSearch;
+      })
+    );
+  }, [posts, searchTerm, filterStatus]);
 
   if (loading) {
     return (
@@ -145,11 +141,7 @@ export default function AdminAllow() {
               strokeWidth="2"
               viewBox="0 0 24 24"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19 9l-7 7-7-7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
         </div>
@@ -206,10 +198,7 @@ export default function AdminAllow() {
                     };
 
                   return (
-                    <tr
-                      key={post.campaignIdx}
-                      className="transition-colors border-b border-gray-200"
-                    >
+                    <tr key={post.campaignIdx} className="transition-colors border-b border-gray-200">
                       <td className="px-6 py-4">
                         <button
                           className="font-medium text-gray-900 text-left"
@@ -220,9 +209,7 @@ export default function AdminAllow() {
                       </td>
                       <td className="px-6 py-4">{post.shopName}</td>
                       <td className="px-6 py-4 text-center">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${currentStatus.color}`}
-                        >
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${currentStatus.color}`}>
                           {currentStatus.text}
                         </span>
                       </td>

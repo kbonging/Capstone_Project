@@ -165,6 +165,9 @@
         LEFT JOIN TB_CAMPAIGN_VISIT v ON v.CAMPAIGN_IDX = c.CAMPAIGN_IDX
         LEFT JOIN TB_CAMPAIGN_DELIVERY d ON d.CAMPAIGN_IDX = c.CAMPAIGN_IDX
         WHERE c.DEL_YN = 'N'
+        <if test="adminYn == null or adminYn == false">
+            AND c.RECRUIT_STATUS = 'OPEN'
+        </if>
         <include refid="searchWhere"></include>
 
         <!-- 동적 정렬 -->
@@ -587,7 +590,7 @@
         SELECT campaign_idx, campaign_title
         FROM tb_campaign
         WHERE recruit_status = 'OPEN'
-        AND apply_end_date &lt; NOW()
+        AND apply_end_date &lt; CURDATE()
     </select>
 
     <!-- 마감 기한 지난 캠페인 종료 -->
@@ -595,7 +598,7 @@
         UPDATE tb_campaign
         SET recruit_status = 'CLOSED'
         WHERE recruit_status = 'OPEN'
-            AND apply_end_date &lt; NOW()
+            AND apply_end_date &lt; CURDATE()
     </update>
 
     <!-- 단일 캠페인 상태 CLOSED 처리 (선정 완료 버튼용) -->
@@ -667,7 +670,7 @@
         ON a.APPLICATION_IDX = r.APPLICATION_IDX
         WHERE a.MEMBER_IDX = #{memberIdx}
         AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
-        AND c.DEADLINE_DATE &lt; NOW()
+        AND c.DEADLINE_DATE &lt; CURDATE()
         AND a.DEL_YN = 'N'
         ORDER BY c.DEADLINE_DATE DESC
         LIMIT #{recordCount} OFFSET #{firstIndex}
@@ -683,7 +686,7 @@
         ON a.APPLICATION_IDX = r.APPLICATION_IDX
         WHERE a.MEMBER_IDX = #{memberIdx}
         AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
-        AND c.DEADLINE_DATE &lt; NOW()
+        AND c.DEADLINE_DATE &lt; CURDATE()
         AND a.DEL_YN = 'N'
     </select>
 
@@ -700,7 +703,7 @@
         ON a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
         WHERE a.MEMBER_IDX = #{memberIdx}
         AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
-        AND NOW() BETWEEN c.EXP_START_DATE AND c.DEADLINE_DATE
+        AND CURDATE() BETWEEN c.EXP_START_DATE AND c.DEADLINE_DATE
         AND a.DEL_YN = 'N'
         ORDER BY c.EXP_START_DATE ASC
         LIMIT #{recordCount} OFFSET #{firstIndex}
@@ -714,7 +717,7 @@
         ON a.CAMPAIGN_IDX = c.CAMPAIGN_IDX
         WHERE a.MEMBER_IDX = #{memberIdx}
         AND a.APPLY_STATUS_CODE = 'CAMAPP_APPROVED'
-        AND NOW() BETWEEN c.EXP_START_DATE AND c.DEADLINE_DATE
+        AND CURDATE() BETWEEN c.EXP_START_DATE AND c.DEADLINE_DATE
         AND a.DEL_YN = 'N'
     </select>
 </mapper>

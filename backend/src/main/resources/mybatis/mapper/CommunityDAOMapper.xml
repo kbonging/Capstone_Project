@@ -32,6 +32,7 @@
         <result property="likeCount" column="like_count" />
         <result property="commentCount" column="comment_count" />
         <result property="likeByMe" column="liked_by_me" />
+        <result property="profileImgUrl" column="profile_img_url" />
         <result property="auth" column="auth" />
         <result property="writerName" column="writer_name" />
         <result property="regDate" column="reg_date" />
@@ -143,6 +144,7 @@
                 ) THEN 1
                 ELSE 0
             END AS liked_by_me,
+            m.profile_img_url,
             ma.auth,
             CASE
                 WHEN ma.auth = 'ROLE_USER' THEN rp.nickname

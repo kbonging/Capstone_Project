@@ -36,13 +36,18 @@ VALUES
 ('INF002', 'INF_TYPE', '인스타', '', 0, 2, '사진 3장 이상의 피드게시물 1개 업로드', NOW()),
 ('INF003', 'INF_TYPE', '유튜브', '', 0, 3, '3분 이상의 영상(유튜브) 1개 업로드', NOW()),
 ('INF004', 'INF_TYPE', '기타', '', 0, 4, '기타', NOW());
+
 ## 활동주제 (ACT_TOPIC)
 INSERT INTO tb_common_code (code_id, group_code, code_nm, image_url,  group_sort, sort, code_dc, reg_date)
 VALUES 
 ('ACT_TOPIC', '', '활동주제', '', 1, 0, '활동주제 카테고리 그룹', NOW()),
 ('ACT001', 'ACT_TOPIC', '맛집', '', 1, 1, '활동주제 카테고리', NOW()),
 ('ACT002', 'ACT_TOPIC', '식품', '', 1, 2, '활동주제 카테고리', NOW()),
-('ACT003', 'ACT_TOPIC', '뷰티', '', 1, 3, '활동주제 카테고리', NOW());
+('ACT003', 'ACT_TOPIC', '뷰티', '', 1, 3, '활동주제 카테고리', NOW()),
+('ACT004', 'ACT_TOPIC', '여행', '', 1, 4, '활동주제 카테고리', NOW()),
+('ACT005', 'ACT_TOPIC', '디지털', '', 1, 5, '활동주제 카테고리', NOW()),
+('ACT006', 'ACT_TOPIC', '반려동물', '', 1, 6, '활동주제 카테고리', NOW()),
+('ACT007', 'ACT_TOPIC', '기타', '', 1, 7, '활동주제 카테고리', NOW());
 
 ## 커뮤니티_카테고리 (COMMU_CATE)
 INSERT INTO TB_COMMON_CODE (CODE_ID, GROUP_CODE, CODE_NM, GROUP_SORT, SORT, CODE_DC, REG_DATE)

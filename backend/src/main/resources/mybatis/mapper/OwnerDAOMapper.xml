@@ -47,4 +47,65 @@
         on mb.MEMBER_IDX=op.MEMBER_IDX
         where mb.member_idx=#{memberIdx};
     </select>
+
+    <!-- 소상공인 프로필 수정 -->
+    <update id="updateOwnerProfile" parameterType="com.webcore.platform.member.dto.MemberUpdateDTO">
+        UPDATE tb_owner_profile
+        SET BUSINESS_NAME = #{businessName},
+        BUSINESS_URL = #{businessUrl}
+        WHERE MEMBER_IDX = #{memberIdx}
+    </update>
+
+
+
+    <!-- 캠페인 소유자(member_idx) -->
+    <select id="selectCampaignOwner" resultType="int">
+        SELECT c.MEMBER_IDX
+        FROM tb_campaign c
+        WHERE c.CAMPAIGN_IDX = #{campaignId}
+    </select>
+
+    <!-- 공통 FROM/WHERE 블록: 채널 코드 기준을 c.CHANNEL_CODE 로 통일 -->
+    <sql id="BASE_FROM_WHERE">
+        FROM tb_review r
+        JOIN tb_campaign_application a ON a.APPLICATION_IDX = r.APPLICATION_IDX
+        JOIN tb_campaign c ON c.CAMPAIGN_IDX = a.CAMPAIGN_IDX
+        JOIN tb_member m ON m.MEMBER_IDX = a.MEMBER_IDX
+        LEFT JOIN tb_common_code cc
+        ON cc.group_code = 'CAM_CHANNEL'
+        AND cc.code_id   = c.CHANNEL_CODE   <!-- a → c 로 수정 -->
+        WHERE a.CAMPAIGN_IDX = #{campaignId}
+        <if test="channelCode != null and channelCode != ''">
+            AND c.CHANNEL_CODE = #{channelCode}  <!-- a → c 로 수정 -->
+        </if>
+    </sql>
+
+    <!-- 카운트 -->
+    <select id="countOwnerReviews" parameterType="map" resultType="int">
+        SELECT COUNT(1)
+        <include refid="BASE_FROM_WHERE"/>
+    </select>
+
+    <!-- 리스트 -->
+    <select id="selectOwnerReviews"
+      parameterType="map"
+      resultType="com.webcore.platform.owner.dto.OwnerReviewCheckListDTO">
+        SELECT
+        r.REVIEW_IDX                              AS reviewIdx,
+        a.APPLICATION_IDX                         AS applicationIdx,
+        m.MEMBER_ID                                AS reviewerName,  <!-- 컬럼명이 MEMBER_ID 라면 대문자로 -->
+        c.CHANNEL_CODE                             AS channelCode,
+        cc.code_nm                                 AS channelName,
+        r.REVIEW_URL                               AS reviewUrl,
+        r.IMAGE_URL                                AS imageUrl,
+        DATE_FORMAT(r.REG_DATE, '%Y-%m-%d %H:%i')  AS submittedAt
+        <include refid="BASE_FROM_WHERE"/>
+        ORDER BY r.REG_DATE
+        <choose>
+            <when test="sortDir != null and sortDir.toLowerCase() == 'asc'">ASC</when>
+            <otherwise>DESC</otherwise>
+        </choose>
+        LIMIT #{recordCount} OFFSET #{firstIndex}
+    </select>
+
 </mapper>

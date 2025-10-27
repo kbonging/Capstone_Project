@@ -1,5 +1,6 @@
 import axios from "axios";
 
+/** 만료 캠페인 종료 */
 export const closeExpiredCampaigns = async (token) => {
     try {
         const response = await axios.put(
