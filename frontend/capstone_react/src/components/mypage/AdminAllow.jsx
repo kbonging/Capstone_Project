@@ -207,7 +207,9 @@ export default function AdminAllow() {
                           {post.title}
                         </button>
                       </td>
-                      <td className="px-6 py-4">{post.shopName}</td>
+                      <td className="px-6 py-4 max-w-[200px] truncate" title={post.shopName}>
+                        {post.shopName}
+                      </td>
                       <td className="px-6 py-4 text-center">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${currentStatus.color}`}>
                           {currentStatus.text}
