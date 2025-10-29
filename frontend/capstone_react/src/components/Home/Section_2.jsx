@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FiMoreHorizontal } from "react-icons/fi";
 import mainLogo from "../../images/main_logo.png";
 import CampaignCard from "../campaign/CampaignCard";
-import { PlusButton } from "../PlusButton";
+// import { PlusButton } from "../PlusButton";
 import {
   getCampaigns,
   mapCampaignForCard,
@@ -199,6 +199,10 @@ function ZoomCard({ data }) {
           alt={data.title}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-110"
+          onError={(e) => {
+            e.target.onerror = null; // 무한 루프 방지
+            e.target.src = toAbsoluteUrl("/uploads/thumbnails/default.png");
+          }}
         />
         {data.isClosed && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
@@ -231,7 +235,10 @@ function ZoomCardGrid({ items }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
       {items.map((it) => (
-        <ZoomCard key={it.campaignIdx} data={it} />
+        <ZoomCard 
+          key={it.campaignIdx} 
+          data={it} 
+        />
       ))}
     </div>
   );
@@ -486,11 +493,11 @@ export default function Section_2() {
         <CategoryChips value={cat} onChange={setCat} />
         <div className="mx-auto w-full px-3 sm:px-4 mt-4" style={{ maxWidth: "1180px" }}>
           <ZoomCardGrid items={items.slice(0, LIMIT)} />
-          {canMore && (
+          {/* {canMore && (
             <div className="mt-4 flex justify-end">
               <PlusButton onClick={handleMore} />
             </div>
-          )}
+          )} */}
         </div>
       </>
     );
@@ -498,11 +505,11 @@ export default function Section_2() {
     content = (
       <div className="mx-auto w-full px-3 sm:px-4 mt-4" style={{ maxWidth: "1180px" }}>
         <ZoomCardGrid items={items.slice(0, LIMIT)} />
-        {canMore && (
+        {/* {canMore && (
           <div className="mt-4 flex justify-end">
             <PlusButton onClick={handleMore} />
           </div>
-        )}
+        )} */}
       </div>
     );
   } else {
@@ -514,11 +521,11 @@ export default function Section_2() {
             <Row key={i} items={r} />
           ))}
         </div>
-        {canMore && (
+        {/* {canMore && (
           <div className="mt-4 flex justify-end">
             <PlusButton onClick={handleMore} />
           </div>
-        )}
+        )} */}
       </div>
     );
   }
