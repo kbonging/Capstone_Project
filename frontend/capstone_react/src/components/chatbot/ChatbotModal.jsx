@@ -29,15 +29,15 @@ export default function ChatbotModal({ open, onClose, children }) {
       aria-modal="true"
       role="dialog"
     >
-      <div
-        className="w-full sm:w-[420px] md:w-[480px] lg:w-[520px] max-h-[85vh] sm:rounded-2xl overflow-hidden shadow-2xl 
-                   bg-white dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-white/10
-                   animate-[fadeIn_150ms_ease-out]"
-        tabIndex={-1}
-        ref={firstFocusRef}
-      >
-        {children}
-      </div>
+<div
+  className="w-[600px] sm:w-[700px] md:w-[800px] lg:w-[900px] max-w-[95vw] max-h-[85vh] 
+             overflow-hidden sm:rounded-2xl shadow-2xl bg-white dark:bg-zinc-900
+             ring-1 ring-black/5 dark:ring-white/10 animate-[fadeIn_150ms_ease-out]"
+  tabIndex={-1}
+  ref={firstFocusRef}
+>
+  {children}
+</div>
       <style>{`
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
       `}</style>

@@ -48,6 +48,10 @@ export default function CampaignCard({
             // 종료면 스케일/호버 제거 + 흑백/어둡게
             isClosed ? "grayscale brightness-75" : isActive ? "scale-[1.03]" : "",
           ].join(" ")}
+          onError={(e) => {
+            e.target.onerror = null; // 무한 루프 방지
+            e.target.src = toAbsoluteUrl("/uploads/thumbnails/default.png");
+          }}
         />
 
         {/* 좌상단 배지 (기존 + 종료 배지 추가) */}

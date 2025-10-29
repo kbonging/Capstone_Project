@@ -25,9 +25,9 @@ const Footer = () => {
             Make Medium yours
           </h3>
           <p className="text-sm leading-relaxed">
-            관심 있는 제품과 서비스를 팔로우하면, <br />
-            가장 알찬 리뷰와 정보를 홈 화면과 <br />
-            알림으로 바로 받아보실 수 있습니다.
+          © 2025 Graduation Project. <br />
+          본 웹사이트는 학습용 프로젝트로 <br />
+          상업적 이용 목적이 없습니다.
           </p>
         </div>
 

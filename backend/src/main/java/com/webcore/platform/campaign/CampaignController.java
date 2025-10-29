@@ -56,6 +56,7 @@ public class CampaignController {
 
     campaignDTO.setMemberIdx(customUser.getMemberDTO().getMemberIdx()); // 본인 글만 조회
     campaignDTO.setShowMyParam("true");
+    campaignDTO.setOwnerYn(true);
 
     Map<String, Object> resultMap = campaignService.getCampaignList(campaignDTO);
 //        log.info("게시글 조회 정보 => {}", resultMap);

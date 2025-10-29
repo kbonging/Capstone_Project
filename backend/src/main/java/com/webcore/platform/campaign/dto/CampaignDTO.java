@@ -65,6 +65,7 @@ public class CampaignDTO extends DefaultDTO {
     /** 관리자 */
     private Boolean adminYn;
 
+    private Boolean OwnerYn;
     /** 소상공인 내 글만 보기 여부 (true or "")*/
     private String showMyParam;
     /** 신청 마감 기한 지난글 제거 */
