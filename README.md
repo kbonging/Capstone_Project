@@ -55,4 +55,6 @@
 
 ---
 
-![메인페이지 이미지](uploads/thumbnails/mainpage.png)
+<div align="center">
+  <img src="uploads/thumbnails/mainpage.png" alt="메인페이지 이미지" width="800"/>
+</div>
