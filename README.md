@@ -50,11 +50,14 @@
 
 ```markdown
 ## 🔐 인증 구조
-
 추가 예정
-
 ---
+````
 
+```markdown
 <div align="center">
   <img src="./uploads/thumbnails/mainpage.png" alt="메인페이지 이미지" width="800"/>
 </div>
+```
+
+---
