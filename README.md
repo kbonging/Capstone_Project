@@ -53,6 +53,8 @@
 ```text
 추가 예정
 
-<img width="1919" height="907" alt="Image" src="https://github.com/user-attachments/assets/b00a96c7-9fd2-482b-87da-6c4fafc08e86" />
+---
 
-
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/b00a96c7-9fd2-482b-87da-6c4fafc08e86" alt="메인페이지 이미지" width="800"/>
+</div>
