@@ -56,5 +56,5 @@
 ---
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/b00a96c7-9fd2-482b-87da-6c4fafc08e86" alt="메인페이지 이미지" width="800"/>
+  <img src="Capstone_Project/uploads/thumbnails/mainpage.png" alt="메인페이지 이미지" width="800"/>
 </div>
