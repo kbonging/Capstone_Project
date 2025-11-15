@@ -56,5 +56,5 @@
 ---
 
 <div align="center">
-  <img src="Capstone_Project/uploads/thumbnails/mainpage.png" alt="메인페이지 이미지" width="800"/>
+  <img src="uploads/thumbnails/mainpage.png" alt="메인페이지 이미지" width="800"/>
 </div>
