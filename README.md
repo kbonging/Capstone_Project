@@ -46,10 +46,6 @@
 - ✅ 회원 프로필/소개/주소는 가입 후 단계별 등록
 - ✅ 리뷰어 채널은 공통코드 기반 관리 (`TB_COMMON_CODE`)
 
----
-
-## 🔐 인증 구조
-추가 예정
 
 ---
 
@@ -57,4 +53,11 @@
 
 <div align="center">
   <img src="./uploads/thumbnails/mainpage.png" alt="메인페이지 이미지" width="800"/>
+</div>
+
+
+## Panel
+
+<div align="center">
+  <img src="./uploads/thumbnails/capstone_panel.png" alt="메인페이지 이미지" width="800"/>
 </div>
